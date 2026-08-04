@@ -9,12 +9,13 @@ The current repository contains a project harness, documentation, scoped agent i
 ```text
 Public visitor
   -> Cloudflare DNS and edge HTTPS
-  -> Origin ingress selected for the deployment environment
+  -> Cloudflare Tunnel
+  -> Nginx origin ingress
   -> Next.js container
-  -> Versioned MDX or typed local content
+  -> PostgreSQL on a private Docker network
 ```
 
-For a self-hosted origin, ingress may later be `cloudflared -> Next.js` or `cloudflared -> Nginx -> Next.js`. Nginx is not a mandatory hop. PostgreSQL is not part of the MVP content path.
+The approved deployment target is a single self-hosted Linux machine using Docker Compose. Nginx owns origin request limits, proxy timeouts, controlled forwarded headers, and health routing. Cloudflare owns public DNS and edge HTTPS. Nginx must not add HTML caching during the initial rollout.
 
 ## Source boundaries
 
@@ -42,15 +43,35 @@ Not every feature needs every layer. A static About page can remain a route plus
 | `src/app/` | Next.js routes, layouts, metadata, route handlers, composition | Reusable business rules |
 | `src/features/` | Feature behavior and feature-specific UI/adapters | Cross-feature utility dumping ground |
 | `src/shared/` | Stable primitives used by multiple features | Feature policy or feature-to-feature orchestration |
-| `content/` | Versioned portfolio and article source content | Runtime secrets or executable application logic |
+| `content/` | Optional reviewed import inputs, development fixtures, and authoring drafts | A second runtime source of truth, secrets, or executable MDX |
 | `infrastructure/` | Docker, ingress, tunnel, and database configuration | Domain policy |
 | `tests/` | Cross-boundary and executable verification | Production implementation imported only for test convenience |
 
+## Content data flow
+
+```text
+Internal content CLI or validated import
+  -> application command
+  -> project-owned repository port
+  -> Drizzle PostgreSQL adapter
+  -> PostgreSQL
+
+Public Next.js route
+  -> application query
+  -> project-owned repository port
+  -> Drizzle PostgreSQL adapter
+  -> validated domain or read model
+  -> rendered public page
+```
+
+PostgreSQL is the sole runtime source of truth for projects, developer skills, and blog posts. Database and Drizzle types stop at the infrastructure adapter. Long-form bodies are trusted Markdown rendered through controlled components; database content must not execute arbitrary MDX or React components.
+
 ## Rendering policy
 
-- Render public, stable pages statically.
-- Generate project detail pages statically from validated content.
-- Use revalidation for blog indexes and articles only after a freshness target is defined.
+- Render public, stable pages that do not require PostgreSQL statically.
+- Keep Docker image builds independent of production database connectivity and credentials.
+- Read project, skill, and blog content from PostgreSQL at runtime through server-only repositories.
+- Apply explicit server caching or revalidation only after each route has a freshness target and invalidation owner.
 - Use dynamic rendering for authenticated previews or truly request-specific data.
 - Keep secret-bearing writes in server-only entry points with server-side validation.
 
@@ -58,7 +79,7 @@ For each route, document when HTML is generated, when data is read, what is cach
 
 ## Trust boundaries
 
-Treat browser input, route params, MDX frontmatter, environment variables, HTTP responses, database rows, proxy headers, and tunnel configuration as untrusted. Validate at the first project-owned boundary and pass typed values inward.
+Treat browser input, route params, Markdown import metadata, environment variables, HTTP responses, database rows, proxy headers, and tunnel configuration as untrusted. Validate at the first project-owned boundary and pass typed values inward.
 
 ## Caching boundaries
 
@@ -66,8 +87,8 @@ Browser, Cloudflare, Nginx, Next.js, and PostgreSQL caching are independent. Int
 
 ## Planned evolution
 
-1. Scaffold the static Next.js shell and local content pipeline.
-2. Complete content, accessibility, SEO, tests, and Docker packaging.
-3. Choose the simplest production ingress that meets the hosting environment.
-4. Add PostgreSQL and an API only after a documented adoption gate is met.
-5. Preserve public URLs and metadata during any content-source migration.
+1. Scaffold the Next.js application in a temporary directory and merge it without replacing the repository harness.
+2. Add private PostgreSQL, reviewed migrations, separate development and test seeds, and environment validation.
+3. Deliver the first database-backed public vertical slice through application ports and a PostgreSQL adapter.
+4. Complete content import, accessibility, SEO, unit and integration tests, Docker packaging, migration release steps, backup, and restore verification.
+5. Add Nginx and Cloudflare Tunnel with separately verified responsibilities and no initial origin HTML cache.

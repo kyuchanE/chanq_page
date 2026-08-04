@@ -71,9 +71,12 @@ Every completed task should state:
 
 The recommended next slice is:
 
-1. Scaffold Next.js App Router with strict TypeScript and a supported package manager.
-2. Add formatting, linting, unit tests, and a production build command.
-3. Configure `src/` aliases without weakening dependency boundaries.
-4. Implement one static Home route with semantic layout and no decorative client JavaScript.
-5. Add a typed local content schema before adding real project or article files.
-6. Extend `scripts/check.sh` to run the new package quality gates.
+1. Generate an empty Next.js scaffold in a temporary directory using the approved settings in `docs/architecture/technology-baseline.md`.
+2. Review and merge package metadata, strict TypeScript, App Router, Tailwind CSS, ESLint, React Compiler, Turbopack, and the `@/*` alias without replacing repository-owned instructions or documentation.
+3. Add Prettier, Vitest, React Testing Library, Playwright, production build commands, and deterministic package quality gates.
+4. Add Zod environment validation and safe `.env.example` placeholders.
+5. Add a private PostgreSQL Docker Compose service, Drizzle schema, committed initial migration, and separate development and test seeds.
+6. Implement the first database-backed content repository vertical slice with unit and PostgreSQL integration tests.
+7. Add the internal content CLI or import entry point for draft and publish behavior.
+8. Extend `scripts/check.sh` to run formatting, linting, type checking, tests, migration checks, and the production build.
+9. Add production Docker packaging, migration release steps, backup, restore verification, Nginx, and Cloudflare Tunnel incrementally.

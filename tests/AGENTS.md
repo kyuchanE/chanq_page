@@ -3,7 +3,7 @@
 Use tests to protect behavior and boundaries, not implementation trivia.
 
 - Keep pure domain and application tests fast and deterministic.
-- Use integration tests for adapters, content parsing, database behavior, and framework boundaries.
+- Use integration tests for adapters, content import validation, database behavior, migrations, and framework boundaries.
 - Use end-to-end tests for a small number of critical visitor journeys.
 - Control time, randomness, network access, and external services.
 - Use fixtures that contain no production secrets or personal data.
@@ -18,7 +18,7 @@ Use tests to protect behavior and boundaries, not implementation trivia.
 
 ## Integration tests
 
-- Test real boundaries such as MDX parsing, route adapters, PostgreSQL queries, migrations, and rendered configuration.
+- Test real boundaries such as Markdown import validation, route adapters, PostgreSQL repositories, migrations, and rendered configuration.
 - Use isolated temporary state, deterministic setup and cleanup, and production-compatible dependency versions.
 - Assert externally visible data and behavior instead of unstable framework snapshots.
 

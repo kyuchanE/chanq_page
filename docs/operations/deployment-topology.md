@@ -9,25 +9,15 @@ No deployable application or infrastructure configuration exists yet. This docum
 ```text
 Visitor
   -> Cloudflare DNS and edge HTTPS
-  -> Hosting-provider ingress or a private Cloudflare Tunnel
+  -> Cloudflare Tunnel
+  -> Nginx container
   -> Next.js standalone container
+  -> PostgreSQL container on a private network
 ```
 
-Use a single application instance until availability or traffic measurements justify more. Build a production image with a non-root runtime user, an explicit health check, a read-only filesystem where practical, and only the required environment variables.
+Use a single self-hosted Linux machine and one application instance until availability or traffic measurements justify more. Build a production image with a non-root runtime user, an explicit health check, a read-only filesystem where practical, and only the required environment variables. The image build must not connect to a production database.
 
-## Self-hosted variants
-
-### Simplest private-origin path
-
-```text
-cloudflared container
-  -> private Docker network
-  -> Next.js container
-```
-
-Prefer this when there is one HTTP service and Cloudflare owns public TLS and routing.
-
-### Nginx path
+## Origin path
 
 ```text
 cloudflared container
@@ -35,18 +25,20 @@ cloudflared container
   -> Next.js container
 ```
 
-Add Nginx only when it owns a documented responsibility such as multiple upstream routes, origin-level request limits, buffering, controlled headers, or a verified static-file policy. Avoid duplicating Cloudflare and Next.js caching without a measured requirement.
+For the MVP, Nginx owns origin request limits, proxy timeouts, controlled forwarded headers, and health routing. It does not own HTML caching. Cloudflare owns public DNS and edge HTTPS; Tunnel prevents direct public origin ingress. Avoid duplicating Cloudflare and Next.js caching without a measured requirement.
 
-## PostgreSQL stage
+## PostgreSQL
 
-PostgreSQL is post-MVP. When adopted:
+PostgreSQL is an MVP component and the runtime source of truth for public content.
 
 - Keep it on a private network with no public port by default.
 - Use migrations as reviewed application artifacts.
 - Define backup, restore, retention, and restore-test procedures before production writes.
 - Use least-privilege application credentials and separate migration privileges where practical.
 - Add readiness checks that distinguish database startup from migration completion.
-- Preserve public slugs, metadata, and publication dates during MDX migration.
+- Run migrations as an explicit release step instead of automatically on each application start.
+- Preserve public slugs, metadata, publication state, and publication dates during schema changes.
+- Follow `postgresql-lifecycle.md` for seed, import, backup, restore, and verification policy.
 
 ## Cloudflare boundaries
 

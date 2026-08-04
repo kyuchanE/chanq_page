@@ -14,10 +14,15 @@ The repository is currently in the **project-harness phase**. Application runtim
 ## Planned technical direction
 
 - Next.js App Router and strict TypeScript
-- Local MDX content for the MVP
+- PostgreSQL as the MVP source of truth for projects, developer skills, and Markdown blog content
+- Drizzle ORM and reviewed SQL migrations
+- Zod validation at environment, import, and external-data boundaries
+- Tailwind CSS for responsive presentation
+- Vitest and React Testing Library for unit and component tests, plus Playwright for critical end-to-end journeys
 - Feature-first, proportional Clean Architecture
 - Docker-based production packaging
-- Cloudflare DNS and HTTPS
-- PostgreSQL, Nginx, and Cloudflare Tunnel only when their documented adoption criteria are met
+- A single-host Docker Compose topology with private PostgreSQL, Nginx ingress, and Cloudflare Tunnel
+
+The application has not been scaffolded yet. These choices are the approved baseline for the next project-generation task; dependency versions and lockfiles will be selected and verified during that task.
 
 See [`docs/architecture/system-overview.md`](docs/architecture/system-overview.md) for the current architecture and [`docs/development/codex-workflow.md`](docs/development/codex-workflow.md) for the detailed development workflow.

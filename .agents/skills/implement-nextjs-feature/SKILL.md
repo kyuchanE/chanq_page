@@ -1,6 +1,6 @@
 ---
 name: implement-nextjs-feature
-description: Implement a documented Next.js App Router feature as a small vertical slice using strict TypeScript, Server Components by default, proportional feature-first Clean Architecture, boundary validation, tests, and synchronized documentation. Use for pages, layouts, metadata, route handlers, server actions, MDX content flows, feature UI, application behavior, adapters, and related bug fixes in this portfolio repository.
+description: Implement a documented Next.js App Router feature as a small vertical slice using strict TypeScript, Server Components by default, proportional feature-first Clean Architecture, boundary validation, tests, and synchronized documentation. Use for pages, layouts, metadata, route handlers, server actions, PostgreSQL-backed Markdown content flows, feature UI, application behavior, adapters, and related bug fixes in this portfolio repository.
 ---
 
 # Implement Next.js Feature

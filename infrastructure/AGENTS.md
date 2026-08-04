@@ -8,7 +8,7 @@ This directory owns versioned deployment and service configuration. Application 
 - Use private networks, least privilege, health checks, resource limits where known, and graceful shutdown.
 - Validate rendered configuration before starting or replacing services.
 - Document operational behavior, recovery, and rollback with every consequential change.
-- Do not add an infrastructure component until its adoption gate is documented and met.
+- Do not add an infrastructure component until its responsibility is documented. PostgreSQL, Docker, Nginx, and Cloudflare Tunnel are approved MVP components; additional services still require an adoption decision.
 
 ## Docker
 
@@ -25,14 +25,16 @@ This directory owns versioned deployment and service configuration. Application 
 
 ## Nginx
 
-- Add Nginx only after assigning it a responsibility that Cloudflare and Next.js do not already satisfy.
+- Include Nginx in the approved MVP topology to own origin request limits, proxy timeouts, controlled forwarded headers, and health routing that should remain outside feature code.
 - Validate with `nginx -t`; define forwarded headers, request limits, timeouts, buffering, compression, TLS ownership, and caching deliberately.
 - Preserve Next.js streaming, static assets, route status codes, and direct navigation.
 
 ## PostgreSQL
 
-- Defer adoption until a documented product gate is met; keep the database private with least-privilege roles.
+- Use PostgreSQL as the MVP source of truth for projects, developer skills, and blog posts; keep it private with least-privilege roles.
 - Treat applied migrations as immutable and add deterministic forward migrations for changes.
 - Use constraints and transactions for invariants and atomic behavior.
 - Define backup, retention, restore, and restore-test procedures before production writes.
-- Test SQL-sensitive adapters against a compatible PostgreSQL instance and preserve public content URLs during migration.
+- Test repository adapters and migrations against a compatible PostgreSQL instance and preserve public content URLs during every schema change.
+- Run migrations as an explicit release action rather than automatically on every application startup.
+- Keep development, test, and production databases and credentials separate.
