@@ -6,6 +6,23 @@ Build a personal developer portfolio that demonstrates real project experience, 
 
 These instructions apply to the entire repository. Before editing a file, also read every `AGENTS.md` from the repository root down to that file's directory. The nearest file adds or narrows instructions for its scope. Do not copy root rules into child files unless the local context needs a more specific constraint.
 
+## Instruction boundaries
+
+Maintain `AGENTS.md` files only at these architectural boundaries:
+
+- `/AGENTS.md`
+- `/docs/AGENTS.md`
+- `/src/app/AGENTS.md`
+- `/src/features/AGENTS.md`
+- `/src/shared/AGENTS.md`
+- `/content/AGENTS.md`
+- `/infrastructure/AGENTS.md`
+- `/tests/AGENTS.md`
+- `/scripts/AGENTS.md`
+- `/.agents/skills/AGENTS.md`
+
+Every descendant directory inherits the nearest applicable boundary instructions. Do not add an `AGENTS.md` to route segments, individual features, content categories, infrastructure components, test types, skill packages, metadata directories, or other leaf directories unless this boundary policy is intentionally revised first. Keep boundary rules cohesive and use headings inside the boundary file for narrower cases.
+
 ## Source-of-truth order
 
 Use this order when project information conflicts:

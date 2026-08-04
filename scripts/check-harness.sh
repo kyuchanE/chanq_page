@@ -6,7 +6,6 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
 
 required_files=(
-  "AGENTS.md"
   "README.md"
   "portfolio-project-plan.md"
   "docs/index.md"
@@ -20,6 +19,19 @@ required_files=(
   ".agents/skills/operate-local-stack/SKILL.md"
 )
 
+agent_boundaries=(
+  "AGENTS.md"
+  "docs/AGENTS.md"
+  "src/app/AGENTS.md"
+  "src/features/AGENTS.md"
+  "src/shared/AGENTS.md"
+  "content/AGENTS.md"
+  "infrastructure/AGENTS.md"
+  "tests/AGENTS.md"
+  "scripts/AGENTS.md"
+  ".agents/skills/AGENTS.md"
+)
+
 failures=0
 
 for relative_path in "${required_files[@]}"; do
@@ -29,33 +41,31 @@ for relative_path in "${required_files[@]}"; do
   fi
 done
 
-while IFS= read -r -d '' directory; do
-  relative_directory="${directory#"${REPO_ROOT}/"}"
-
-  if [[ "${directory}" == "${REPO_ROOT}" ]]; then
-    continue
+for relative_path in "${agent_boundaries[@]}"; do
+  if [[ ! -f "${REPO_ROOT}/${relative_path}" ]]; then
+    echo "ERROR: Required instruction boundary is missing: ${relative_path}" >&2
+    failures=$((failures + 1))
   fi
+done
 
-  if git -C "${REPO_ROOT}" check-ignore --quiet -- "${relative_directory}"; then
-    continue
-  fi
+while IFS= read -r -d '' agent_file; do
+  relative_agent_file="${agent_file#"${REPO_ROOT}/"}"
+  allowed=false
 
-  if [[ ! -f "${directory}/AGENTS.md" ]]; then
-    echo "ERROR: Directory-scoped instructions are missing: ${relative_directory}/AGENTS.md" >&2
+  for boundary in "${agent_boundaries[@]}"; do
+    if [[ "${relative_agent_file}" == "${boundary}" ]]; then
+      allowed=true
+      break
+    fi
+  done
+
+  if [[ "${allowed}" == false ]]; then
+    echo "ERROR: AGENTS.md exists outside an approved boundary: ${relative_agent_file}" >&2
     failures=$((failures + 1))
   fi
 done < <(
-  find "${REPO_ROOT}" -type d \
-    -not -path "${REPO_ROOT}/.git" \
+  find "${REPO_ROOT}" -name AGENTS.md -type f \
     -not -path "${REPO_ROOT}/.git/*" \
-    -not -path "${REPO_ROOT}/.next" \
-    -not -path "${REPO_ROOT}/.next/*" \
-    -not -path "${REPO_ROOT}/node_modules" \
-    -not -path "${REPO_ROOT}/node_modules/*" \
-    -not -path "${REPO_ROOT}/coverage" \
-    -not -path "${REPO_ROOT}/coverage/*" \
-    -not -path "${REPO_ROOT}/out" \
-    -not -path "${REPO_ROOT}/out/*" \
     -print0
 )
 

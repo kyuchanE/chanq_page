@@ -9,3 +9,6 @@ Each child directory is one reusable project procedure with a required `SKILL.md
 - Add bundled resources only when they eliminate repeated work.
 - Run the skill validator and `./scripts/check.sh` after changes.
 - Do not add auxiliary README, changelog, or installation files inside a skill.
+- Keep each `agents/openai.yaml` aligned with its `SKILL.md`; quote strings, keep the short description concise, and make `default_prompt` explicitly invoke `$skill-name`.
+- Do not add icons, colors, dependencies, or policy fields without a real requirement.
+- Keep planning skills separate from implementation, validation skills read-only unless fixes are requested, implementation skills proportional to current boundaries, and operations skills read-only first with explicit recovery guidance.
