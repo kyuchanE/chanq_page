@@ -1,0 +1,4 @@
+interface:
+  display_name: "Operate Local Stack"
+  short_description: "Manage and verify the local stack"
+  default_prompt: "Use $operate-local-stack to configure or verify the Docker, PostgreSQL, Nginx, and Cloudflare Tunnel stack safely."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Validate Project Change"
+  short_description: "Run risk-based project validation"
+  default_prompt: "Use $validate-project-change to validate the current repository changes and report evidence and remaining risks."

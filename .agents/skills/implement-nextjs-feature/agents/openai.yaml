@@ -1,0 +1,4 @@
+interface:
+  display_name: "Implement Next.js Feature"
+  short_description: "Build a feature within project boundaries"
+  default_prompt: "Use $implement-nextjs-feature to implement a documented Next.js feature with the project architecture and quality gates."

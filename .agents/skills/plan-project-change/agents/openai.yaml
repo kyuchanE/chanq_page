@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Project Change"
+  short_description: "Plan repository changes from docs"
+  default_prompt: "Use $plan-project-change to turn a requested repository change into an evidence-based implementation plan."
