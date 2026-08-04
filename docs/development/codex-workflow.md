@@ -67,16 +67,19 @@ Every completed task should state:
 - Documentation or ADR updates
 - Assumptions, deferred work, and remaining risks
 
-## First implementation milestone
+## Implementation milestones
 
-The recommended next slice is:
+The initial application scaffold is complete:
 
-1. Generate an empty Next.js scaffold in a temporary directory using the approved settings in `docs/architecture/technology-baseline.md`.
-2. Review and merge package metadata, strict TypeScript, App Router, Tailwind CSS, ESLint, React Compiler, Turbopack, and the `@/*` alias without replacing repository-owned instructions or documentation.
-3. Add Prettier, Vitest, React Testing Library, Playwright, production build commands, and deterministic package quality gates.
-4. Add Zod environment validation and safe `.env.example` placeholders.
-5. Add a private PostgreSQL Docker Compose service, Drizzle schema, committed initial migration, and separate development and test seeds.
-6. Implement the first database-backed content repository vertical slice with unit and PostgreSQL integration tests.
-7. Add the internal content CLI or import entry point for draft and publish behavior.
-8. Extend `scripts/check.sh` to run formatting, linting, type checking, tests, migration checks, and the production build.
-9. Add production Docker packaging, migration release steps, backup, restore verification, Nginx, and Cloudflare Tunnel incrementally.
+1. The empty Next.js scaffold was generated in a temporary directory using the approved settings in `docs/architecture/technology-baseline.md`.
+2. Package metadata, strict TypeScript, App Router, Tailwind CSS, ESLint, React Compiler, Turbopack, and the `@/*` alias were reviewed and merged without replacing repository-owned instructions or documentation.
+
+Continue with these reviewable slices:
+
+1. Add Prettier, Vitest, React Testing Library, Playwright, and deterministic package quality gates.
+2. Add Zod environment validation and safe `.env.example` placeholders.
+3. Add a private PostgreSQL Docker Compose service, Drizzle schema, committed initial migration, and separate development and test seeds.
+4. Implement the first database-backed content repository vertical slice with unit and PostgreSQL integration tests.
+5. Add the internal content CLI or import entry point for draft and publish behavior.
+6. Extend `scripts/check.sh` to run formatting, linting, type checking, tests, migration checks, and the production build.
+7. Add production Docker packaging, migration release steps, backup, restore verification, Nginx, and Cloudflare Tunnel incrementally.

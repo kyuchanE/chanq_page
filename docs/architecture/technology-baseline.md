@@ -2,7 +2,21 @@
 
 ## Status
 
-Approved for the next project-generation task. No application package or runtime configuration has been created yet.
+Implemented for the initial application scaffold. Database, validation, testing, and runtime-topology entries remain approved for later vertical slices.
+
+## Resolved scaffold versions
+
+The temporary scaffold resolved and committed these direct package versions on the initial generation:
+
+- Next.js 16.2.12
+- React and React DOM 19.2.4
+- TypeScript 5.9.3
+- Tailwind CSS 4.3.3
+- ESLint 9.39.5 with `eslint-config-next` 16.2.12
+- React Compiler Babel plugin 1.0.0
+- pnpm 11.9.0 with Node.js 20.9.0 or later
+
+The committed lockfile is the dependency-resolution source of truth. Routine compatible upgrades update the manifest, lockfile, and this summary together.
 
 ## Application scaffold
 

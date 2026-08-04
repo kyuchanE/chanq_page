@@ -2,7 +2,7 @@
 
 ## Status
 
-The current repository contains a project harness, documentation, scoped agent instructions, reusable Codex skills, and validation scripts. It does not yet contain a running Next.js application or production infrastructure configuration.
+The current repository contains a project harness, documentation, scoped agent instructions, reusable Codex skills, validation scripts, and a minimal runnable Next.js App Router application. The application currently exposes only the generated empty home route. It does not yet contain portfolio features, database integration, tests, or production infrastructure configuration.
 
 ## Target MVP context
 
@@ -87,8 +87,7 @@ Browser, Cloudflare, Nginx, Next.js, and PostgreSQL caching are independent. Int
 
 ## Planned evolution
 
-1. Scaffold the Next.js application in a temporary directory and merge it without replacing the repository harness.
-2. Add private PostgreSQL, reviewed migrations, separate development and test seeds, and environment validation.
-3. Deliver the first database-backed public vertical slice through application ports and a PostgreSQL adapter.
-4. Complete content import, accessibility, SEO, unit and integration tests, Docker packaging, migration release steps, backup, and restore verification.
-5. Add Nginx and Cloudflare Tunnel with separately verified responsibilities and no initial origin HTML cache.
+1. Add private PostgreSQL, reviewed migrations, separate development and test seeds, and environment validation.
+2. Deliver the first database-backed public vertical slice through application ports and a PostgreSQL adapter.
+3. Complete content import, accessibility, SEO, unit and integration tests, Docker packaging, migration release steps, backup, and restore verification.
+4. Add Nginx and Cloudflare Tunnel with separately verified responsibilities and no initial origin HTML cache.

@@ -21,16 +21,18 @@ This page answers three questions for contributors and Codex: **what are we buil
 
 ## Current project state
 
-The repository is in the **harness and architecture baseline** stage:
+The repository is in the **Next.js application scaffold** stage:
 
 - Product direction is documented.
 - Root and directory-scoped `AGENTS.md` files define working rules.
 - Project-local skills define repeatable Codex workflows.
 - Deterministic scripts validate the harness and documentation links.
+- A minimal `chanq_page` Next.js App Router application is scaffolded with pnpm, strict TypeScript, ESLint, Tailwind CSS, React Compiler, Turbopack, a `src/` root, and the `@/*` alias.
+- The generated empty home route is the only runtime behavior; portfolio features have not yet been implemented.
 - PostgreSQL is approved as the MVP source of truth, and the pre-scaffold toolchain, content model, and lifecycle policies are documented.
-- Next.js runtime code, package metadata, database schema, migrations, content, tests, and infrastructure configuration have not yet been scaffolded.
+- Database schema, migrations, content, tests, and infrastructure configuration have not yet been scaffolded.
 
-The next milestone is to generate an empty Next.js App Router scaffold in a temporary directory using the approved baseline, review it, and merge it without replacing this repository harness. PostgreSQL, Nginx, and Cloudflare Tunnel are approved MVP components but must be added incrementally with their documented validation and safety gates.
+The next milestones are to add formatting and test quality gates, then validated environment configuration and a private PostgreSQL development service before delivering the first database-backed content vertical slice. Nginx and Cloudflare Tunnel are approved MVP components but must be added incrementally with their documented validation and safety gates.
 
 ## Documentation ownership
 
