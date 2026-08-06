@@ -10,11 +10,12 @@ The current repository contains a project harness, documentation, scoped agent i
 Next.js and Drizzle Kit on the development Mac
   -> postgresql://127.0.0.1:5433
   -> PostgreSQL 16.14 linux/arm64 container
-  -> chanq_page development database
-  -> chanq_page_test isolated integration database
+     -> root: bootstrap, migration, reset, and role administration
+     -> chanq_page_app: chanq_page development DML only
+     -> chanq_page_test_app: chanq_page_test integration DML only
 ```
 
-The project Compose file binds PostgreSQL to loopback only. Its named volume is local runtime state and is never a deployment or cross-host transfer artifact. A native Homebrew PostgreSQL 16 service may continue using port 5432 independently.
+The project Compose file binds PostgreSQL to loopback only. Development and test application roles cannot connect to each other's databases or modify the schema. Drizzle uses separate elevated migration URLs. The named volume is local runtime state and is never a deployment or cross-host transfer artifact. A native Homebrew PostgreSQL 16 service may continue using port 5432 independently.
 
 ## Current route skeleton
 

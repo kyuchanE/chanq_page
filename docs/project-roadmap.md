@@ -42,43 +42,29 @@ Those requirements remain authoritative in the product and operations documentat
 
 ## Remaining work
 
-### DEV-02 — Local database access policy and deterministic data
+### DEV-02 — Deterministic development and test data
 
-**Status:** `BLOCKED`  
+**Status:** `READY`
 **Depends on:** None
 
-**Decision needed:** Choose whether routine local application execution uses a least-privilege application role or the local `root` role. Either choice must retain an isolated least-privilege compatibility test before production work is authorized.
-
-**Outcome:** Local database access follows an explicit documented policy, deterministic data is reproducible, and production-role compatibility risks can be detected on the development Mac.
+**Outcome:** Development seed data is idempotent, test fixtures are isolated and resettable, and neither flow can leak environment-specific data into another database.
 
 **Completion conditions:**
 
-- Record the selected local role policy and its privilege-parity tradeoff in the appropriate architecture or development document.
-- Keep the local `root` PostgreSQL role available for bootstrap, migration, reset, and administrative workflows.
-- Add idempotent local provisioning for least-privilege development/test compatibility roles without requiring volume recreation.
-- Grant compatibility roles only the schema usage, sequence usage, and table operations required by implemented repositories.
-- Add the connection URLs required by the selected policy with safe `.env.example` placeholders.
 - Add an idempotent deterministic development seed.
 - Add isolated, resettable synthetic test fixtures that never reuse development data.
-- Run repository permission-compatibility tests with the least-privilege test role even if routine local execution uses `root`.
-- Add a regression proving the least-privilege role cannot perform schema-changing operations.
 - Document reset, reseed, status, and failure-recovery behavior without recording credentials.
 
 **Validation:**
 
-- Fresh local role provisioning
-- Repeated role provisioning without errors or privilege drift
 - Repeated development seed with stable row identities and counts
 - Isolated test fixture reset
-- Application-role read/write checks
-- Application-role DDL denial check
-- Development and test migration status
 - PostgreSQL integration suite
 - `./scripts/check.sh`
 
 ### DEV-03 — Shared public presentation foundation
 
-**Status:** `READY`  
+**Status:** `QUEUED`
 **Depends on:** None
 
 **Outcome:** Every public route uses a coherent, responsive, accessible shell without creating a speculative component library.

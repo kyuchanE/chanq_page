@@ -70,6 +70,7 @@ Review the temporary scaffold before merging. Preserve repository-owned instruct
 | Runtime source of truth | PostgreSQL | Support structured ongoing projects, skills, and posts from the first vertical slice. |
 | Database access | Drizzle ORM with `node-postgres` | Keep SQL and schema intent visible for a long-lived self-hosted Node.js process. |
 | Migration tooling | Drizzle Kit with committed SQL migrations | Generate reviewable migrations and apply them explicitly. |
+| Local database roles | Elevated migration role plus isolated least-privilege development/test application roles | Detect permission regressions locally without giving routine application code schema privileges. |
 | Boundary validation | Zod | Validate environment configuration, import inputs, and untrusted external data with strict TypeScript inference. |
 | Long-form content | Markdown text | Avoid runtime execution of database-provided MDX or arbitrary components. |
 | MVP write path | Internal server-only CLI or import use case | Add content without approving an admin UI, authentication, or a public write API. |

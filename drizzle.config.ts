@@ -1,11 +1,11 @@
 import { config as loadEnvironment } from "dotenv";
 import { defineConfig } from "drizzle-kit";
 
-import { parseDatabaseEnvironment } from "./src/shared/config/database-environment";
+import { parseMigrationDatabaseEnvironment } from "./src/shared/config/database-environment";
 
 loadEnvironment({ path: ".env.local", quiet: true });
 
-const environment = parseDatabaseEnvironment(process.env);
+const environment = parseMigrationDatabaseEnvironment(process.env);
 const target = process.env.DRIZZLE_DATABASE_TARGET ?? "development";
 
 if (target !== "development" && target !== "test") {
@@ -21,8 +21,8 @@ export default defineConfig({
   dbCredentials: {
     url:
       target === "test"
-        ? environment.TEST_DATABASE_URL
-        : environment.DATABASE_URL,
+        ? environment.TEST_MIGRATION_DATABASE_URL
+        : environment.MIGRATION_DATABASE_URL,
   },
   strict: true,
   verbose: true,

@@ -21,6 +21,7 @@ This page answers three questions for contributors and Codex: **what are we buil
 - [`ADR-0003: Use PostgreSQL for MVP Content`](architecture/decisions/0003-use-postgresql-for-mvp-content.md)
 - [`ADR-0004: Use Separate Apple Silicon macOS Hosts`](architecture/decisions/0004-use-separate-apple-silicon-macos-hosts.md)
 - [`ADR-0005: Promote PostgreSQL Schema and Content Separately`](architecture/decisions/0005-promote-schema-and-content-separately.md)
+- [`ADR-0006: Separate Local PostgreSQL Application Roles`](architecture/decisions/0006-separate-local-postgresql-application-roles.md)
 
 ## Current project state
 
@@ -36,6 +37,7 @@ The repository is in the **MVP route and local database foundation** stage:
 - The isolated `chanq_page` and `chanq_page_test` databases use the same committed Drizzle migration. The physical schema contains posts, projects, skills, tags, and their three relationship tables.
 - Zod validates database URLs, `.env.example` contains safe placeholders, and the actual `.env.local` remains ignored.
 - Status and transactional schema-check scripts report container, migration, table, constraint, relationship, and cascade health without printing credentials.
+- Local migrations and administration use the `root` database role, while isolated least-privilege application roles own routine development and test DML; permission checks cover DDL denial, migration-ledger denial, and cross-database isolation.
 - Prettier, Vitest, React Testing Library, DOM matchers, and Playwright provide deterministic formatting, unit/component, and production-like browser smoke-test entry points.
 - The default repository check enforces formatting, linting, type checking, unit/component tests, migration consistency, and the production build without starting Docker or a browser.
 - The approved topology assigns development and production to separate Apple Silicon Macs; production will run pinned `linux/arm64` containers on macOS when infrastructure is scaffolded.

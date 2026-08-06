@@ -13,6 +13,8 @@ Implemented local foundation and approved production policy for separate Apple S
 | Development database | `chanq_page` |
 | Integration database | `chanq_page_test`; automated schema checks run here only |
 | Bootstrap role | Local-only PostgreSQL superuser `root`; never reuse in production |
+| Development application role | `chanq_page_app`; DML on `chanq_page` only |
+| Test application role | `chanq_page_test_app`; DML on `chanq_page_test` only |
 | Schema | Seven content tables from the committed Drizzle migration |
 | Progress evidence | Container health, applied migration count, table count, and transactional schema checks |
 | Not implemented | Seeds, repository adapters, content import, production Compose, backup automation, restore drill |
@@ -32,10 +34,12 @@ Maintain separate development, test, and production databases. Never run automat
 
 Pin the same PostgreSQL major version and required extensions in every environment. Keep database names, roles, credentials, environment files, and Docker volumes distinct.
 
-Application-facing configuration:
+Database configuration:
 
-- `DATABASE_URL` for the Next.js server and migration tooling
-- A separate test database URL supplied only to PostgreSQL integration tests
+- `DATABASE_URL` for routine development application access
+- `TEST_DATABASE_URL` for integration access to the isolated test database
+- `MIGRATION_DATABASE_URL` for elevated development migrations
+- `TEST_MIGRATION_DATABASE_URL` for elevated test migrations
 - Container bootstrap values supplied through ignored environment files or a secret store
 
 Provide safe placeholders in `.env.example`. Never expose database configuration through a `NEXT_PUBLIC_` variable.
@@ -51,15 +55,19 @@ Before a release, verify the complete migration history against a fresh test dat
 ```bash
 cp .env.example .env.local
 pnpm db:local:up
+pnpm db:roles:provision
 pnpm db:migrate
 pnpm db:migrate:test
+pnpm db:test:permissions
 pnpm db:test:schema
 pnpm db:status
 ```
 
 Replace all placeholders before startup and percent-encode reserved password characters in connection URLs. Docker initialization scripts create the test database only when the named volume is first initialized. Do not delete or recreate that volume casually; it is local state even though it is not a deployment artifact.
 
-`pnpm db:local:down` stops the service while preserving the named volume. The Compose health check gates `db:local:up`, and the host mapping stays on loopback port 5433 to avoid changing the separately installed Homebrew PostgreSQL 16 service on port 5432.
+Fresh volumes provision the development and test application roles during PostgreSQL initialization. Run `pnpm db:roles:provision` for an existing volume and whenever role passwords or grants intentionally change; the command is idempotent and does not recreate the volume. `pnpm db:local:down` stops the service while preserving the named volume. The Compose health check gates `db:local:up`, and the host mapping stays on loopback port 5433 to avoid changing the separately installed Homebrew PostgreSQL 16 service on port 5432.
+
+The local `root` role owns bootstrap, migrations, reset, and role administration. Routine development access uses `chanq_page_app`, and integration access uses `chanq_page_test_app`. The application roles cannot connect across environments, create database objects, or read the Drizzle migration ledger. Actual passwords remain in ignored `.env.local`; `.env.example` contains role names and safe placeholders only.
 
 ### Migration and progress commands
 
@@ -68,11 +76,13 @@ pnpm db:generate -- --name <migration_name>
 pnpm db:check
 pnpm db:migrate
 pnpm db:migrate:test
+pnpm db:roles:provision
 pnpm db:status
+pnpm db:test:permissions
 pnpm db:test:schema
 ```
 
-`db:status` is read-only and reports container health, server version, role properties, applied migration count, and table counts without printing credentials. `db:test:schema` runs against `chanq_page_test` inside a transaction and rolls its fixture writes back. Keep generated SQL and Drizzle migration metadata together in version control.
+`db:status` is read-only and reports container health, server version, role properties, database ACLs, applied migration count, and table counts without printing credentials. `db:test:permissions` verifies application-role DML, DDL denial, migration-ledger denial, and cross-database isolation. `db:test:schema` authenticates as `chanq_page_test_app`, runs against `chanq_page_test` inside a transaction, and rolls its fixture writes back. Keep generated SQL and Drizzle migration metadata together in version control.
 
 ## Migrations
 

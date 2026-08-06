@@ -44,3 +44,8 @@ echo
 echo "Test database"
 "${compose[@]}" exec -T postgres sh -c \
   'pg_isready --username "$POSTGRES_USER" --dbname "$POSTGRES_TEST_DB" && psql --username "$POSTGRES_USER" --dbname "$POSTGRES_TEST_DB" --no-psqlrc --command="SELECT current_database() AS database, current_user AS role, current_setting('\''server_version'\'') AS version;" --command="SELECT count(*) AS applied_migrations, max(created_at) AS latest_migration_timestamp FROM drizzle.__drizzle_migrations;" --command="SELECT count(*) AS content_table_count FROM information_schema.tables WHERE table_schema = '\''public'\'';"'
+
+echo
+echo "Application role policy"
+"${compose[@]}" exec -T postgres sh -c \
+  'psql --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" --no-psqlrc --set=ON_ERROR_STOP=1 --set=development_role="$POSTGRES_APP_USER" --set=test_role="$POSTGRES_TEST_APP_USER" --set=development_database="$POSTGRES_DB" --set=test_database="$POSTGRES_TEST_DB" --file=/opt/chanq-page/postgres/roles/application-role-status.sql'

@@ -51,13 +51,15 @@ The project database runs in Docker and binds only to `127.0.0.1:5433`, leaving 
 ```bash
 cp .env.example .env.local
 pnpm db:local:up
+pnpm db:roles:provision
 pnpm db:migrate
 pnpm db:migrate:test
+pnpm db:test:permissions
 pnpm db:test:schema
 pnpm db:status
 ```
 
-`chanq_page` is the development database and `chanq_page_test` is reserved for resettable integration tests. The local `root` PostgreSQL role is a development-only bootstrap superuser; do not reuse it or its credentials in production. `pnpm db:local:down` stops the service without deleting the named volume.
+`chanq_page` is the development database and `chanq_page_test` is reserved for resettable integration tests. The local `root` PostgreSQL role is used only for bootstrap, migrations, reset, and role administration. Routine development uses `chanq_page_app`; integration checks use `chanq_page_test_app`. Each application role can access only its own database and cannot create schema objects or read the migration ledger. Do not reuse any local credential in production. `pnpm db:local:down` stops the service without deleting the named volume.
 
 Use `pnpm db:generate -- --name <migration_name>` after an intentional schema change, review the generated SQL, and run `pnpm db:check` before applying it. Applied migrations are immutable.
 

@@ -6,10 +6,9 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 REPOSITORY_ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
 ENV_FILE="${REPOSITORY_ROOT}/.env.local"
 COMPOSE_FILE="${REPOSITORY_ROOT}/infrastructure/compose.local.yaml"
-TEST_FILE="${REPOSITORY_ROOT}/tests/integration/postgres/schema.test.sql"
 
 usage() {
-  echo "Usage: ./scripts/check-postgres-schema.sh"
+  echo "Usage: ./scripts/provision-postgres-roles.sh"
 }
 
 if [[ $# -gt 0 ]]; then
@@ -33,8 +32,5 @@ if [[ -z "$("${compose[@]}" ps --status running --services postgres)" ]]; then
   exit 1
 fi
 
-"${compose[@]}" exec -T postgres sh -c \
-  'PGPASSWORD="$POSTGRES_TEST_APP_PASSWORD" psql --host=127.0.0.1 --username="$POSTGRES_TEST_APP_USER" --dbname="$POSTGRES_TEST_DB" --no-psqlrc --set=ON_ERROR_STOP=1' \
-  < "${TEST_FILE}"
-
-echo "PostgreSQL schema integration checks passed."
+"${compose[@]}" exec -T postgres \
+  /docker-entrypoint-initdb.d/020-provision-application-roles.sh
