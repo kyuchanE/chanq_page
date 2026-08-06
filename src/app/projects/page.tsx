@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import { PageIntroduction } from "@/shared/ui/page-introduction";
+
 export const metadata: Metadata = {
   title: "Projects",
   description:
@@ -8,12 +10,10 @@ export const metadata: Metadata = {
 
 export default function ProjectsPage() {
   return (
-    <main>
-      <h1>Projects</h1>
-      <p>
-        This section will present project case studies, technical decisions,
-        results, and limitations.
-      </p>
-    </main>
+    <PageIntroduction
+      description="This section will present project case studies, technical decisions, results, and limitations."
+      eyebrow="Case studies"
+      title="Projects"
+    />
   );
 }

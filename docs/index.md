@@ -25,14 +25,14 @@ This page answers three questions for contributors and Codex: **what are we buil
 
 ## Current project state
 
-The repository is in the **MVP route and local database foundation** stage:
+The repository is in the **MVP public presentation and local database foundation** stage:
 
 - Product direction is documented.
 - Root and directory-scoped `AGENTS.md` files define working rules.
 - Project-local skills define repeatable Codex workflows.
 - Deterministic scripts validate the harness and documentation links.
 - A minimal `chanq_page` Next.js App Router application is scaffolded with pnpm, strict TypeScript, ESLint, Tailwind CSS, React Compiler, Turbopack, a `src/` root, and the `@/*` alias.
-- Static placeholder routes and page metadata exist for Home, About, Skills, Projects, Retrospectives, Blog, and Contact; completed portfolio features have not yet been implemented.
+- Static placeholder routes and page metadata exist for Home, About, Skills, Projects, Retrospectives, Blog, and Contact. Every route uses the same responsive public shell with semantic landmarks, current-page navigation, visible focus, skip navigation, reduced-motion behavior, and global presentation tokens; completed content features have not yet been implemented.
 - PostgreSQL 16.14 runs as a project-local `linux/arm64` Docker service on the development Mac. It binds to localhost port 5433 so the existing Homebrew PostgreSQL 16 service on port 5432 remains untouched.
 - The isolated `chanq_page` and `chanq_page_test` databases use the same committed Drizzle migration. The physical schema contains posts, projects, skills, tags, and their three relationship tables.
 - Zod validates database URLs, `.env.example` contains safe placeholders, and the actual `.env.local` remains ignored.

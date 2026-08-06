@@ -1,11 +1,11 @@
+import { PageIntroduction } from "@/shared/ui/page-introduction";
+
 export default function Home() {
   return (
-    <main>
-      <h1>Developer Portfolio</h1>
-      <p>
-        This portfolio will present practical experience, problem solving, and
-        technical decisions.
-      </p>
-    </main>
+    <PageIntroduction
+      description="This portfolio will present practical experience, problem solving, and technical decisions."
+      eyebrow="Overview"
+      title="Developer Portfolio"
+    />
   );
 }

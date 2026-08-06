@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import { PageIntroduction } from "@/shared/ui/page-introduction";
+
 export const metadata: Metadata = {
   title: "Skills",
   description:
@@ -8,12 +10,10 @@ export const metadata: Metadata = {
 
 export default function SkillsPage() {
   return (
-    <main>
-      <h1>Skills</h1>
-      <p>
-        This section will connect technical skills to practical experience and
-        supporting evidence.
-      </p>
-    </main>
+    <PageIntroduction
+      description="This section will connect technical skills to practical experience and supporting evidence."
+      eyebrow="Capabilities"
+      title="Skills"
+    />
   );
 }

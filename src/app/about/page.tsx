@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import { PageIntroduction } from "@/shared/ui/page-introduction";
+
 export const metadata: Metadata = {
   title: "About",
   description:
@@ -8,12 +10,10 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <main>
-      <h1>About</h1>
-      <p>
-        This section will introduce the developer&apos;s background, working
-        principles, and current interests.
-      </p>
-    </main>
+    <PageIntroduction
+      description="This section will introduce the developer's background, working principles, and current interests."
+      eyebrow="Profile"
+      title="About"
+    />
   );
 }

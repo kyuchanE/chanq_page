@@ -2,7 +2,7 @@
 
 ## Status
 
-The current repository contains a project harness, documentation, scoped agent instructions, reusable Codex skills, validation scripts, a minimal runnable Next.js App Router application, and a local PostgreSQL foundation. It exposes static placeholder routes for the seven MVP sections. PostgreSQL 16.14 runs locally in Docker with isolated development and test databases, a typed Drizzle schema, a committed initial migration, deterministic development and test data, and transactional integration checks. Completed portfolio features, repository adapters, application tests, and production infrastructure are not yet implemented.
+The current repository contains a project harness, documentation, scoped agent instructions, reusable Codex skills, validation scripts, a runnable Next.js App Router application with a shared public presentation foundation, and a local PostgreSQL foundation. It exposes static placeholder routes for the seven MVP sections inside a responsive and accessible shell. PostgreSQL 16.14 runs locally in Docker with isolated development and test databases, a typed Drizzle schema, a committed initial migration, deterministic development and test data, and transactional integration checks. Completed content features, repository adapters, and production infrastructure are not yet implemented.
 
 ## Current local database boundary
 
@@ -29,7 +29,7 @@ The project Compose file binds PostgreSQL to loopback only. Development and test
 | `/blog` | Blog | `src/app/blog/page.tsx` |
 | `/contact` | Contact | `src/app/contact/page.tsx` |
 
-Each route is currently a static Server Component with semantic placeholder content and accurate page metadata. Dynamic detail routes, feature presentation modules, and data access remain planned.
+Each route is a static Server Component with semantic placeholder content and accurate page metadata. The root layout composes one header, primary navigation, main-content, and footer shell. The navigation isolates `usePathname` in a small Client Component so exact and nested section URLs expose a visible `aria-current="page"` state; native links remain keyboard operable. Global CSS owns the color, typography, spacing, width, focus, and motion tokens, responsive breakpoints, skip-link treatment, and reduced-motion override. A feature-neutral page-introduction primitive is shared by all seven routes. Empty, loading, and error primitives remain deferred until a real data flow defines their requirements.
 
 ## Target MVP context
 
@@ -143,7 +143,6 @@ Browser, Cloudflare, Nginx, Next.js, and PostgreSQL caching are independent. Int
 
 ## Planned evolution
 
-1. Add the shared responsive and accessible public presentation foundation.
-2. Deliver the first database-backed public vertical slice through application ports and a PostgreSQL adapter.
-3. Complete the validated content import, accessibility, SEO, unit and integration tests, `linux/arm64` Docker packaging, migration release steps, logical backup, and isolated restore verification.
-4. Add Nginx and Cloudflare Tunnel with separately verified responsibilities and no initial origin HTML cache.
+1. Deliver the first database-backed public vertical slice through application ports and a PostgreSQL adapter.
+2. Complete the validated content import, accessibility, SEO, unit and integration tests, `linux/arm64` Docker packaging, migration release steps, logical backup, and isolated restore verification.
+3. Add Nginx and Cloudflare Tunnel with separately verified responsibilities and no initial origin HTML cache.

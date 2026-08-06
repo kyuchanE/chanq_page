@@ -1,0 +1,66 @@
+// @vitest-environment jsdom
+
+import { cleanup, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+import { PrimaryNavigation } from "@/app/_components/primary-navigation";
+import { PublicShell } from "@/app/_components/public-shell";
+
+const navigationState = vi.hoisted(() => ({ pathname: "/" }));
+
+vi.mock("next/navigation", () => ({
+  usePathname: () => navigationState.pathname,
+}));
+
+afterEach(() => {
+  cleanup();
+  navigationState.pathname = "/";
+});
+
+describe("PublicShell", () => {
+  it("provides the public landmarks and a main-content skip target", () => {
+    render(
+      <PublicShell>
+        <h1>Page heading</h1>
+      </PublicShell>,
+    );
+
+    expect(screen.getByRole("banner")).toBeVisible();
+    expect(
+      screen.getByRole("navigation", { name: "Primary navigation" }),
+    ).toBeVisible();
+    expect(screen.getByRole("main")).toHaveAttribute("id", "main-content");
+    expect(screen.getByRole("contentinfo")).toBeVisible();
+    expect(
+      screen.getByRole("link", { name: "Skip to main content" }),
+    ).toHaveAttribute("href", "#main-content");
+  });
+});
+
+describe("PrimaryNavigation", () => {
+  it("marks the exact home link as the current page", () => {
+    render(<PrimaryNavigation />);
+
+    expect(screen.getByRole("link", { name: "Home" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    expect(screen.getByRole("link", { name: "Projects" })).not.toHaveAttribute(
+      "aria-current",
+    );
+  });
+
+  it("keeps a parent section current on a nested public route", () => {
+    navigationState.pathname = "/projects/example-project";
+
+    render(<PrimaryNavigation />);
+
+    expect(screen.getByRole("link", { name: "Projects" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    expect(screen.getByRole("link", { name: "Home" })).not.toHaveAttribute(
+      "aria-current",
+    );
+  });
+});

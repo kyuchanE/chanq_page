@@ -42,38 +42,10 @@ Those requirements remain authoritative in the product and operations documentat
 
 ## Remaining work
 
-### DEV-03 — Shared public presentation foundation
+### DEV-04 — Projects PostgreSQL vertical slice
 
 **Status:** `READY`
 **Depends on:** None
-
-**Outcome:** Every public route uses a coherent, responsive, accessible shell without creating a speculative component library.
-
-**Completion conditions:**
-
-- Define a small set of global color, typography, spacing, width, focus, and motion tokens.
-- Implement semantic header, navigation, main-content, and footer landmarks.
-- Provide keyboard-operable navigation with a visible current-page state and focus treatment.
-- Add a skip link and reduced-motion behavior.
-- Establish mobile, tablet, and desktop layout behavior.
-- Create only the shared primitives already required by multiple MVP pages.
-- Keep stable pages as Server Components unless a documented interaction requires a Client Component.
-- Define reusable empty, error, and loading presentation only where an implemented data flow needs it.
-
-**Validation:**
-
-- Keyboard navigation and focus inspection
-- Mobile, tablet, and desktop viewport checks
-- Reduced-motion inspection
-- Semantic landmark inspection
-- Component tests for any client-side navigation behavior
-- ESLint and type checking
-- Production build
-
-### DEV-04 — Projects PostgreSQL vertical slice
-
-**Status:** `QUEUED`  
-**Depends on:** DEV-03
 
 **Outcome:** Visitors can browse published projects and open a project case study backed by PostgreSQL without database or Drizzle types crossing the infrastructure boundary.
 
@@ -152,7 +124,7 @@ Those requirements remain authoritative in the product and operations documentat
 ### DEV-07 — Blog and Retrospectives PostgreSQL vertical slices
 
 **Status:** `QUEUED`  
-**Depends on:** DEV-03, DEV-05, DEV-06
+**Depends on:** DEV-05, DEV-06
 
 **Outcome:** Visitors can browse and read published Blog and Retrospective content with tags, related projects, trusted Markdown, and stable metadata.
 
