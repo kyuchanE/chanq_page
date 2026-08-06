@@ -2,7 +2,7 @@
 
 ## Status
 
-The current repository contains a project harness, documentation, scoped agent instructions, reusable Codex skills, validation scripts, a minimal runnable Next.js App Router application, and a local PostgreSQL foundation. It exposes static placeholder routes for the seven MVP sections. PostgreSQL 16.14 runs locally in Docker with isolated development and test databases, a typed Drizzle schema, a committed initial migration, and transactional schema checks. Completed portfolio features, repository adapters, application tests, and production infrastructure are not yet implemented.
+The current repository contains a project harness, documentation, scoped agent instructions, reusable Codex skills, validation scripts, a minimal runnable Next.js App Router application, and a local PostgreSQL foundation. It exposes static placeholder routes for the seven MVP sections. PostgreSQL 16.14 runs locally in Docker with isolated development and test databases, a typed Drizzle schema, a committed initial migration, deterministic development and test data, and transactional integration checks. Completed portfolio features, repository adapters, application tests, and production infrastructure are not yet implemented.
 
 ## Current local database boundary
 
@@ -143,7 +143,7 @@ Browser, Cloudflare, Nginx, Next.js, and PostgreSQL caching are independent. Int
 
 ## Planned evolution
 
-1. Add deterministic development and test seeds to the implemented local PostgreSQL and migration foundation.
+1. Add the shared responsive and accessible public presentation foundation.
 2. Deliver the first database-backed public vertical slice through application ports and a PostgreSQL adapter.
 3. Complete the validated content import, accessibility, SEO, unit and integration tests, `linux/arm64` Docker packaging, migration release steps, logical backup, and isolated restore verification.
 4. Add Nginx and Cloudflare Tunnel with separately verified responsibilities and no initial origin HTML cache.

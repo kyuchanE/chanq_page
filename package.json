@@ -26,8 +26,13 @@
     "db:local:down": "docker compose --env-file .env.local -f infrastructure/compose.local.yaml down",
     "db:roles:provision": "./scripts/provision-postgres-roles.sh",
     "db:status": "./scripts/postgres-status.sh",
+    "db:seed:dev": "./scripts/seed-postgres.sh development --allow-seed",
+    "db:seed:test:reset": "./scripts/seed-postgres.sh test --allow-reset",
+    "db:seed:status": "./scripts/postgres-seed-status.sh",
     "db:test:schema": "./scripts/check-postgres-schema.sh",
-    "db:test:permissions": "./scripts/check-postgres-permissions.sh"
+    "db:test:permissions": "./scripts/check-postgres-permissions.sh",
+    "db:test:seeds": "./scripts/check-postgres-seeds.sh --allow-fixture-reset",
+    "db:test:integration": "pnpm db:test:permissions && pnpm db:test:seeds && pnpm db:test:schema"
   },
   "dependencies": {
     "drizzle-orm": "0.45.2",

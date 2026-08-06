@@ -38,11 +38,12 @@ The repository is in the **MVP route and local database foundation** stage:
 - Zod validates database URLs, `.env.example` contains safe placeholders, and the actual `.env.local` remains ignored.
 - Status and transactional schema-check scripts report container, migration, table, constraint, relationship, and cascade health without printing credentials.
 - Local migrations and administration use the `root` database role, while isolated least-privilege application roles own routine development and test DML; permission checks cover DDL denial, migration-ledger denial, and cross-database isolation.
+- Deterministic development seed rows use fixed identities, timestamps, and a reserved namespace without replacing developer-authored rows. The isolated test database resets to separate synthetic fixtures, and integration checks prove repeat stability, reset recovery, and cross-environment marker isolation.
 - Prettier, Vitest, React Testing Library, DOM matchers, and Playwright provide deterministic formatting, unit/component, and production-like browser smoke-test entry points.
 - The default repository check enforces formatting, linting, type checking, unit/component tests, migration consistency, and the production build without starting Docker or a browser.
 - The approved topology assigns development and production to separate Apple Silicon Macs; production will run pinned `linux/arm64` containers on macOS when infrastructure is scaffolded.
 - Schema promotion uses committed migrations, content promotion uses the validated import path, and logical backups are limited to initial bootstrap or disaster recovery.
-- Production PostgreSQL, application repository adapters, seeds, validated content imports, backup automation, and restore verification have not yet been implemented.
+- Production PostgreSQL, application repository adapters, validated content imports, backup automation, and restore verification have not yet been implemented.
 
 The ordered queue of unfinished development and local validation work is maintained only in `project-roadmap.md`. Production operations remain documented separately and are intentionally excluded from that queue.
 

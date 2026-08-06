@@ -2,7 +2,7 @@
 
 ## Status
 
-Implemented for the initial application scaffold, local PostgreSQL foundation, and application quality-gate foundation. Feature-level testing and production runtime-topology entries remain approved for later vertical slices.
+Implemented for the initial application scaffold, local PostgreSQL foundation, deterministic local data, and application quality-gate foundation. Feature-level testing and production runtime-topology entries remain approved for later vertical slices.
 
 ## Resolved scaffold versions
 
@@ -71,6 +71,7 @@ Review the temporary scaffold before merging. Preserve repository-owned instruct
 | Database access | Drizzle ORM with `node-postgres` | Keep SQL and schema intent visible for a long-lived self-hosted Node.js process. |
 | Migration tooling | Drizzle Kit with committed SQL migrations | Generate reviewable migrations and apply them explicitly. |
 | Local database roles | Elevated migration role plus isolated least-privilege development/test application roles | Detect permission regressions locally without giving routine application code schema privileges. |
+| Local deterministic data | Reserved development seed namespace plus isolated resettable test fixtures | Preserve developer-authored rows while making integration state reproducible and preventing cross-environment fixture reuse. |
 | Boundary validation | Zod | Validate environment configuration, import inputs, and untrusted external data with strict TypeScript inference. |
 | Long-form content | Markdown text | Avoid runtime execution of database-provided MDX or arbitrary components. |
 | MVP write path | Internal server-only CLI or import use case | Add content without approving an admin UI, authentication, or a public write API. |
@@ -86,7 +87,7 @@ Do not expose Drizzle records or Zod schemas as domain models by default. Transl
 | Layer | Tooling | Scope |
 |---|---|---|
 | Unit and synchronous component | Vitest, React Testing Library, and DOM matchers | Domain rules, application orchestration, validation, synchronous UI behavior, and regressions |
-| PostgreSQL integration | Transactional SQL harness now; Vitest against the dedicated database with the repository slice | Migrations and constraints now; repository adapters, transactions, seeds, and import behavior later |
+| PostgreSQL integration | Transactional SQL harness now; Vitest against the dedicated database with the repository slice | Migrations, constraints, roles, deterministic seeds, and fixture reset now; repository adapters and import behavior later |
 | End-to-end | Playwright | Critical public navigation, project and article reading, direct URLs, 404 behavior, and accessibility-critical interactions |
 
 Do not depend on component unit tests for asynchronous Server Components. Verify those paths through application tests and production-like Playwright journeys.

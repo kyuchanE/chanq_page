@@ -11,13 +11,14 @@ Implemented local foundation and approved production policy for separate Apple S
 | PostgreSQL image | Pinned `postgres:16.14-bookworm` on `linux/arm64` |
 | Host access | `127.0.0.1:5433` only; native PostgreSQL on 5432 remains independent |
 | Development database | `chanq_page` |
-| Integration database | `chanq_page_test`; automated schema checks run here only |
+| Integration database | `chanq_page_test`; resettable synthetic fixtures and automated PostgreSQL checks run here only |
 | Bootstrap role | Local-only PostgreSQL superuser `root`; never reuse in production |
 | Development application role | `chanq_page_app`; DML on `chanq_page` only |
 | Test application role | `chanq_page_test_app`; DML on `chanq_page_test` only |
 | Schema | Seven content tables from the committed Drizzle migration |
-| Progress evidence | Container health, applied migration count, table count, and transactional schema checks |
-| Not implemented | Seeds, repository adapters, content import, production Compose, backup automation, restore drill |
+| Deterministic local data | Fixed development seed identities plus independently resettable synthetic test fixtures |
+| Progress evidence | Container health, migration and table counts, seed status, permission checks, deterministic reset checks, and transactional schema checks |
+| Not implemented | Repository adapters, content import, production Compose, backup automation, restore drill |
 
 Actual credentials and connection URLs live only in ignored `.env.local`. The tracked `.env.example` contains safe placeholders. The PostgreSQL role named `root` is not the macOS root account and does not grant host privileges.
 
@@ -58,8 +59,10 @@ pnpm db:local:up
 pnpm db:roles:provision
 pnpm db:migrate
 pnpm db:migrate:test
-pnpm db:test:permissions
-pnpm db:test:schema
+pnpm db:seed:dev
+pnpm db:seed:test:reset
+pnpm db:test:integration
+pnpm db:seed:status
 pnpm db:status
 ```
 
@@ -67,7 +70,7 @@ Replace all placeholders before startup and percent-encode reserved password cha
 
 Fresh volumes provision the development and test application roles during PostgreSQL initialization. Run `pnpm db:roles:provision` for an existing volume and whenever role passwords or grants intentionally change; the command is idempotent and does not recreate the volume. `pnpm db:local:down` stops the service while preserving the named volume. The Compose health check gates `db:local:up`, and the host mapping stays on loopback port 5433 to avoid changing the separately installed Homebrew PostgreSQL 16 service on port 5432.
 
-The local `root` role owns bootstrap, migrations, reset, and role administration. Routine development access uses `chanq_page_app`, and integration access uses `chanq_page_test_app`. The application roles cannot connect across environments, create database objects, or read the Drizzle migration ledger. Actual passwords remain in ignored `.env.local`; `.env.example` contains role names and safe placeholders only.
+The local `root` role owns bootstrap, migrations, database-level reset, and role administration. Routine development access and seed DML use `chanq_page_app`; integration access and fixture-reset DML use `chanq_page_test_app`. The application roles cannot connect across environments, create database objects, or read the Drizzle migration ledger. Actual passwords remain in ignored `.env.local`; `.env.example` contains role names and safe placeholders only.
 
 ### Migration and progress commands
 
@@ -78,11 +81,36 @@ pnpm db:migrate
 pnpm db:migrate:test
 pnpm db:roles:provision
 pnpm db:status
+pnpm db:seed:dev
+pnpm db:seed:test:reset
+pnpm db:seed:status
 pnpm db:test:permissions
+pnpm db:test:seeds
 pnpm db:test:schema
+pnpm db:test:integration
 ```
 
-`db:status` is read-only and reports container health, server version, role properties, database ACLs, applied migration count, and table counts without printing credentials. `db:test:permissions` verifies application-role DML, DDL denial, migration-ledger denial, and cross-database isolation. `db:test:schema` authenticates as `chanq_page_test_app`, runs against `chanq_page_test` inside a transaction, and rolls its fixture writes back. Keep generated SQL and Drizzle migration metadata together in version control.
+`db:status` is read-only and reports container health, server version, role properties, database ACLs, applied migration count, and table counts without printing credentials. `db:seed:status` reports total and fixture-owned base-table counts through each application role. `db:test:permissions` verifies application-role DML, DDL denial, migration-ledger denial, and cross-database isolation. `db:test:seeds` verifies wrong-target rejection, repeated development seed identity and count stability, isolated test drift recovery, and cross-environment marker isolation. `db:test:schema` authenticates as `chanq_page_test_app`, runs against `chanq_page_test` inside a transaction, and rolls its probe writes back. `db:test:integration` runs all PostgreSQL boundary checks. Keep generated SQL and Drizzle migration metadata together in version control.
+
+### Deterministic local data
+
+Run the development seed after migrations:
+
+```bash
+pnpm db:seed:dev
+```
+
+The development fixture uses fixed UUIDs and timestamps and owns only stable keys and slugs beginning with `dev-seed-`. Re-running the command updates the current fixture rows, rebuilds relations owned by fixture projects and posts, and prunes stale rows only inside that reserved namespace. Other development rows are preserved. Do not use the reserved prefix for manually authored data.
+
+Reset the isolated test dataset with:
+
+```bash
+pnpm db:seed:test:reset
+```
+
+The reset requires the configured development and test database names and application roles to differ, requires the test database name to end in `_test`, and then verifies the exact `chanq_page_test` database and `chanq_page_test_app` role again inside SQL. It deletes all seven content tables through application-level DML and inserts separate fixed `test-fixture-` synthetic rows. It never reads or copies development seed rows.
+
+Both operations run in a transaction with `ON_ERROR_STOP`. A failed statement rolls back the full operation. For recovery, inspect `pnpm db:seed:status`, resolve the reported constraint, role, or target mismatch, and rerun the same command. Do not delete the PostgreSQL volume to recover from a seed failure. `pnpm db:test:seeds` intentionally mutates the reserved development fixture namespace and the isolated test database while proving repeated stability and reset recovery; it does not modify non-fixture development rows.
 
 ## Migrations
 
@@ -101,9 +129,9 @@ Do not use direct schema push commands in production. Do not edit an applied mig
 
 ## Seeds and content imports
 
-- Keep development and test seed entry points separate.
-- Make seeds deterministic and idempotent where practical.
-- Use small synthetic test fixtures without personal or production data.
+- Keep the implemented development and test seed entry points separate.
+- Preserve fixed identifiers, timestamps, ordering, and reserved markers when extending local fixtures.
+- Use small synthetic test fixtures without personal or production data and reset them only in the isolated test database.
 - Keep production content out of automatic development and test seed flows.
 - Route project, skill, and post imports through application validation and repository ports.
 - Require an explicit target environment and confirmation before a CLI writes to production.

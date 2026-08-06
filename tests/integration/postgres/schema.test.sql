@@ -23,10 +23,18 @@ BEGIN
   END IF;
 END $$;
 
-INSERT INTO skills (key, name, category, summary, evidence)
-VALUES ('postgresql', 'PostgreSQL', 'Database', 'Relational data modeling', 'Schema migration evidence');
+INSERT INTO skills (id, key, name, category, summary, evidence)
+VALUES (
+  '90000000-0000-4000-8000-000000000001',
+  'schema-probe-postgresql',
+  'PostgreSQL',
+  'Database',
+  'Relational data modeling',
+  'Schema migration evidence'
+);
 
 INSERT INTO projects (
+  id,
   slug,
   title,
   summary,
@@ -38,7 +46,8 @@ INSERT INTO projects (
   seo_description
 )
 VALUES (
-  'portfolio',
+  '91000000-0000-4000-8000-000000000001',
+  'schema-probe-portfolio',
   'Portfolio',
   'A portfolio project',
   '# Portfolio',
@@ -50,6 +59,7 @@ VALUES (
 );
 
 INSERT INTO posts (
+  id,
   slug,
   title,
   summary,
@@ -60,7 +70,8 @@ INSERT INTO posts (
   seo_description
 )
 VALUES (
-  'first-post',
+  '92000000-0000-4000-8000-000000000001',
+  'schema-probe-first-post',
   'First post',
   'A test post',
   '# First post',
@@ -70,29 +81,33 @@ VALUES (
   'First post details'
 );
 
-INSERT INTO tags (slug, name)
-VALUES ('database', 'Database');
+INSERT INTO tags (id, slug, name)
+VALUES (
+  '93000000-0000-4000-8000-000000000001',
+  'schema-probe-database',
+  'Database'
+);
 
 INSERT INTO project_skills (project_id, skill_id)
 SELECT projects.id, skills.id
 FROM projects
 CROSS JOIN skills
-WHERE projects.slug = 'portfolio'
-  AND skills.key = 'postgresql';
+WHERE projects.id = '91000000-0000-4000-8000-000000000001'
+  AND skills.id = '90000000-0000-4000-8000-000000000001';
 
 INSERT INTO post_tags (post_id, tag_id)
 SELECT posts.id, tags.id
 FROM posts
 CROSS JOIN tags
-WHERE posts.slug = 'first-post'
-  AND tags.slug = 'database';
+WHERE posts.id = '92000000-0000-4000-8000-000000000001'
+  AND tags.id = '93000000-0000-4000-8000-000000000001';
 
 INSERT INTO post_projects (post_id, project_id)
 SELECT posts.id, projects.id
 FROM posts
 CROSS JOIN projects
-WHERE posts.slug = 'first-post'
-  AND projects.slug = 'portfolio';
+WHERE posts.id = '92000000-0000-4000-8000-000000000001'
+  AND projects.id = '91000000-0000-4000-8000-000000000001';
 
 DO $$
 BEGIN
@@ -126,7 +141,7 @@ DO $$
 BEGIN
   BEGIN
     INSERT INTO tags (slug, name)
-    VALUES ('database', 'Duplicate database tag');
+    VALUES ('schema-probe-database', 'Duplicate database tag');
 
     RAISE EXCEPTION 'Duplicate tag slug was accepted';
   EXCEPTION
@@ -139,9 +154,21 @@ DECLARE
   relation_count integer;
 BEGIN
   SELECT
-    (SELECT count(*) FROM post_tags) +
-    (SELECT count(*) FROM post_projects) +
-    (SELECT count(*) FROM project_skills)
+    (
+      SELECT count(*)
+      FROM post_tags
+      WHERE post_id = '92000000-0000-4000-8000-000000000001'
+    ) +
+    (
+      SELECT count(*)
+      FROM post_projects
+      WHERE post_id = '92000000-0000-4000-8000-000000000001'
+    ) +
+    (
+      SELECT count(*)
+      FROM project_skills
+      WHERE project_id = '91000000-0000-4000-8000-000000000001'
+    )
   INTO relation_count;
 
   IF relation_count <> 3 THEN
@@ -150,15 +177,23 @@ BEGIN
 END $$;
 
 DELETE FROM posts
-WHERE slug = 'first-post';
+WHERE id = '92000000-0000-4000-8000-000000000001';
 
 DO $$
 DECLARE
   post_relation_count integer;
 BEGIN
   SELECT
-    (SELECT count(*) FROM post_tags) +
-    (SELECT count(*) FROM post_projects)
+    (
+      SELECT count(*)
+      FROM post_tags
+      WHERE post_id = '92000000-0000-4000-8000-000000000001'
+    ) +
+    (
+      SELECT count(*)
+      FROM post_projects
+      WHERE post_id = '92000000-0000-4000-8000-000000000001'
+    )
   INTO post_relation_count;
 
   IF post_relation_count <> 0 THEN

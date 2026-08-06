@@ -42,29 +42,9 @@ Those requirements remain authoritative in the product and operations documentat
 
 ## Remaining work
 
-### DEV-02 — Deterministic development and test data
-
-**Status:** `READY`
-**Depends on:** None
-
-**Outcome:** Development seed data is idempotent, test fixtures are isolated and resettable, and neither flow can leak environment-specific data into another database.
-
-**Completion conditions:**
-
-- Add an idempotent deterministic development seed.
-- Add isolated, resettable synthetic test fixtures that never reuse development data.
-- Document reset, reseed, status, and failure-recovery behavior without recording credentials.
-
-**Validation:**
-
-- Repeated development seed with stable row identities and counts
-- Isolated test fixture reset
-- PostgreSQL integration suite
-- `./scripts/check.sh`
-
 ### DEV-03 — Shared public presentation foundation
 
-**Status:** `QUEUED`
+**Status:** `READY`
 **Depends on:** None
 
 **Outcome:** Every public route uses a coherent, responsive, accessible shell without creating a speculative component library.
@@ -93,7 +73,7 @@ Those requirements remain authoritative in the product and operations documentat
 ### DEV-04 — Projects PostgreSQL vertical slice
 
 **Status:** `QUEUED`  
-**Depends on:** DEV-02, DEV-03
+**Depends on:** DEV-03
 
 **Outcome:** Visitors can browse published projects and open a project case study backed by PostgreSQL without database or Drizzle types crossing the infrastructure boundary.
 
@@ -147,7 +127,7 @@ Those requirements remain authoritative in the product and operations documentat
 ### DEV-06 — Blog and retrospective classification decision
 
 **Status:** `QUEUED`  
-**Depends on:** DEV-02
+**Depends on:** None
 
 **Outcome:** Blog posts and retrospectives have an explicit, queryable classification and stable URL policy before their repository and routes are implemented.
 
