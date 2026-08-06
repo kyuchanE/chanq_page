@@ -91,11 +91,14 @@ Favor cohesive modules and explicit data flow over global state, service locator
 ## Security and operations
 
 - Never commit secrets, real credentials, private keys, tunnel tokens, production database URLs, or personal data.
+- Treat the Apple Silicon development Mac and separate Apple Silicon production Mac as distinct trust, credential, data, and failure boundaries; verify production images for `linux/arm64`.
 - Provide `.env.example` entries with safe placeholders when configuration is introduced.
 - Bind PostgreSQL and internal tools to private Docker networks by default.
 - Validate and normalize input at every external boundary; authorize sensitive server actions independently of UI visibility.
 - Make migrations backward-aware, reviewable, and backed up before destructive production changes.
 - Treat applied migrations as immutable, run production migrations as an explicit release step, and verify backup and restore before production content becomes irreplaceable.
+- Promote schema with committed migrations and content through the validated import path. Never copy PostgreSQL data directories or Docker volumes between hosts.
+- Limit `pg_dump` custom-format logical backups to a verified one-time initial bootstrap or disaster recovery, and use `pg_restore` against an isolated database first; after launch, recovery backups originate from production.
 - Prefer read-only inspection before infrastructure mutation. Do not deploy, purge caches, rotate credentials, or alter DNS without explicit authorization.
 - Keep Cloudflare, Next.js, browser, and any Nginx caching policies independently documented and testable.
 

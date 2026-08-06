@@ -11,6 +11,8 @@ PostgreSQL is the runtime source of truth for public portfolio content. This dir
 - Preserve public URLs when moving or restructuring source files.
 - Store long-form bodies as Markdown. Do not import executable MDX or arbitrary React components from database content.
 - Keep development and test fixtures separate from production imports, and make import or seed operations idempotent where practical.
+- Treat reviewed production import inputs as content-promotion artifacts; never substitute a development database or its backup for routine content promotion.
+- Require dry-run validation, explicit production targeting, and deterministic conflict handling before a production import.
 
 ## Blog articles
 

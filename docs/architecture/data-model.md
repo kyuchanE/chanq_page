@@ -2,7 +2,9 @@
 
 ## Status
 
-Approved logical model. Physical Drizzle schema and SQL migrations will be created after the Next.js scaffold is merged.
+Implemented logical and physical MVP foundation. The typed schema is in `src/features/content/infrastructure/postgres/schema.ts`, and the first reviewed SQL migration is in `infrastructure/postgres/migrations/0000_initial_content_schema.sql`.
+
+The migration has been applied to the local development and isolated test databases. Transactional integration checks verify the seven content tables, publication constraints, unique slugs, relationship rows, and cascade deletion behavior. Repository adapters and content import behavior remain pending.
 
 ## Ownership
 

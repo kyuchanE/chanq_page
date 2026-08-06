@@ -1,4 +1,4 @@
 interface:
   display_name: "Operate Local Stack"
-  short_description: "Manage and verify the local stack"
-  default_prompt: "Use $operate-local-stack to configure or verify the Docker, PostgreSQL, Nginx, and Cloudflare Tunnel stack safely."
+  short_description: "Manage the Apple Silicon Mac stack"
+  default_prompt: "Use $operate-local-stack to configure or verify the separate Apple Silicon Mac Docker, PostgreSQL, Nginx, and Cloudflare Tunnel environments safely."

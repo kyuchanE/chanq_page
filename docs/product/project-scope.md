@@ -13,7 +13,7 @@ Create a public developer portfolio that lets a visitor quickly understand the d
 
 ## MVP capabilities
 
-- Home, About, Skills, Projects, Blog, and Contact experiences
+- Home, About, Skills, Projects, Retrospectives, Blog, and Contact experiences
 - Two or three detailed project case studies
 - Three to five retrospectives or troubleshooting articles
 - Responsive layouts with restrained, purposeful motion
@@ -28,7 +28,7 @@ Create a public developer portfolio that lets a visitor quickly understand the d
 - An internal CLI or import script for controlled content creation and publication
 - Unit tests and PostgreSQL-backed integration tests
 - Explicit production migration, backup, restore, retention, and restore-test procedures
-- Reproducible Docker build and single-instance deployment
+- Reproducible `linux/arm64` Docker build and single-instance deployment on the dedicated Apple Silicon macOS production host
 - Public DNS and HTTPS through Cloudflare
 
 ## MVP exclusions
@@ -56,7 +56,7 @@ The MVP is done when:
 3. At least three useful articles or retrospectives are published.
 4. Mobile, tablet, desktop, keyboard, focus, contrast, image alternatives, and reduced motion are verified.
 5. Metadata, canonical URLs, sitemap, robots rules, Open Graph data, structured data, 404 behavior, and indexability are verified.
-6. The production image builds and the application runs through Docker Compose on the intended domain with HTTPS.
+6. The `linux/arm64` production image builds and the application runs through Docker Compose on the dedicated Apple Silicon macOS host and intended domain with HTTPS.
 7. PostgreSQL starts privately, migrations apply explicitly, development and test seeds are reproducible, and repository integration tests pass against a compatible database.
 8. Projects, skills, and blog posts can be created or updated through the validated internal CLI or import path without direct ad hoc production SQL.
 9. A production backup can be created, verified, and restored through the documented procedure before irreplaceable content is accepted.

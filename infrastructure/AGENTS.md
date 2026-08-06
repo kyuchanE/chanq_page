@@ -3,8 +3,10 @@
 This directory owns versioned deployment and service configuration. Application policy belongs in `src/`; operating explanations and runbooks belong in `docs/operations/`.
 
 - Keep local, test, and production differences explicit.
+- Treat the Apple Silicon development Mac and separate Apple Silicon production Mac as distinct trust, credential, data, and failure boundaries.
 - Never commit credentials or production identifiers; provide safe examples.
 - Pin intentional image versions and review upgrades.
+- Verify every production image and native dependency for `linux/arm64`; do not rely on x86_64 emulation for an approved runtime component.
 - Use private networks, least privilege, health checks, resource limits where known, and graceful shutdown.
 - Validate rendered configuration before starting or replacing services.
 - Document operational behavior, recovery, and rollback with every consequential change.
@@ -14,6 +16,8 @@ This directory owns versioned deployment and service configuration. Application 
 
 - Use multi-stage builds and a minimal non-root production image.
 - Prefer Next.js standalone output when supported, add health checks and graceful shutdown, and keep Compose networks, volumes, profiles, and exposed ports explicit.
+- Account for the macOS Docker virtualization layer when documenting host paths, storage capacity, restart behavior, and recovery.
+- Verify that the production Docker runtime starts after a macOS reboot and that unintended host sleep cannot suspend the public service.
 - Do not expose internal services without a documented need.
 
 ## Cloudflare
@@ -38,3 +42,7 @@ This directory owns versioned deployment and service configuration. Application 
 - Test repository adapters and migrations against a compatible PostgreSQL instance and preserve public content URLs during every schema change.
 - Run migrations as an explicit release action rather than automatically on every application startup.
 - Keep development, test, and production databases and credentials separate.
+- Promote schema with committed migrations and content through the validated import path by default.
+- Never copy `/var/lib/postgresql/data`, Docker volumes, or physical database files between hosts.
+- Limit `pg_dump` custom-format logical backups to a verified one-time initial bootstrap or disaster recovery, and use `pg_restore` against an isolated database before any cutover.
+- After launch, create recovery backups from production and never overwrite production with a development backup.

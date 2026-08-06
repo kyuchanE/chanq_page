@@ -1,8 +1,8 @@
-# Pre-Scaffold Technology Baseline
+# Technology Baseline
 
 ## Status
 
-Implemented for the initial application scaffold. Database, validation, testing, and runtime-topology entries remain approved for later vertical slices.
+Implemented for the initial application scaffold, local PostgreSQL foundation, and application quality-gate foundation. Feature-level testing and production runtime-topology entries remain approved for later vertical slices.
 
 ## Resolved scaffold versions
 
@@ -17,6 +17,26 @@ The temporary scaffold resolved and committed these direct package versions on t
 - pnpm 11.9.0 with Node.js 20.9.0 or later
 
 The committed lockfile is the dependency-resolution source of truth. Routine compatible upgrades update the manifest, lockfile, and this summary together.
+
+## Resolved local database versions
+
+- PostgreSQL 16.14 on Debian Bookworm as a pinned `linux/arm64` container
+- Drizzle ORM 0.45.2
+- Drizzle Kit 0.31.10
+- `pg` (`node-postgres`) 8.22.0 with `@types/pg` 8.20.3
+- Zod 4.4.3
+- dotenv 17.4.2 for migration-tool environment loading
+
+## Resolved quality-gate versions
+
+- Prettier 3.9.6
+- Vitest 4.1.10
+- React Testing Library 16.3.2
+- Testing Library DOM matchers 7.0.0
+- jsdom 26.1.0
+- Playwright Test 1.62.1 with its pinned Chromium build
+
+jsdom is intentionally pinned below its newest major because version 30 requires a newer Node.js baseline than this project's Node.js 20.9 minimum. The committed lockfile remains authoritative for transitive Vite and browser-test dependencies.
 
 ## Application scaffold
 
@@ -53,6 +73,9 @@ Review the temporary scaffold before merging. Preserve repository-owned instruct
 | Boundary validation | Zod | Validate environment configuration, import inputs, and untrusted external data with strict TypeScript inference. |
 | Long-form content | Markdown text | Avoid runtime execution of database-provided MDX or arbitrary components. |
 | MVP write path | Internal server-only CLI or import use case | Add content without approving an admin UI, authentication, or a public write API. |
+| Production schema promotion | Committed, reviewed migrations | Keep schema history deterministic instead of restoring a development database during each deployment. |
+| Production content promotion | Validated import through application and repository boundaries | Exclude development seeds, test fixtures, roles, and environment-specific database state. |
+| Logical backup role | `pg_dump` custom format with `pg_restore` | Limit logical backups to initial bootstrap or disaster recovery and keep them out of the normal schema and content deployment path. |
 | Static images | Versioned files under `public/` with database references | Keep image upload and object storage outside the MVP. |
 
 Do not expose Drizzle records or Zod schemas as domain models by default. Translate external data at the infrastructure or input boundary and pass project-owned types inward.
@@ -62,34 +85,42 @@ Do not expose Drizzle records or Zod schemas as domain models by default. Transl
 | Layer | Tooling | Scope |
 |---|---|---|
 | Unit and synchronous component | Vitest, React Testing Library, and DOM matchers | Domain rules, application orchestration, validation, synchronous UI behavior, and regressions |
-| PostgreSQL integration | Vitest against a dedicated compatible PostgreSQL database | Migrations, constraints, repository adapters, transactions, seeds, and import behavior |
+| PostgreSQL integration | Transactional SQL harness now; Vitest against the dedicated database with the repository slice | Migrations and constraints now; repository adapters, transactions, seeds, and import behavior later |
 | End-to-end | Playwright | Critical public navigation, project and article reading, direct URLs, 404 behavior, and accessibility-critical interactions |
 
 Do not depend on component unit tests for asynchronous Server Components. Verify those paths through application tests and production-like Playwright journeys.
+
+Prettier checks code and configuration but excludes manually maintained Markdown and generated Drizzle migration artifacts. `scripts/check.sh` runs formatting, linting, types, unit/component tests, migration consistency, and the production build. PostgreSQL integration and Playwright remain explicit commands because they require Docker or a locally installed browser binary.
 
 ## Runtime topology
 
 ### Local development
 
 ```text
-Next.js through pnpm on the host
-  -> PostgreSQL through Docker Compose
+Apple Silicon development Mac
+  -> Next.js through pnpm on macOS
+  -> PostgreSQL 16.14 linux/arm64 through Docker Compose
+     -> chanq_page development database
+     -> chanq_page_test isolated integration database
 ```
 
 ### Production
 
 ```text
-Cloudflare Tunnel
-  -> Nginx
-  -> Next.js standalone container
-  -> PostgreSQL on a private Docker network
+Separate Apple Silicon production Mac running macOS
+  -> Cloudflare Tunnel `linux/arm64` container
+  -> Nginx `linux/arm64` container
+  -> Next.js standalone `linux/arm64` container
+  -> PostgreSQL `linux/arm64` container on a private Docker network
 ```
 
-Use one self-hosted Linux machine and Docker Compose for the MVP. Nginx owns origin request limits, proxy timeouts, controlled forwarded headers, and health routing. Cloudflare owns public DNS and edge HTTPS. Keep Nginx HTML caching disabled until Next.js caching and invalidation are measured independently.
+Keep development and production on different Macs with separate credentials, environment files, Docker volumes, and PostgreSQL data. Nginx owns origin request limits, proxy timeouts, controlled forwarded headers, and health routing. Cloudflare owns public DNS and edge HTTPS. Keep Nginx HTML caching disabled until Next.js caching and invalidation are measured independently.
 
 ## Version policy
 
 - Resolve supported package versions during the scaffold task from current official compatibility guidance.
 - Commit `pnpm-lock.yaml` and pin the supported Node.js range in project metadata.
 - Pin Docker image versions intentionally instead of using floating `latest` tags.
+- Verify every production image and native dependency for `linux/arm64` before release.
+- Pin the same PostgreSQL major version and required extensions across development, test, restore verification, and production.
 - Record consequential version exceptions in documentation; routine patch upgrades do not require an ADR.

@@ -50,11 +50,22 @@ Run:
 ./scripts/check.sh
 ```
 
-As runtime tooling is added, run the relevant format, lint, type-check, unit, integration, end-to-end, and build scripts. Use `$validate-project-change` for a risk-based validation pass. Record exactly which commands ran and distinguish failures from checks that were unavailable or intentionally not run.
+The default check runs the repository harness, skill validation, Markdown-link validation, Prettier check, ESLint, TypeScript, Vitest, Drizzle migration consistency, and the production build. It intentionally does not start Docker or a browser.
+
+Run service-dependent and production-like browser checks explicitly when they are relevant:
+
+```bash
+pnpm db:test:schema
+pnpm test:e2e
+```
+
+Install the pinned Playwright Chromium build once per development environment with `pnpm exec playwright install chromium`. Use `$validate-project-change` for a risk-based validation pass. Record exactly which commands ran and distinguish failures from checks that were unavailable or intentionally not run.
 
 ## Working with infrastructure
 
-Use `$operate-local-stack` before changing Docker, PostgreSQL, Nginx, or Cloudflare Tunnel configuration. Inspect first, keep secrets out of the repository, validate rendered configuration, add health checks, and document rollback or recovery for consequential changes.
+Use `$operate-local-stack` before changing Docker, PostgreSQL, Nginx, or Cloudflare Tunnel configuration. Confirm whether work targets the Apple Silicon development Mac, the separate Apple Silicon production Mac, or an isolated test or restore environment. Inspect first, verify `linux/arm64` support, keep secrets and volumes separated, validate rendered configuration, add health checks, and document rollback or recovery for consequential changes.
+
+Promote schema with committed migrations and content through the validated import path. Never copy PostgreSQL data directories or Docker volumes between hosts. Reserve `pg_dump` custom-format logical backups for a verified one-time initial bootstrap or disaster recovery, run `pg_restore` against an isolated database first, and require separate authority for production cutover.
 
 ## Handoff format
 
@@ -67,19 +78,18 @@ Every completed task should state:
 - Documentation or ADR updates
 - Assumptions, deferred work, and remaining risks
 
-## Implementation milestones
+## Implemented foundations
 
-The initial application scaffold is complete:
+The initial application and local database foundations are complete:
 
 1. The empty Next.js scaffold was generated in a temporary directory using the approved settings in `docs/architecture/technology-baseline.md`.
 2. Package metadata, strict TypeScript, App Router, Tailwind CSS, ESLint, React Compiler, Turbopack, and the `@/*` alias were reviewed and merged without replacing repository-owned instructions or documentation.
+3. Zod validates development and test connection URLs, while actual local credentials stay in ignored `.env.local`.
+4. PostgreSQL 16.14 runs in a loopback-only `linux/arm64` container with separate development and test databases.
+5. The typed Drizzle schema, reviewed initial SQL migration, migration ledger, status command, and transactional schema checks are implemented.
+6. Prettier checks code and configuration while preserving manually maintained Markdown and generated migration artifacts.
+7. Vitest, React Testing Library, and DOM matchers provide unit and synchronous component tests with Node and jsdom environments.
+8. Playwright runs critical browser smoke tests against a production build and local Next.js server.
+9. `scripts/check.sh` enforces all fast repository and application gates, including the production build, without starting Docker or a browser.
 
-Continue with these reviewable slices:
-
-1. Add Prettier, Vitest, React Testing Library, Playwright, and deterministic package quality gates.
-2. Add Zod environment validation and safe `.env.example` placeholders.
-3. Add a private PostgreSQL Docker Compose service, Drizzle schema, committed initial migration, and separate development and test seeds.
-4. Implement the first database-backed content repository vertical slice with unit and PostgreSQL integration tests.
-5. Add the internal content CLI or import entry point for draft and publish behavior.
-6. Extend `scripts/check.sh` to run formatting, linting, type checking, tests, migration checks, and the production build.
-7. Add production Docker packaging, migration release steps, backup, restore verification, Nginx, and Cloudflare Tunnel incrementally.
+The ordered queue of unfinished development and local validation work is maintained only in `docs/project-roadmap.md`.

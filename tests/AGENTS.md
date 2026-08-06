@@ -20,6 +20,7 @@ Use tests to protect behavior and boundaries, not implementation trivia.
 
 - Test real boundaries such as Markdown import validation, route adapters, PostgreSQL repositories, migrations, and rendered configuration.
 - Use isolated temporary state, deterministic setup and cleanup, and production-compatible dependency versions.
+- Run PostgreSQL integration, migration, import, and restore checks against the same pinned major version and required extensions approved for production.
 - Assert externally visible data and behavior instead of unstable framework snapshots.
 
 ## End-to-end tests

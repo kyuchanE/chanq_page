@@ -1,0 +1,43 @@
+import { z } from "zod";
+
+const postgresUrl = z
+  .string()
+  .min(1)
+  .superRefine((value, context) => {
+    try {
+      const url = new URL(value);
+
+      if (url.protocol !== "postgres:" && url.protocol !== "postgresql:") {
+        context.addIssue({
+          code: "custom",
+          message: "Expected a PostgreSQL connection URL.",
+        });
+      }
+    } catch {
+      context.addIssue({
+        code: "custom",
+        message: "Expected a valid connection URL.",
+      });
+    }
+  });
+
+const databaseEnvironmentSchema = z.object({
+  DATABASE_URL: postgresUrl,
+  TEST_DATABASE_URL: postgresUrl,
+});
+
+export type DatabaseEnvironment = z.infer<typeof databaseEnvironmentSchema>;
+
+export function parseDatabaseEnvironment(
+  environment: Record<string, string | undefined>,
+): DatabaseEnvironment {
+  const result = databaseEnvironmentSchema.safeParse(environment);
+
+  if (!result.success) {
+    throw new Error(
+      "Invalid database environment configuration. Check DATABASE_URL and TEST_DATABASE_URL.",
+    );
+  }
+
+  return result.data;
+}
