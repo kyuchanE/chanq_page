@@ -55,7 +55,7 @@ The default check runs the repository harness, skill validation, Markdown-link v
 Run service-dependent and production-like browser checks explicitly when they are relevant:
 
 ```bash
-pnpm db:test:schema
+pnpm db:test:integration
 pnpm test:e2e
 ```
 
@@ -91,5 +91,7 @@ The initial application and local database foundations are complete:
 7. Vitest, React Testing Library, and DOM matchers provide unit and synchronous component tests with Node and jsdom environments.
 8. Playwright runs critical browser smoke tests against a production build and local Next.js server.
 9. `scripts/check.sh` enforces all fast repository and application gates, including the production build, without starting Docker or a browser.
+10. The PostgreSQL project repository validates public rows and has isolated application-role integration coverage for publication state, ordering, relations, and unknown slugs.
+11. Playwright resets and uses the isolated test database for dynamic project list, detail, refresh, metadata, and 404 journeys.
 
 The ordered queue of unfinished development and local validation work is maintained only in `docs/project-roadmap.md`.

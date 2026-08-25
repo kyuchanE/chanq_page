@@ -42,39 +42,10 @@ Those requirements remain authoritative in the product and operations documentat
 
 ## Remaining work
 
-### DEV-04 — Projects PostgreSQL vertical slice
+### DEV-05 — Skills PostgreSQL vertical slice
 
 **Status:** `READY`
 **Depends on:** None
-
-**Outcome:** Visitors can browse published projects and open a project case study backed by PostgreSQL without database or Drizzle types crossing the infrastructure boundary.
-
-**Completion conditions:**
-
-- Define project-owned public list and detail types.
-- Define the smallest repository port justified by published-list, featured-list, and slug-detail reads.
-- Implement the Drizzle PostgreSQL adapter with database-row validation and project-owned error translation.
-- Exclude drafts and apply deterministic featured/display ordering.
-- Implement the Projects listing and stable project detail route.
-- Render trusted Markdown without executable MDX.
-- Return the correct not-found behavior for unknown or draft slugs.
-- Generate visible-content-aligned metadata for project pages.
-- Add representative project fixtures without personal secrets or unverifiable claims.
-
-**Validation:**
-
-- Pure mapping and validation tests
-- PostgreSQL repository integration tests using the application role
-- Draft exclusion, ordering, relation, and unknown-slug tests
-- Direct navigation and refresh for list, detail, and 404 paths
-- Accessibility and metadata inspection
-- Production build
-- `./scripts/check.sh`
-
-### DEV-05 — Skills PostgreSQL vertical slice
-
-**Status:** `QUEUED`  
-**Depends on:** DEV-04
 
 **Outcome:** Visitors can understand evidence-backed skills and see their relationship to published projects.
 
@@ -152,7 +123,7 @@ Those requirements remain authoritative in the product and operations documentat
 ### DEV-08 — Validated internal content import
 
 **Status:** `QUEUED`  
-**Depends on:** DEV-04, DEV-05, DEV-07
+**Depends on:** DEV-05, DEV-07
 
 **Outcome:** Projects, skills, posts, tags, and relations can be prepared and verified locally through a controlled import path instead of ad hoc SQL.
 

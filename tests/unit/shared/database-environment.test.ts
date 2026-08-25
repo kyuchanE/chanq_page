@@ -1,9 +1,38 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  parseApplicationDatabaseEnvironment,
   parseDatabaseEnvironment,
   parseMigrationDatabaseEnvironment,
 } from "@/shared/config/database-environment";
+
+describe("parseApplicationDatabaseEnvironment", () => {
+  it("requires only the runtime application database URL", () => {
+    const environment = {
+      DATABASE_URL: "postgresql://app:password@127.0.0.1:5433/chanq_page",
+    };
+
+    expect(parseApplicationDatabaseEnvironment(environment)).toEqual(
+      environment,
+    );
+  });
+
+  it("rejects a non-PostgreSQL runtime URL without exposing it", () => {
+    const invalidValue = "https://example.com/secret";
+
+    expect(() =>
+      parseApplicationDatabaseEnvironment({ DATABASE_URL: invalidValue }),
+    ).toThrow(
+      "Invalid application database configuration. Check DATABASE_URL.",
+    );
+
+    try {
+      parseApplicationDatabaseEnvironment({ DATABASE_URL: invalidValue });
+    } catch (error) {
+      expect((error as Error).message).not.toContain(invalidValue);
+    }
+  });
+});
 
 describe("parseDatabaseEnvironment", () => {
   it("accepts PostgreSQL URLs for development and test databases", () => {

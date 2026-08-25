@@ -16,7 +16,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "pnpm build && playwright test",
+    "test:e2e": "pnpm db:seed:test:reset && pnpm build && playwright test",
     "check": "./scripts/check.sh",
     "db:generate": "drizzle-kit generate",
     "db:check": "MIGRATION_DATABASE_URL=postgresql://schema-check@127.0.0.1:5433/unused TEST_MIGRATION_DATABASE_URL=postgresql://schema-check@127.0.0.1:5433/unused drizzle-kit check",
@@ -32,7 +32,8 @@
     "db:test:schema": "./scripts/check-postgres-schema.sh",
     "db:test:permissions": "./scripts/check-postgres-permissions.sh",
     "db:test:seeds": "./scripts/check-postgres-seeds.sh --allow-fixture-reset",
-    "db:test:integration": "pnpm db:test:permissions && pnpm db:test:seeds && pnpm db:test:schema"
+    "db:test:repositories": "pnpm db:seed:test:reset && vitest run --config vitest.integration.config.mts",
+    "db:test:integration": "pnpm db:test:permissions && pnpm db:test:seeds && pnpm db:test:schema && pnpm db:test:repositories"
   },
   "dependencies": {
     "drizzle-orm": "0.45.2",
@@ -40,6 +41,7 @@
     "pg": "8.22.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "react-markdown": "10.1.0",
     "zod": "4.4.3"
   },
   "devDependencies": {

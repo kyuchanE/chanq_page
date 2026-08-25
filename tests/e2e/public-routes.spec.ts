@@ -115,3 +115,68 @@ test("an unknown route returns a useful not-found response", async ({
   expect(response?.status()).toBe(404);
   await expect(page.getByText("This page could not be found.")).toBeVisible();
 });
+
+test("a visitor can browse and reopen a published project case study", async ({
+  page,
+}) => {
+  const listResponse = await page.goto("/projects");
+
+  expect(listResponse?.status()).toBe(200);
+  await expect(
+    page.getByRole("heading", { name: "Published projects" }),
+  ).toBeVisible();
+
+  const caseStudyLink = page.getByRole("link", {
+    name: "Read the Fixture Featured Project case study",
+  });
+
+  await expect(caseStudyLink).toBeVisible();
+  await caseStudyLink.click();
+
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Fixture Featured Project" }),
+  ).toBeVisible();
+  await expect(page.getByText("Fixture PostgreSQL")).toBeVisible();
+  await expect(page).toHaveTitle(
+    "Fixture Featured Project | ChanQ Developer Portfolio",
+  );
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+    "content",
+    "Synthetic featured project for integration tests.",
+  );
+
+  const refreshResponse = await page.reload();
+
+  expect(refreshResponse?.status()).toBe(200);
+  await expect(
+    page.getByRole("heading", { level: 2, name: "Fixture Featured Project" }),
+  ).toBeVisible();
+});
+
+test("draft, unknown, and malformed project slugs return project 404s", async ({
+  page,
+}) => {
+  const paths = [
+    "/projects/test-fixture-draft-project",
+    "/projects/unknown-project",
+    "/projects/Not-URL-Safe",
+  ];
+
+  for (const path of paths) {
+    await test.step(path, async () => {
+      const response = await page.goto(path);
+
+      expect(response?.status()).toBe(404);
+      await expect(
+        page.getByRole("heading", {
+          level: 1,
+          name: "This case study is not available.",
+        }),
+      ).toBeVisible();
+      await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+        "content",
+        /noindex/,
+      );
+    });
+  }
+});

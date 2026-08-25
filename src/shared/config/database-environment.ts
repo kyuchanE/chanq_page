@@ -26,12 +26,19 @@ const databaseEnvironmentSchema = z.object({
   TEST_DATABASE_URL: postgresUrl,
 });
 
+const applicationDatabaseEnvironmentSchema = z.object({
+  DATABASE_URL: postgresUrl,
+});
+
 const migrationDatabaseEnvironmentSchema = z.object({
   MIGRATION_DATABASE_URL: postgresUrl,
   TEST_MIGRATION_DATABASE_URL: postgresUrl,
 });
 
 export type DatabaseEnvironment = z.infer<typeof databaseEnvironmentSchema>;
+export type ApplicationDatabaseEnvironment = z.infer<
+  typeof applicationDatabaseEnvironmentSchema
+>;
 export type MigrationDatabaseEnvironment = z.infer<
   typeof migrationDatabaseEnvironmentSchema
 >;
@@ -44,6 +51,20 @@ export function parseDatabaseEnvironment(
   if (!result.success) {
     throw new Error(
       "Invalid database environment configuration. Check DATABASE_URL and TEST_DATABASE_URL.",
+    );
+  }
+
+  return result.data;
+}
+
+export function parseApplicationDatabaseEnvironment(
+  environment: Record<string, string | undefined>,
+): ApplicationDatabaseEnvironment {
+  const result = applicationDatabaseEnvironmentSchema.safeParse(environment);
+
+  if (!result.success) {
+    throw new Error(
+      "Invalid application database configuration. Check DATABASE_URL.",
     );
   }
 

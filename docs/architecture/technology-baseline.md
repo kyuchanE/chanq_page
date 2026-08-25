@@ -26,6 +26,7 @@ The committed lockfile is the dependency-resolution source of truth. Routine com
 - `pg` (`node-postgres`) 8.22.0 with `@types/pg` 8.20.3
 - Zod 4.4.3
 - dotenv 17.4.2 for migration-tool environment loading
+- react-markdown 10.1.0 for controlled CommonMark rendering without executable MDX or raw HTML
 
 ## Resolved quality-gate versions
 
@@ -73,7 +74,7 @@ Review the temporary scaffold before merging. Preserve repository-owned instruct
 | Local database roles | Elevated migration role plus isolated least-privilege development/test application roles | Detect permission regressions locally without giving routine application code schema privileges. |
 | Local deterministic data | Reserved development seed namespace plus isolated resettable test fixtures | Preserve developer-authored rows while making integration state reproducible and preventing cross-environment fixture reuse. |
 | Boundary validation | Zod | Validate environment configuration, import inputs, and untrusted external data with strict TypeScript inference. |
-| Long-form content | Markdown text | Avoid runtime execution of database-provided MDX or arbitrary components. |
+| Long-form content | Markdown text rendered by react-markdown with raw HTML disabled | Use a CommonMark parser and React elements without runtime execution of database-provided MDX or arbitrary HTML. |
 | MVP write path | Internal server-only CLI or import use case | Add content without approving an admin UI, authentication, or a public write API. |
 | Production schema promotion | Committed, reviewed migrations | Keep schema history deterministic instead of restoring a development database during each deployment. |
 | Production content promotion | Validated import through application and repository boundaries | Exclude development seeds, test fixtures, roles, and environment-specific database state. |
@@ -87,10 +88,10 @@ Do not expose Drizzle records or Zod schemas as domain models by default. Transl
 | Layer | Tooling | Scope |
 |---|---|---|
 | Unit and synchronous component | Vitest, React Testing Library, and DOM matchers | Domain rules, application orchestration, validation, synchronous UI behavior, and regressions |
-| PostgreSQL integration | Transactional SQL harness now; Vitest against the dedicated database with the repository slice | Migrations, constraints, roles, deterministic seeds, and fixture reset now; repository adapters and import behavior later |
+| PostgreSQL integration | Transactional SQL harness plus Vitest against the dedicated database | Migrations, constraints, roles, deterministic seeds, fixture reset, project repository ordering, publication filtering, relations, and error boundaries |
 | End-to-end | Playwright | Critical public navigation, project and article reading, direct URLs, 404 behavior, and accessibility-critical interactions |
 
-Do not depend on component unit tests for asynchronous Server Components. Verify those paths through application tests and production-like Playwright journeys.
+Do not depend on component unit tests for asynchronous Server Components. Verify those paths through application tests and production-like Playwright journeys. Playwright resets and uses the isolated test database for database-backed routes.
 
 Prettier checks code and configuration but excludes manually maintained Markdown and generated Drizzle migration artifacts. `scripts/check.sh` runs formatting, linting, types, unit/component tests, migration consistency, and the production build. PostgreSQL integration and Playwright remain explicit commands because they require Docker or a locally installed browser binary.
 

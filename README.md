@@ -2,7 +2,7 @@
 
 This repository contains the foundation for a personal developer portfolio built with Next.js and TypeScript. The project emphasizes evidence-based project case studies, technical writing, accessibility, performance, SEO, and understandable production operations.
 
-The repository is currently in the **route and local database foundation phase**. Minimal static routes for the seven MVP sections run alongside a project-local PostgreSQL 16 container, a typed Drizzle schema, an initial committed migration, and deterministic development and test data. Portfolio repositories, content imports, feature behavior, and production infrastructure will be added as reviewable vertical slices.
+The repository is currently in the **PostgreSQL-backed public content phase**. Six static placeholder sections run alongside a dynamic Projects list and case-study detail route backed by the project-local PostgreSQL 16 container. The Projects slice validates database rows, excludes drafts, orders published content deterministically, renders controlled CommonMark, and exposes stable metadata and 404 behavior. Remaining repositories, content imports, feature behavior, and production infrastructure will be added as reviewable vertical slices.
 
 ## Start here
 
@@ -19,15 +19,17 @@ Prerequisites:
 - Corepack-managed pnpm 11.9.0
 - Docker Desktop with Apple Silicon and Docker Compose support
 
-Install dependencies and start the development server:
+Install dependencies, start PostgreSQL, synchronize the safe development fixtures, and start the development server:
 
 ```bash
 pnpm install
 pnpm exec playwright install chromium
+pnpm db:local:up
+pnpm db:seed:dev
 pnpm dev
 ```
 
-The Home route is available at `http://localhost:3000`, with placeholder routes for About, Skills, Projects, Retrospectives, Blog, and Contact.
+The Home route is available at `http://localhost:3000`. Projects reads published development content at runtime; About, Skills, Retrospectives, Blog, and Contact remain placeholders.
 
 Run the deterministic repository and application gates before handing off a change:
 
@@ -61,7 +63,7 @@ pnpm db:seed:status
 pnpm db:status
 ```
 
-`chanq_page` is the development database and `chanq_page_test` is reserved for resettable integration tests. The local `root` PostgreSQL role is used only for bootstrap, migrations, reset, and role administration. Routine development uses `chanq_page_app`; integration checks use `chanq_page_test_app`. Each application role can access only its own database and cannot create schema objects or read the migration ledger. Do not reuse any local credential in production. `pnpm db:local:down` stops the service without deleting the named volume.
+`chanq_page` is the development database and `chanq_page_test` is reserved for resettable integration and browser tests. The local `root` PostgreSQL role is used only for bootstrap, migrations, reset, and role administration. Routine development uses `chanq_page_app`; integration checks and Playwright use `chanq_page_test_app`. Each application role can access only its own database and cannot create schema objects or read the migration ledger. Do not reuse any local credential in production. `pnpm db:local:down` stops the service without deleting the named volume.
 
 `pnpm db:seed:dev` idempotently synchronizes only the reserved `dev-seed-` fixture namespace and preserves other development rows. `pnpm db:seed:test:reset` deletes and rebuilds content only in the isolated test database with separate synthetic fixtures. Both flows use fixed UUIDs and timestamps through their least-privilege application roles. Use `pnpm db:seed:status` for a read-only count summary.
 
@@ -85,6 +87,6 @@ Promote schema with committed migrations and promote content through the validat
 - Docker-based production packaging
 - A dedicated Apple Silicon macOS production host running private PostgreSQL, Nginx, Next.js, and Cloudflare Tunnel as `linux/arm64` Docker containers
 
-The application scaffold now provides Next.js App Router, React Compiler, strict TypeScript, Tailwind CSS, ESLint, Turbopack, the `@/*` import alias, and a committed pnpm lockfile. Prettier, Vitest, React Testing Library, DOM matchers, and Playwright provide deterministic formatting and test entry points. The local database foundation adds PostgreSQL 16.14, Drizzle ORM and Kit, `node-postgres`, Zod environment validation, development and test databases, migration status reporting, deterministic isolated data, and transactional integration checks. Repository adapters, feature-level application tests, and production infrastructure remain planned.
+The application scaffold now provides Next.js App Router, React Compiler, strict TypeScript, Tailwind CSS, ESLint, Turbopack, the `@/*` import alias, and a committed pnpm lockfile. Prettier, Vitest, React Testing Library, DOM matchers, and Playwright provide deterministic formatting and test entry points. The local database foundation adds PostgreSQL 16.14, Drizzle ORM and Kit, `node-postgres`, Zod environment and row validation, development and test databases, migration status reporting, deterministic isolated data, and transactional integration checks. The project repository and public Projects experience are implemented; skill and post repositories, content import, and production infrastructure remain planned.
 
 See [`docs/architecture/system-overview.md`](docs/architecture/system-overview.md) for the current architecture and [`docs/development/codex-workflow.md`](docs/development/codex-workflow.md) for the detailed development workflow.

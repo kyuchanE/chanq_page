@@ -2,7 +2,7 @@
 
 ## Status
 
-The current repository contains a project harness, documentation, scoped agent instructions, reusable Codex skills, validation scripts, a runnable Next.js App Router application with a shared public presentation foundation, and a local PostgreSQL foundation. It exposes static placeholder routes for the seven MVP sections inside a responsive and accessible shell. PostgreSQL 16.14 runs locally in Docker with isolated development and test databases, a typed Drizzle schema, a committed initial migration, deterministic development and test data, and transactional integration checks. Completed content features, repository adapters, and production infrastructure are not yet implemented.
+The current repository contains a project harness, documentation, scoped agent instructions, reusable Codex skills, validation scripts, a runnable Next.js App Router application with a shared public presentation foundation, and a local PostgreSQL foundation. Six MVP sections remain static placeholders inside the responsive and accessible shell. Projects is a dynamic PostgreSQL-backed list and detail experience with validated public read models, controlled Markdown, visible skill relations, metadata, explicit loading/empty/recoverable-error states, and project-specific not-found behavior. PostgreSQL 16.14 runs locally in Docker with isolated development and test databases, a typed Drizzle schema, a committed initial migration, deterministic development and test data, and repository integration checks. Remaining content features and production infrastructure are not yet implemented.
 
 ## Current local database boundary
 
@@ -24,12 +24,13 @@ The project Compose file binds PostgreSQL to loopback only. Development and test
 | `/` | Home | `src/app/page.tsx` |
 | `/about` | About | `src/app/about/page.tsx` |
 | `/skills` | Skills | `src/app/skills/page.tsx` |
-| `/projects` | Projects | `src/app/projects/page.tsx` |
+| `/projects` | Published project list | `src/app/projects/(listing)/page.tsx` |
+| `/projects/[slug]` | Published project detail | `src/app/projects/[slug]/page.tsx` |
 | `/retrospectives` | Retrospectives | `src/app/retrospectives/page.tsx` |
 | `/blog` | Blog | `src/app/blog/page.tsx` |
 | `/contact` | Contact | `src/app/contact/page.tsx` |
 
-Each route is a static Server Component with semantic placeholder content and accurate page metadata. The root layout composes one header, primary navigation, main-content, and footer shell. The navigation isolates `usePathname` in a small Client Component so exact and nested section URLs expose a visible `aria-current="page"` state; native links remain keyboard operable. Global CSS owns the color, typography, spacing, width, focus, and motion tokens, responsive breakpoints, skip-link treatment, and reduced-motion override. A feature-neutral page-introduction primitive is shared by all seven routes. Empty, loading, and error primitives remain deferred until a real data flow defines their requirements.
+The six placeholder routes are static Server Components. Projects uses dynamic Server Components so the production build remains independent of database connectivity while runtime reads come from PostgreSQL. The Projects route composes the feature-owned repository adapter; public list and detail values do not expose PostgreSQL or Drizzle types. The root layout composes one header, primary navigation, main-content, and footer shell. The navigation isolates `usePathname` in a small Client Component so exact and nested section URLs expose a visible `aria-current="page"` state; native links remain keyboard operable. Global CSS owns the color, typography, spacing, width, focus, and motion tokens, responsive breakpoints, skip-link treatment, project presentation, and reduced-motion override.
 
 ## Target MVP context
 
@@ -103,6 +104,8 @@ Public Next.js route
 
 PostgreSQL is the sole runtime source of truth for projects, developer skills, and blog posts. Database and Drizzle types stop at the infrastructure adapter. Long-form bodies are trusted Markdown rendered through controlled components; database content must not execute arbitrary MDX or React components.
 
+The project slice implements this read path for published lists, featured lists, and detail-by-slug. Infrastructure validates every selected row with Zod before mapping it to project-owned values. Drafts are filtered in the query, visible skill relations are deterministically ordered, and invalid rows or connectivity failures become project-owned repository errors.
+
 ## Release data flow
 
 ```text
@@ -132,6 +135,8 @@ Do not transfer `/var/lib/postgresql/data`, Docker volumes, or physical database
 - Keep secret-bearing writes in server-only entry points with server-side validation.
 
 For each route, document when HTML is generated, when data is read, what is cached, acceptable staleness, and invalidation ownership.
+
+The current Projects routes read PostgreSQL for each dynamic server render. No explicit Next.js data cache or revalidation window is configured yet; the accepted staleness is therefore the duration of a single request, and PostgreSQL owns the authoritative value.
 
 ## Trust boundaries
 
