@@ -30,10 +30,11 @@
     "db:seed:test:reset": "./scripts/seed-postgres.sh test --allow-reset",
     "db:seed:status": "./scripts/postgres-seed-status.sh",
     "db:test:schema": "./scripts/check-postgres-schema.sh",
+    "db:test:migrations": "./scripts/check-postgres-migrations.sh --allow-temporary-databases",
     "db:test:permissions": "./scripts/check-postgres-permissions.sh",
     "db:test:seeds": "./scripts/check-postgres-seeds.sh --allow-fixture-reset",
     "db:test:repositories": "pnpm db:seed:test:reset && vitest run --config vitest.integration.config.mts",
-    "db:test:integration": "pnpm db:test:permissions && pnpm db:test:seeds && pnpm db:test:schema && pnpm db:test:repositories"
+    "db:test:integration": "pnpm db:test:migrations && pnpm db:test:permissions && pnpm db:test:seeds && pnpm db:test:schema && pnpm db:test:repositories"
   },
   "dependencies": {
     "drizzle-orm": "0.45.2",

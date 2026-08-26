@@ -57,6 +57,7 @@ BEGIN
     SELECT 1 FROM posts
     WHERE id = '12000000-0000-4000-8000-000000000002'
       AND slug = 'dev-seed-draft-post'
+      AND kind = 'retrospective'
       AND status = 'draft'
       AND published_at IS NULL
   ) THEN

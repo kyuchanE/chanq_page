@@ -42,35 +42,10 @@ Those requirements remain authoritative in the product and operations documentat
 
 ## Remaining work
 
-### DEV-06 — Blog and retrospective classification decision
+### DEV-07 — Blog and Retrospectives PostgreSQL vertical slices
 
 **Status:** `READY`
 **Depends on:** None
-
-**Outcome:** Blog posts and retrospectives have an explicit, queryable classification and stable URL policy before their repository and routes are implemented.
-
-**Completion conditions:**
-
-- Decide whether retrospectives are a post type, constrained category, or another explicit project-owned concept.
-- Define whether one post can appear in both Blog and Retrospectives.
-- Define stable detail URL ownership and duplicate-content canonical behavior.
-- Update the logical data model and add an ADR if the decision creates a durable cross-cutting boundary.
-- Add a forward-only migration if the physical schema changes.
-- Preserve existing post identifiers, publication state, slugs, and timestamps.
-
-**Validation:**
-
-- Schema and documentation consistency review
-- Drizzle migration consistency check
-- Full migration history against an isolated database
-- Representative upgrade-path test
-- Classification constraint and query tests
-- `./scripts/check.sh`
-
-### DEV-07 — Blog and Retrospectives PostgreSQL vertical slices
-
-**Status:** `QUEUED`  
-**Depends on:** DEV-06
 
 **Outcome:** Visitors can browse and read published Blog and Retrospective content with tags, related projects, trusted Markdown, and stable metadata.
 

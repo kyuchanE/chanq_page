@@ -64,6 +64,7 @@ INSERT INTO posts (
   title,
   summary,
   body,
+  kind,
   status,
   published_at,
   seo_title,
@@ -75,10 +76,36 @@ VALUES (
   'First post',
   'A test post',
   '# First post',
+  'article',
   'published',
   now(),
   'First post',
   'First post details'
+);
+
+INSERT INTO posts (
+  id,
+  slug,
+  title,
+  summary,
+  body,
+  kind,
+  status,
+  published_at,
+  seo_title,
+  seo_description
+)
+VALUES (
+  '92000000-0000-4000-8000-000000000002',
+  'schema-probe-retrospective',
+  'Retrospective',
+  'A test retrospective',
+  '# Retrospective',
+  'retrospective',
+  'published',
+  now(),
+  'Retrospective',
+  'Retrospective details'
 );
 
 INSERT INTO tags (id, slug, name)
@@ -117,6 +144,7 @@ BEGIN
       title,
       summary,
       body,
+      kind,
       status,
       seo_title,
       seo_description
@@ -126,6 +154,7 @@ BEGIN
       'Invalid published post',
       'This insert must fail',
       '# Invalid',
+      'article',
       'published',
       'Invalid',
       'Missing publication timestamp'
@@ -134,6 +163,56 @@ BEGIN
     RAISE EXCEPTION 'Published post without published_at was accepted';
   EXCEPTION
     WHEN check_violation THEN NULL;
+  END;
+END $$;
+
+DO $$
+DECLARE
+  classified_kinds text[];
+  kind_default text;
+  kind_nullable text;
+BEGIN
+  SELECT array_agg(kind::text ORDER BY kind::text)
+  INTO classified_kinds
+  FROM posts
+  WHERE slug LIKE 'schema-probe-%'
+    AND status = 'published';
+
+  IF classified_kinds <> ARRAY['article', 'retrospective'] THEN
+    RAISE EXCEPTION 'Post classification query returned %', classified_kinds;
+  END IF;
+
+  SELECT column_default, is_nullable
+  INTO kind_default, kind_nullable
+  FROM information_schema.columns
+  WHERE table_schema = 'public'
+    AND table_name = 'posts'
+    AND column_name = 'kind';
+
+  IF kind_nullable <> 'NO' OR kind_default IS NOT NULL THEN
+    RAISE EXCEPTION 'Post kind must be required without an implicit default';
+  END IF;
+
+  IF enum_range(NULL::post_kind)::text <> '{article,retrospective}' THEN
+    RAISE EXCEPTION 'Unexpected post_kind values: %', enum_range(NULL::post_kind);
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_indexes
+    WHERE schemaname = 'public'
+      AND tablename = 'posts'
+      AND indexname = 'posts_kind_published_listing_index'
+      AND indexdef LIKE '%(kind, status, published_at)%'
+  ) THEN
+    RAISE EXCEPTION 'Expected section-aware published post listing index';
+  END IF;
+
+  BEGIN
+    EXECUTE 'UPDATE posts SET kind = ''essay'' WHERE id = ''92000000-0000-4000-8000-000000000001''';
+    RAISE EXCEPTION 'Unexpected post classification was accepted';
+  EXCEPTION
+    WHEN invalid_text_representation THEN NULL;
   END;
 END $$;
 

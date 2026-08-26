@@ -2,9 +2,9 @@
 
 ## Status
 
-Implemented logical and physical MVP foundation. The typed schema is in `src/features/content/infrastructure/postgres/schema.ts`, and the first reviewed SQL migration is in `infrastructure/postgres/migrations/0000_initial_content_schema.sql`.
+Implemented logical and physical MVP foundation. The typed schema is in `src/features/content/infrastructure/postgres/schema.ts`, and the reviewed SQL migration history is in `infrastructure/postgres/migrations/`.
 
-The migration has been applied to the local development and isolated test databases. Transactional integration checks verify the seven content tables, publication constraints, unique slugs, relationship rows, and cascade deletion behavior. Deterministic development data uses a reserved fixture namespace with fixed identifiers and timestamps; the isolated test database resets to separate synthetic fixtures. Project and skill read repositories are implemented; post repositories and content import behavior remain pending.
+Both migrations have been applied to the local development and isolated test databases. Transactional integration checks verify the seven content tables, post classification, publication constraints, unique slugs, relationship rows, and cascade deletion behavior. Isolated migration checks exercise both the complete SQL history and the representative upgrade of existing posts. Deterministic development data uses a reserved fixture namespace with fixed identifiers and timestamps; the isolated test database resets to separate synthetic fixtures. Project and skill read repositories are implemented; post repositories and content import behavior remain pending.
 
 ## Ownership
 
@@ -24,6 +24,7 @@ projects <-> project_skills <-> skills
 - Use lowercase, URL-safe, stable slugs with unique constraints.
 - Store timestamps as PostgreSQL `timestamptz` in UTC.
 - Use explicit `draft` and `published` states.
+- Require every post to choose exactly one `article` or `retrospective` kind without an implicit database default.
 - Require `published_at` for published content and hide drafts from public repositories.
 - Keep `created_at` and `updated_at` on mutable records.
 - Store SEO title, SEO description, and optional Open Graph image path explicitly.
@@ -35,12 +36,15 @@ projects <-> project_skills <-> skills
 Required concepts:
 
 - `id`, `slug`, `title`, `summary`, and Markdown `body`
+- Exactly one `kind`: `article` for Blog or `retrospective` for Retrospectives
 - `status`, `published_at`, `created_at`, and `updated_at`
 - `seo_title`, `seo_description`, and optional `og_image_path`
 - Many-to-many tags through `post_tags`
 - Optional related projects through `post_projects`
 
-Index published listing queries by status and publication time. Enforce unique slugs, unique post-tag pairs, and unique post-project pairs.
+Articles and retrospectives share one aggregate because their lifecycle, metadata, tags, and project relations have the same invariants. A post cannot belong to both sections. Article details are owned by `/blog/{slug}` and retrospective details by `/retrospectives/{slug}`; each owning URL is canonical, and a kind mismatch returns not found. Slugs remain globally unique across both kinds.
+
+Index published listing queries by kind, status, and publication time. Enforce the allowed kinds, explicit classification, unique slugs, unique post-tag pairs, and unique post-project pairs. The classification migration preserves existing rows by backfilling them as articles, then removes the temporary default so future writes must classify explicitly. See [ADR-0007](decisions/0007-classify-posts-by-kind.md).
 
 ## Projects
 
@@ -83,6 +87,8 @@ Repository ports belong to the owning feature application layer. Drizzle schemas
 The project repository exposes published-list, featured-list, and published-detail-by-slug reads. Lists sort featured rows first, then use display order, publication time, and slug as deterministic tie-breakers. Detail reads include visible skills ordered by skill display order, name, and key. Unknown and draft slugs return no public value; malformed database rows and connectivity failures are translated at the adapter boundary.
 
 The skill repository exposes one visible-skill list ordered alphabetically by category, then by display order, name, and stable key. Each skill includes its narrative evidence and published related projects ordered by featured state, project display order, publication time, and slug. Non-visible skills and draft project relations remain outside the public read model.
+
+The planned post repository will require the expected kind for list and detail reads. It will filter drafts before mapping, treat a kind mismatch like an unknown slug, and generate metadata and canonical URLs from the same validated post value.
 
 ## Deferred model concerns
 

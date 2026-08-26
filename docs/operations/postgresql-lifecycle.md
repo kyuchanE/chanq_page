@@ -15,10 +15,10 @@ Implemented local foundation and approved production policy for separate Apple S
 | Bootstrap role | Local-only PostgreSQL superuser `root`; never reuse in production |
 | Development application role | `chanq_page_app`; DML on `chanq_page` only |
 | Test application role | `chanq_page_test_app`; DML on `chanq_page_test` only |
-| Schema | Seven content tables from the committed Drizzle migration |
+| Schema | Seven content tables from two committed Drizzle migrations |
 | Deterministic local data | Fixed development seed identities plus independently resettable synthetic test fixtures |
-| Progress evidence | Container health, migration and table counts, seed status, permission checks, deterministic reset checks, and transactional schema checks |
-| Not implemented | Repository adapters, content import, production Compose, backup automation, restore drill |
+| Progress evidence | Container health, migration and table counts, isolated full-history and upgrade checks, seed status, permission checks, deterministic reset checks, and transactional schema checks |
+| Not implemented | Post repository adapter, content import, production Compose, backup automation, restore drill |
 
 Actual credentials and connection URLs live only in ignored `.env.local`. The tracked `.env.example` contains safe placeholders. The PostgreSQL role named `root` is not the macOS root account and does not grant host privileges.
 
@@ -75,7 +75,7 @@ The local `root` role owns bootstrap, migrations, database-level reset, and role
 ### Migration and progress commands
 
 ```bash
-pnpm db:generate -- --name <migration_name>
+pnpm db:generate --name <migration_name>
 pnpm db:check
 pnpm db:migrate
 pnpm db:migrate:test
@@ -85,12 +85,13 @@ pnpm db:seed:dev
 pnpm db:seed:test:reset
 pnpm db:seed:status
 pnpm db:test:permissions
+pnpm db:test:migrations
 pnpm db:test:seeds
 pnpm db:test:schema
 pnpm db:test:integration
 ```
 
-`db:status` is read-only and reports container health, server version, role properties, database ACLs, applied migration count, and table counts without printing credentials. `db:seed:status` reports total and fixture-owned base-table counts through each application role. `db:test:permissions` verifies application-role DML, DDL denial, migration-ledger denial, and cross-database isolation. `db:test:seeds` verifies wrong-target rejection, repeated development seed identity and count stability, isolated test drift recovery, and cross-environment marker isolation. `db:test:schema` authenticates as `chanq_page_test_app`, runs against `chanq_page_test` inside a transaction, and rolls its probe writes back. `db:test:integration` runs all PostgreSQL boundary checks. Keep generated SQL and Drizzle migration metadata together in version control.
+`db:status` is read-only and reports container health, server version, role properties, database ACLs, applied migration count, and table counts without printing credentials. `db:seed:status` reports total and fixture-owned base-table counts through each application role. `db:test:permissions` verifies application-role DML, DDL denial, migration-ledger denial, and cross-database isolation. `db:test:migrations` requires an explicit temporary-database flag internally, creates two fixed isolated databases, verifies the full SQL history and a representative upgrade with existing rows, and removes both databases on exit. `db:test:seeds` verifies wrong-target rejection, repeated development seed identity and count stability, isolated test drift recovery, and cross-environment marker isolation. `db:test:schema` authenticates as `chanq_page_test_app`, runs against `chanq_page_test` inside a transaction, and rolls its probe writes back. `db:test:integration` runs all PostgreSQL boundary checks. Keep generated SQL and Drizzle migration metadata together in version control.
 
 ### Deterministic local data
 

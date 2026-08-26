@@ -2,7 +2,7 @@
 
 ## Status
 
-The current repository contains a project harness, documentation, scoped agent instructions, reusable Codex skills, validation scripts, a runnable Next.js App Router application with a shared public presentation foundation, and a local PostgreSQL foundation. Five MVP sections remain static placeholders inside the responsive and accessible shell. Projects is a dynamic PostgreSQL-backed list and detail experience with validated public read models, controlled Markdown, visible skill relations, metadata, explicit loading/empty/recoverable-error states, and project-specific not-found behavior. Skills is a dynamic PostgreSQL-backed evidence view with deterministic grouping and published-project-only relations. PostgreSQL 16.14 runs locally in Docker with isolated development and test databases, a typed Drizzle schema, a committed initial migration, deterministic development and test data, and repository integration checks. Remaining content features and production infrastructure are not yet implemented.
+The current repository contains a project harness, documentation, scoped agent instructions, reusable Codex skills, validation scripts, a runnable Next.js App Router application with a shared public presentation foundation, and a local PostgreSQL foundation. Five MVP sections remain static placeholders inside the responsive and accessible shell. Projects is a dynamic PostgreSQL-backed list and detail experience with validated public read models, controlled Markdown, visible skill relations, metadata, explicit loading/empty/recoverable-error states, and project-specific not-found behavior. Skills is a dynamic PostgreSQL-backed evidence view with deterministic grouping and published-project-only relations. PostgreSQL 16.14 runs locally in Docker with isolated development and test databases, a typed Drizzle schema, two committed migrations, deterministic development and test data, repository integration checks, and isolated fresh-history and upgrade-path migration checks. Posts now have an explicit article-or-retrospective classification and stable URL ownership; their repositories and public routes remain pending. Production infrastructure is not yet implemented.
 
 ## Current local database boundary
 
@@ -31,6 +31,8 @@ The project Compose file binds PostgreSQL to loopback only. Development and test
 | `/contact` | Contact | `src/app/contact/page.tsx` |
 
 The five placeholder routes are static Server Components. Projects and Skills use dynamic Server Components so the production build remains independent of database connectivity while runtime reads come from PostgreSQL. Their App Router composition shares one connection pool and exposes only project-owned list/detail values; PostgreSQL and Drizzle types remain inside infrastructure. The root layout composes one header, primary navigation, main-content, and footer shell. The navigation isolates `usePathname` in a small Client Component so exact and nested section URLs expose a visible `aria-current="page"` state; native links remain keyboard operable. Global CSS owns the color, typography, spacing, width, focus, and motion tokens, responsive breakpoints, skip-link treatment, content presentation, and reduced-motion override.
+
+Blog articles and retrospectives share the `posts` aggregate but have one required, mutually exclusive kind. Article details are owned by `/blog/[slug]`; retrospective details are owned by `/retrospectives/[slug]`. The owning URL is canonical, and draft, unknown, or mismatched-kind requests will return not found when the post routes are implemented. [ADR-0007](decisions/0007-classify-posts-by-kind.md) records this policy.
 
 ## Target MVP context
 
@@ -150,6 +152,6 @@ Browser, Cloudflare, Nginx, Next.js, and PostgreSQL caching are independent. Int
 
 ## Planned evolution
 
-1. Extend the established database-backed public pattern to posts after their classification policy is decided.
+1. Extend the established database-backed public pattern to the classified Blog and Retrospectives post sections.
 2. Complete the validated content import, accessibility, SEO, unit and integration tests, `linux/arm64` Docker packaging, migration release steps, logical backup, and isolated restore verification.
 3. Add Nginx and Cloudflare Tunnel with separately verified responsibilities and no initial origin HTML cache.

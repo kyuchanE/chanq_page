@@ -23,6 +23,7 @@ const auditTimestamps = {
 };
 
 export const contentStatus = pgEnum("content_status", ["draft", "published"]);
+export const postKind = pgEnum("post_kind", ["article", "retrospective"]);
 
 export const skills = pgTable(
   "skills",
@@ -92,6 +93,7 @@ export const posts = pgTable(
     title: text("title").notNull(),
     summary: text("summary").notNull(),
     body: text("body").notNull(),
+    kind: postKind("kind").notNull(),
     status: contentStatus("status").default("draft").notNull(),
     publishedAt: timestamp("published_at", {
       withTimezone: true,
@@ -104,7 +106,11 @@ export const posts = pgTable(
   },
   (table) => [
     uniqueIndex("posts_slug_unique").on(table.slug),
-    index("posts_published_listing_index").on(table.status, table.publishedAt),
+    index("posts_kind_published_listing_index").on(
+      table.kind,
+      table.status,
+      table.publishedAt,
+    ),
     check(
       "posts_published_at_required",
       sql`${table.status} <> 'published' OR ${table.publishedAt} IS NOT NULL`,
