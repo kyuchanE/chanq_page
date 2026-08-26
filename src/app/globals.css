@@ -370,7 +370,8 @@ a {
   font-weight: 800;
 }
 
-.project-empty-state {
+.project-empty-state,
+.skill-empty-state {
   max-width: var(--reading-width);
   margin: 0;
   padding: var(--space-6);
@@ -378,6 +379,132 @@ a {
   border-radius: var(--radius-large);
   color: var(--color-text-muted);
   background: rgb(255 253 247 / 58%);
+}
+
+.skills-page {
+  display: grid;
+  gap: var(--space-16);
+}
+
+.skills-page__content,
+.skill-groups,
+.skill-category {
+  display: grid;
+}
+
+.skills-page__content {
+  gap: var(--space-8);
+}
+
+.skill-groups {
+  gap: var(--space-12);
+}
+
+.skill-category {
+  gap: var(--space-6);
+}
+
+.skill-category__header p,
+.skill-category__header h2 {
+  margin: 0;
+}
+
+.skill-category__header p {
+  color: var(--color-accent-strong);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.skill-category__header h2 {
+  margin-top: var(--space-2);
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  line-height: 1.15;
+}
+
+.skill-list {
+  display: grid;
+  margin: 0;
+  gap: var(--space-6);
+  padding: 0;
+  list-style: none;
+}
+
+.skill-card {
+  min-width: 0;
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-large);
+  background: var(--color-surface);
+  box-shadow: 0 0.75rem 2.5rem rgb(23 34 28 / 6%);
+}
+
+.skill-card article,
+.skill-card__evidence,
+.skill-card__projects {
+  display: grid;
+}
+
+.skill-card article {
+  gap: var(--space-4);
+}
+
+.skill-card h3,
+.skill-card h4,
+.skill-card p,
+.skill-card ul {
+  margin: 0;
+}
+
+.skill-card h3 {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  line-height: 1.2;
+}
+
+.skill-card__summary {
+  color: var(--color-text-muted);
+}
+
+.skill-card__evidence {
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border-left: 0.25rem solid var(--color-accent);
+  background: rgb(31 100 76 / 7%);
+}
+
+.skill-card__label {
+  color: var(--color-accent-strong);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.skill-card__projects {
+  gap: var(--space-3);
+}
+
+.skill-card__projects h4 {
+  font-size: 0.875rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.skill-card__projects ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  padding: 0;
+  list-style: none;
+}
+
+.skill-card__projects a {
+  border-radius: var(--radius-small);
+  color: var(--color-accent-strong);
+  font-weight: 800;
 }
 
 .project-detail {
@@ -546,7 +673,7 @@ a {
 }
 
 .project-not-found,
-.project-route-state {
+.content-route-state {
   display: grid;
   max-width: var(--reading-width);
   gap: var(--space-4);
@@ -557,16 +684,16 @@ a {
 }
 
 .project-not-found__eyebrow,
-.project-route-state__eyebrow,
+.content-route-state__eyebrow,
 .project-not-found h1,
 .project-not-found p,
-.project-route-state h1,
-.project-route-state p {
+.content-route-state h1,
+.content-route-state p {
   margin: 0;
 }
 
 .project-not-found__eyebrow,
-.project-route-state__eyebrow {
+.content-route-state__eyebrow {
   color: var(--color-accent-strong);
   font-size: 0.75rem;
   font-weight: 800;
@@ -575,19 +702,19 @@ a {
 }
 
 .project-not-found h1,
-.project-route-state h1 {
+.content-route-state h1 {
   font-family: var(--font-display);
   font-size: clamp(2rem, 6vw, 3.5rem);
   line-height: 1.1;
 }
 
 .project-not-found p,
-.project-route-state p {
+.content-route-state p {
   max-width: 55ch;
   color: var(--color-text-muted);
 }
 
-.project-route-state button {
+.content-route-state button {
   width: fit-content;
   padding: var(--space-3) var(--space-4);
   border: 0;
@@ -599,7 +726,7 @@ a {
   cursor: pointer;
 }
 
-.project-route-state button:hover {
+.content-route-state button:hover {
   background: var(--color-accent-strong);
 }
 
@@ -651,9 +778,14 @@ a {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .skill-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .project-card,
+  .skill-card,
   .project-not-found,
-  .project-route-state {
+  .content-route-state {
     padding: var(--space-8);
   }
 

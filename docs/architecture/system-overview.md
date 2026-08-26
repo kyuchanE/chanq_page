@@ -2,7 +2,7 @@
 
 ## Status
 
-The current repository contains a project harness, documentation, scoped agent instructions, reusable Codex skills, validation scripts, a runnable Next.js App Router application with a shared public presentation foundation, and a local PostgreSQL foundation. Six MVP sections remain static placeholders inside the responsive and accessible shell. Projects is a dynamic PostgreSQL-backed list and detail experience with validated public read models, controlled Markdown, visible skill relations, metadata, explicit loading/empty/recoverable-error states, and project-specific not-found behavior. PostgreSQL 16.14 runs locally in Docker with isolated development and test databases, a typed Drizzle schema, a committed initial migration, deterministic development and test data, and repository integration checks. Remaining content features and production infrastructure are not yet implemented.
+The current repository contains a project harness, documentation, scoped agent instructions, reusable Codex skills, validation scripts, a runnable Next.js App Router application with a shared public presentation foundation, and a local PostgreSQL foundation. Five MVP sections remain static placeholders inside the responsive and accessible shell. Projects is a dynamic PostgreSQL-backed list and detail experience with validated public read models, controlled Markdown, visible skill relations, metadata, explicit loading/empty/recoverable-error states, and project-specific not-found behavior. Skills is a dynamic PostgreSQL-backed evidence view with deterministic grouping and published-project-only relations. PostgreSQL 16.14 runs locally in Docker with isolated development and test databases, a typed Drizzle schema, a committed initial migration, deterministic development and test data, and repository integration checks. Remaining content features and production infrastructure are not yet implemented.
 
 ## Current local database boundary
 
@@ -30,7 +30,7 @@ The project Compose file binds PostgreSQL to loopback only. Development and test
 | `/blog` | Blog | `src/app/blog/page.tsx` |
 | `/contact` | Contact | `src/app/contact/page.tsx` |
 
-The six placeholder routes are static Server Components. Projects uses dynamic Server Components so the production build remains independent of database connectivity while runtime reads come from PostgreSQL. The Projects route composes the feature-owned repository adapter; public list and detail values do not expose PostgreSQL or Drizzle types. The root layout composes one header, primary navigation, main-content, and footer shell. The navigation isolates `usePathname` in a small Client Component so exact and nested section URLs expose a visible `aria-current="page"` state; native links remain keyboard operable. Global CSS owns the color, typography, spacing, width, focus, and motion tokens, responsive breakpoints, skip-link treatment, project presentation, and reduced-motion override.
+The five placeholder routes are static Server Components. Projects and Skills use dynamic Server Components so the production build remains independent of database connectivity while runtime reads come from PostgreSQL. Their App Router composition shares one connection pool and exposes only project-owned list/detail values; PostgreSQL and Drizzle types remain inside infrastructure. The root layout composes one header, primary navigation, main-content, and footer shell. The navigation isolates `usePathname` in a small Client Component so exact and nested section URLs expose a visible `aria-current="page"` state; native links remain keyboard operable. Global CSS owns the color, typography, spacing, width, focus, and motion tokens, responsive breakpoints, skip-link treatment, content presentation, and reduced-motion override.
 
 ## Target MVP context
 
@@ -106,6 +106,8 @@ PostgreSQL is the sole runtime source of truth for projects, developer skills, a
 
 The project slice implements this read path for published lists, featured lists, and detail-by-slug. Infrastructure validates every selected row with Zod before mapping it to project-owned values. Drafts are filtered in the query, visible skill relations are deterministically ordered, and invalid rows or connectivity failures become project-owned repository errors.
 
+The skill slice implements one visible-skill query ordered by category, display order, name, and stable key. It includes narrative evidence and related project titles/slugs only when those projects are published. Hidden skills remain outside public results, and malformed joined rows or connectivity failures become skill-owned repository errors.
+
 ## Release data flow
 
 ```text
@@ -136,7 +138,7 @@ Do not transfer `/var/lib/postgresql/data`, Docker volumes, or physical database
 
 For each route, document when HTML is generated, when data is read, what is cached, acceptable staleness, and invalidation ownership.
 
-The current Projects routes read PostgreSQL for each dynamic server render. No explicit Next.js data cache or revalidation window is configured yet; the accepted staleness is therefore the duration of a single request, and PostgreSQL owns the authoritative value.
+The current Projects and Skills routes read PostgreSQL for each dynamic server render. No explicit Next.js data cache or revalidation window is configured yet; the accepted staleness is therefore the duration of a single request, and PostgreSQL owns the authoritative value.
 
 ## Trust boundaries
 
@@ -148,6 +150,6 @@ Browser, Cloudflare, Nginx, Next.js, and PostgreSQL caching are independent. Int
 
 ## Planned evolution
 
-1. Deliver the first database-backed public vertical slice through application ports and a PostgreSQL adapter.
+1. Extend the established database-backed public pattern to posts after their classification policy is decided.
 2. Complete the validated content import, accessibility, SEO, unit and integration tests, `linux/arm64` Docker packaging, migration release steps, logical backup, and isolated restore verification.
 3. Add Nginx and Cloudflare Tunnel with separately verified responsibilities and no initial origin HTML cache.

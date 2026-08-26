@@ -32,8 +32,9 @@ The repository is in the **MVP PostgreSQL-backed public content** stage:
 - Project-local skills define repeatable Codex workflows.
 - Deterministic scripts validate the harness and documentation links.
 - A minimal `chanq_page` Next.js App Router application is scaffolded with pnpm, strict TypeScript, ESLint, Tailwind CSS, React Compiler, Turbopack, a `src/` root, and the `@/*` alias.
-- Static placeholder routes and page metadata exist for Home, About, Skills, Retrospectives, Blog, and Contact. Every route uses the same responsive public shell with semantic landmarks, current-page navigation, visible focus, skip navigation, reduced-motion behavior, and global presentation tokens.
+- Static placeholder routes and page metadata exist for Home, About, Retrospectives, Blog, and Contact. Every route uses the same responsive public shell with semantic landmarks, current-page navigation, visible focus, skip navigation, reduced-motion behavior, and global presentation tokens.
 - Projects is the first completed PostgreSQL-backed public slice. Its dynamic list and stable detail route expose only published projects, deterministic featured/display ordering, visible related skills, controlled CommonMark rendering, content-aligned metadata, accessible loading/empty/recoverable-error states, and draft/unknown/malformed-slug 404 behavior.
+- Skills is a dynamic PostgreSQL-backed public slice with deterministic category/display ordering, narrative evidence, published-project-only case-study links, and accessible loading/empty/recoverable-error states. It does not expose hidden skills, draft project relations, percentages, or unsupported ratings.
 - PostgreSQL 16.14 runs as a project-local `linux/arm64` Docker service on the development Mac. It binds to localhost port 5433 so the existing Homebrew PostgreSQL 16 service on port 5432 remains untouched.
 - The isolated `chanq_page` and `chanq_page_test` databases use the same committed Drizzle migration. The physical schema contains posts, projects, skills, tags, and their three relationship tables.
 - Zod validates database URLs, `.env.example` contains safe placeholders, and the actual `.env.local` remains ignored.
@@ -44,7 +45,7 @@ The repository is in the **MVP PostgreSQL-backed public content** stage:
 - The default repository check enforces formatting, linting, type checking, unit/component tests, migration consistency, and the production build without starting Docker or a browser.
 - The approved topology assigns development and production to separate Apple Silicon Macs; production will run pinned `linux/arm64` containers on macOS when infrastructure is scaffolded.
 - Schema promotion uses committed migrations, content promotion uses the validated import path, and logical backups are limited to initial bootstrap or disaster recovery.
-- The project read repository validates database rows, translates adapter failures into project-owned errors, and runs through the least-privilege application role. Production PostgreSQL, skill and post repositories, validated content imports, backup automation, and restore verification have not yet been implemented.
+- Project and skill read repositories validate database rows, translate adapter failures into project-owned errors, share one runtime connection pool, and run through the least-privilege application role. Production PostgreSQL, post repositories, validated content imports, backup automation, and restore verification have not yet been implemented.
 
 The ordered queue of unfinished development and local validation work is maintained only in `project-roadmap.md`. Production operations remain documented separately and are intentionally excluded from that queue.
 

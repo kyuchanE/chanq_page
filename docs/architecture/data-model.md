@@ -4,7 +4,7 @@
 
 Implemented logical and physical MVP foundation. The typed schema is in `src/features/content/infrastructure/postgres/schema.ts`, and the first reviewed SQL migration is in `infrastructure/postgres/migrations/0000_initial_content_schema.sql`.
 
-The migration has been applied to the local development and isolated test databases. Transactional integration checks verify the seven content tables, publication constraints, unique slugs, relationship rows, and cascade deletion behavior. Deterministic development data uses a reserved fixture namespace with fixed identifiers and timestamps; the isolated test database resets to separate synthetic fixtures. The project read repository is implemented; skill and post repositories plus content import behavior remain pending.
+The migration has been applied to the local development and isolated test databases. Transactional integration checks verify the seven content tables, publication constraints, unique slugs, relationship rows, and cascade deletion behavior. Deterministic development data uses a reserved fixture namespace with fixed identifiers and timestamps; the isolated test database resets to separate synthetic fixtures. Project and skill read repositories are implemented; post repositories and content import behavior remain pending.
 
 ## Ownership
 
@@ -81,6 +81,8 @@ Define public read operations around observable needs, such as published lists, 
 Repository ports belong to the owning feature application layer. Drizzle schemas, SQL rows, database errors, and connection objects remain in infrastructure adapters. Translate unique-constraint, not-found, and connectivity failures into project-owned results.
 
 The project repository exposes published-list, featured-list, and published-detail-by-slug reads. Lists sort featured rows first, then use display order, publication time, and slug as deterministic tie-breakers. Detail reads include visible skills ordered by skill display order, name, and key. Unknown and draft slugs return no public value; malformed database rows and connectivity failures are translated at the adapter boundary.
+
+The skill repository exposes one visible-skill list ordered alphabetically by category, then by display order, name, and stable key. Each skill includes its narrative evidence and published related projects ordered by featured state, project display order, publication time, and slug. Non-visible skills and draft project relations remain outside the public read model.
 
 ## Deferred model concerns
 

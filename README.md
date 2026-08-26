@@ -2,7 +2,7 @@
 
 This repository contains the foundation for a personal developer portfolio built with Next.js and TypeScript. The project emphasizes evidence-based project case studies, technical writing, accessibility, performance, SEO, and understandable production operations.
 
-The repository is currently in the **PostgreSQL-backed public content phase**. Six static placeholder sections run alongside a dynamic Projects list and case-study detail route backed by the project-local PostgreSQL 16 container. The Projects slice validates database rows, excludes drafts, orders published content deterministically, renders controlled CommonMark, and exposes stable metadata and 404 behavior. Remaining repositories, content imports, feature behavior, and production infrastructure will be added as reviewable vertical slices.
+The repository is currently in the **PostgreSQL-backed public content phase**. Five static placeholder sections run alongside dynamic Projects and Skills experiences backed by the project-local PostgreSQL 16 container. These slices validate database rows, enforce publication and visibility rules, order content deterministically, and connect evidence-backed capabilities to published case studies. Remaining repositories, content imports, feature behavior, and production infrastructure will be added as reviewable vertical slices.
 
 ## Start here
 
@@ -29,7 +29,7 @@ pnpm db:seed:dev
 pnpm dev
 ```
 
-The Home route is available at `http://localhost:3000`. Projects reads published development content at runtime; About, Skills, Retrospectives, Blog, and Contact remain placeholders.
+The Home route is available at `http://localhost:3000`. Projects and Skills read published development content at runtime; About, Retrospectives, Blog, and Contact remain placeholders.
 
 Run the deterministic repository and application gates before handing off a change:
 
@@ -87,6 +87,6 @@ Promote schema with committed migrations and promote content through the validat
 - Docker-based production packaging
 - A dedicated Apple Silicon macOS production host running private PostgreSQL, Nginx, Next.js, and Cloudflare Tunnel as `linux/arm64` Docker containers
 
-The application scaffold now provides Next.js App Router, React Compiler, strict TypeScript, Tailwind CSS, ESLint, Turbopack, the `@/*` import alias, and a committed pnpm lockfile. Prettier, Vitest, React Testing Library, DOM matchers, and Playwright provide deterministic formatting and test entry points. The local database foundation adds PostgreSQL 16.14, Drizzle ORM and Kit, `node-postgres`, Zod environment and row validation, development and test databases, migration status reporting, deterministic isolated data, and transactional integration checks. The project repository and public Projects experience are implemented; skill and post repositories, content import, and production infrastructure remain planned.
+The application scaffold now provides Next.js App Router, React Compiler, strict TypeScript, Tailwind CSS, ESLint, Turbopack, the `@/*` import alias, and a committed pnpm lockfile. Prettier, Vitest, React Testing Library, DOM matchers, and Playwright provide deterministic formatting and test entry points. The local database foundation adds PostgreSQL 16.14, Drizzle ORM and Kit, `node-postgres`, Zod environment and row validation, development and test databases, migration status reporting, deterministic isolated data, and transactional integration checks. Project and skill repositories plus their public experiences are implemented; post repositories, content import, and production infrastructure remain planned.
 
 See [`docs/architecture/system-overview.md`](docs/architecture/system-overview.md) for the current architecture and [`docs/development/codex-workflow.md`](docs/development/codex-workflow.md) for the detailed development workflow.

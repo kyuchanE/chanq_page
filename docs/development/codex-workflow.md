@@ -91,7 +91,7 @@ The initial application and local database foundations are complete:
 7. Vitest, React Testing Library, and DOM matchers provide unit and synchronous component tests with Node and jsdom environments.
 8. Playwright runs critical browser smoke tests against a production build and local Next.js server.
 9. `scripts/check.sh` enforces all fast repository and application gates, including the production build, without starting Docker or a browser.
-10. The PostgreSQL project repository validates public rows and has isolated application-role integration coverage for publication state, ordering, relations, and unknown slugs.
-11. Playwright resets and uses the isolated test database for dynamic project list, detail, refresh, metadata, and 404 journeys.
+10. The PostgreSQL project and skill repositories validate public rows and have isolated application-role integration coverage for publication/visibility state, ordering, relations, and adapter errors.
+11. Playwright resets and uses the isolated test database for dynamic Projects and Skills journeys, including refresh, metadata, responsive layout, keyboard access, and project 404 behavior.
 
 The ordered queue of unfinished development and local validation work is maintained only in `docs/project-roadmap.md`.

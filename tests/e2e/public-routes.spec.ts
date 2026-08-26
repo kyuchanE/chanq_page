@@ -180,3 +180,57 @@ test("draft, unknown, and malformed project slugs return project 404s", async ({
     });
   }
 });
+
+test("skills expose published project evidence across responsive layouts", async ({
+  page,
+}) => {
+  const viewports = [
+    { height: 812, name: "mobile", width: 375 },
+    { height: 900, name: "desktop", width: 1440 },
+  ] as const;
+
+  for (const viewport of viewports) {
+    await test.step(viewport.name, async () => {
+      await page.setViewportSize(viewport);
+      const response = await page.goto("/skills");
+
+      expect(response?.status()).toBe(200);
+      await expect(
+        page.getByRole("heading", {
+          level: 1,
+          name: "Skills",
+        }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole("heading", { level: 2, name: "Database" }),
+      ).toBeVisible();
+      await expect(page.getByText("Fixture Hidden Skill")).toHaveCount(0);
+      await expect(page.getByText("Fixture Draft Project")).toHaveCount(0);
+
+      const hasPageOverflow = await page
+        .locator("html")
+        .evaluate((element) => element.scrollWidth > element.clientWidth);
+
+      expect(hasPageOverflow).toBe(false);
+    });
+  }
+
+  await expect(page).toHaveTitle("Skills | ChanQ Developer Portfolio");
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+    "content",
+    "Technical skills connected to practical experience and supporting evidence.",
+  );
+
+  const evidenceLink = page
+    .getByRole("link", { exact: true, name: "Fixture Featured Project" })
+    .first();
+
+  await evidenceLink.focus();
+  await expect(evidenceLink).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/\/projects\/test-fixture-featured-project$/);
+
+  const refreshResponse = await page.reload();
+
+  expect(refreshResponse?.status()).toBe(200);
+});

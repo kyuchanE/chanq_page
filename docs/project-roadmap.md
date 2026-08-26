@@ -42,34 +42,9 @@ Those requirements remain authoritative in the product and operations documentat
 
 ## Remaining work
 
-### DEV-05 — Skills PostgreSQL vertical slice
-
-**Status:** `READY`
-**Depends on:** None
-
-**Outcome:** Visitors can understand evidence-backed skills and see their relationship to published projects.
-
-**Completion conditions:**
-
-- Define project-owned visible-skill read models and the minimal repository query.
-- Implement deterministic category and display ordering.
-- Exclude non-visible skills from public reads.
-- Render the Skills page without percentages or unsupported proficiency ratings.
-- Show project evidence without leaking unpublished projects.
-- Reuse the established PostgreSQL adapter and presentation patterns without adding unnecessary layers.
-
-**Validation:**
-
-- Skill mapping and validation tests
-- PostgreSQL visibility, ordering, and project-relation integration tests
-- Empty-state behavior
-- Responsive and keyboard inspection
-- Production build
-- `./scripts/check.sh`
-
 ### DEV-06 — Blog and retrospective classification decision
 
-**Status:** `QUEUED`  
+**Status:** `READY`
 **Depends on:** None
 
 **Outcome:** Blog posts and retrospectives have an explicit, queryable classification and stable URL policy before their repository and routes are implemented.
@@ -95,7 +70,7 @@ Those requirements remain authoritative in the product and operations documentat
 ### DEV-07 — Blog and Retrospectives PostgreSQL vertical slices
 
 **Status:** `QUEUED`  
-**Depends on:** DEV-05, DEV-06
+**Depends on:** DEV-06
 
 **Outcome:** Visitors can browse and read published Blog and Retrospective content with tags, related projects, trusted Markdown, and stable metadata.
 
@@ -123,7 +98,7 @@ Those requirements remain authoritative in the product and operations documentat
 ### DEV-08 — Validated internal content import
 
 **Status:** `QUEUED`  
-**Depends on:** DEV-05, DEV-07
+**Depends on:** DEV-07
 
 **Outcome:** Projects, skills, posts, tags, and relations can be prepared and verified locally through a controlled import path instead of ad hoc SQL.
 

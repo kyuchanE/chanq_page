@@ -1,20 +1,18 @@
 import { and, asc, desc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
-import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
 import {
   ProjectRepositoryError,
   type ProjectRepository,
 } from "@/features/content/application/projects/project-repository";
+import type { ContentDatabase } from "@/features/content/infrastructure/postgres/database";
 import * as schema from "@/features/content/infrastructure/postgres/schema";
 import {
   InvalidProjectRowError,
   mapPublishedProjectDetailRows,
   mapPublishedProjectListRows,
 } from "@/features/content/infrastructure/postgres/projects/project-row-mapper";
-
-type ContentDatabase = NodePgDatabase<typeof schema>;
 
 export type PostgresProjectRepositoryConnection = Readonly<{
   close: () => Promise<void>;
@@ -55,7 +53,7 @@ function translateRepositoryError(error: unknown): never {
   );
 }
 
-function createPostgresProjectRepository(
+export function createPostgresProjectRepository(
   database: ContentDatabase,
 ): ProjectRepository {
   return {

@@ -1,34 +1,10 @@
 import { cache } from "react";
 
-import {
-  connectPostgresProjectRepository,
-  parseProjectSlug,
-  type ProjectRepository,
-} from "@/features/content/projects.server";
-import { parseApplicationDatabaseEnvironment } from "@/shared/config/database-environment";
-
-type DatabaseGlobal = typeof globalThis & {
-  chanqPageProjectRepository?: ProjectRepository;
-};
-
-const databaseGlobal = globalThis as DatabaseGlobal;
-
-function getProjectRepository(): ProjectRepository {
-  if (databaseGlobal.chanqPageProjectRepository === undefined) {
-    const environment = parseApplicationDatabaseEnvironment(process.env);
-
-    databaseGlobal.chanqPageProjectRepository =
-      connectPostgresProjectRepository({
-        applicationName: "chanq_page",
-        connectionString: environment.DATABASE_URL,
-      }).repository;
-  }
-
-  return databaseGlobal.chanqPageProjectRepository;
-}
+import { getContentRepositories } from "@/app/_composition/content";
+import { parseProjectSlug } from "@/features/content/projects.server";
 
 export async function listPublishedProjects() {
-  return getProjectRepository().listPublished();
+  return getContentRepositories().projects.listPublished();
 }
 
 export const findPublishedProject = cache(async (candidateSlug: unknown) => {
@@ -38,5 +14,5 @@ export const findPublishedProject = cache(async (candidateSlug: unknown) => {
     return null;
   }
 
-  return getProjectRepository().findPublishedBySlug(slug);
+  return getContentRepositories().projects.findPublishedBySlug(slug);
 });

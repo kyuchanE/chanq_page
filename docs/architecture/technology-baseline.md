@@ -2,7 +2,7 @@
 
 ## Status
 
-Implemented for the initial application scaffold, local PostgreSQL foundation, deterministic local data, and application quality-gate foundation. Feature-level testing and production runtime-topology entries remain approved for later vertical slices.
+Implemented for the application scaffold, local PostgreSQL foundation, deterministic local data, application quality gates, and the Projects and Skills public vertical slices. Post and import feature testing plus production runtime-topology entries remain approved for later work.
 
 ## Resolved scaffold versions
 
@@ -88,8 +88,8 @@ Do not expose Drizzle records or Zod schemas as domain models by default. Transl
 | Layer | Tooling | Scope |
 |---|---|---|
 | Unit and synchronous component | Vitest, React Testing Library, and DOM matchers | Domain rules, application orchestration, validation, synchronous UI behavior, and regressions |
-| PostgreSQL integration | Transactional SQL harness plus Vitest against the dedicated database | Migrations, constraints, roles, deterministic seeds, fixture reset, project repository ordering, publication filtering, relations, and error boundaries |
-| End-to-end | Playwright | Critical public navigation, project and article reading, direct URLs, 404 behavior, and accessibility-critical interactions |
+| PostgreSQL integration | Transactional SQL harness plus Vitest against the dedicated database | Migrations, constraints, roles, deterministic seeds, fixture reset, project/skill ordering, visibility/publication filtering, relations, and error boundaries |
+| End-to-end | Playwright | Critical public navigation, project reading, skill evidence, responsive layouts, direct URLs, 404 behavior, and accessibility-critical interactions |
 
 Do not depend on component unit tests for asynchronous Server Components. Verify those paths through application tests and production-like Playwright journeys. Playwright resets and uses the isolated test database for database-backed routes.
 
