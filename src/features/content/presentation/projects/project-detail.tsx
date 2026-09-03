@@ -66,7 +66,7 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
         </nav>
       ) : null}
 
-      <div className="project-markdown">
+      <div className="content-markdown">
         <Markdown
           components={{
             a: ({ children, href }) => {

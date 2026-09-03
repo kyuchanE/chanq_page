@@ -12,8 +12,8 @@ BEGIN
   END IF;
 
   SELECT count(*) INTO actual_count FROM posts;
-  IF actual_count <> 2 THEN
-    RAISE EXCEPTION 'Expected exactly 2 test posts, found %', actual_count;
+  IF actual_count <> 5 THEN
+    RAISE EXCEPTION 'Expected exactly 5 test posts, found %', actual_count;
   END IF;
 
   SELECT count(*) INTO actual_count FROM skills;
@@ -32,13 +32,13 @@ BEGIN
   END IF;
 
   SELECT count(*) INTO actual_count FROM post_tags;
-  IF actual_count <> 3 THEN
-    RAISE EXCEPTION 'Expected exactly 3 test post-tag relations, found %', actual_count;
+  IF actual_count <> 6 THEN
+    RAISE EXCEPTION 'Expected exactly 6 test post-tag relations, found %', actual_count;
   END IF;
 
   SELECT count(*) INTO actual_count FROM post_projects;
-  IF actual_count <> 2 THEN
-    RAISE EXCEPTION 'Expected exactly 2 test post-project relations, found %', actual_count;
+  IF actual_count <> 4 THEN
+    RAISE EXCEPTION 'Expected exactly 4 test post-project relations, found %', actual_count;
   END IF;
 
   IF NOT EXISTS (
@@ -53,6 +53,13 @@ BEGIN
     WHERE id = '20000000-0000-4000-8000-000000000003'
       AND key = 'test-fixture-hidden-skill'
       AND NOT visible
+  ) OR NOT EXISTS (
+    SELECT 1 FROM posts
+    WHERE id = '22000000-0000-4000-8000-000000000003'
+      AND slug = 'test-fixture-published-retrospective'
+      AND kind = 'retrospective'
+      AND status = 'published'
+      AND published_at = '2025-03-02T00:00:00Z'
   ) OR NOT EXISTS (
     SELECT 1 FROM posts
     WHERE id = '22000000-0000-4000-8000-000000000002'

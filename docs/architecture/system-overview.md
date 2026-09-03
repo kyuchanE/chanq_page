@@ -2,7 +2,7 @@
 
 ## Status
 
-The current repository contains a project harness, documentation, scoped agent instructions, reusable Codex skills, validation scripts, a runnable Next.js App Router application with a shared public presentation foundation, and a local PostgreSQL foundation. Five MVP sections remain static placeholders inside the responsive and accessible shell. Projects is a dynamic PostgreSQL-backed list and detail experience with validated public read models, controlled Markdown, visible skill relations, metadata, explicit loading/empty/recoverable-error states, and project-specific not-found behavior. Skills is a dynamic PostgreSQL-backed evidence view with deterministic grouping and published-project-only relations. PostgreSQL 16.14 runs locally in Docker with isolated development and test databases, a typed Drizzle schema, two committed migrations, deterministic development and test data, repository integration checks, and isolated fresh-history and upgrade-path migration checks. Posts now have an explicit article-or-retrospective classification and stable URL ownership; their repositories and public routes remain pending. Production infrastructure is not yet implemented.
+The current repository contains a project harness, documentation, scoped agent instructions, reusable Codex skills, validation scripts, a runnable Next.js App Router application with a shared public presentation foundation, and a local PostgreSQL foundation. Three MVP sections remain static placeholders inside the responsive and accessible shell. Projects is a dynamic PostgreSQL-backed list and detail experience with validated public read models, controlled Markdown, visible skill relations, metadata, explicit loading/empty/recoverable-error states, and project-specific not-found behavior. Skills is a dynamic PostgreSQL-backed evidence view with deterministic grouping and published-project-only relations. Blog and Retrospectives are dynamic PostgreSQL-backed list and detail experiences over one classified post repository, with controlled Markdown, tags, published project relations, stable canonical metadata, accessible route states, and kind-aware not-found behavior. PostgreSQL 16.14 runs locally in Docker with isolated development and test databases, a typed Drizzle schema, two committed migrations, deterministic development and test data, repository integration checks, and isolated fresh-history and upgrade-path migration checks. Production infrastructure is not yet implemented.
 
 ## Current local database boundary
 
@@ -26,13 +26,15 @@ The project Compose file binds PostgreSQL to loopback only. Development and test
 | `/skills` | Skills | `src/app/skills/page.tsx` |
 | `/projects` | Published project list | `src/app/projects/(listing)/page.tsx` |
 | `/projects/[slug]` | Published project detail | `src/app/projects/[slug]/page.tsx` |
-| `/retrospectives` | Retrospectives | `src/app/retrospectives/page.tsx` |
-| `/blog` | Blog | `src/app/blog/page.tsx` |
+| `/retrospectives` | Published retrospective list | `src/app/retrospectives/(listing)/page.tsx` |
+| `/retrospectives/[slug]` | Published retrospective detail | `src/app/retrospectives/[slug]/page.tsx` |
+| `/blog` | Published article list | `src/app/blog/(listing)/page.tsx` |
+| `/blog/[slug]` | Published article detail | `src/app/blog/[slug]/page.tsx` |
 | `/contact` | Contact | `src/app/contact/page.tsx` |
 
-The five placeholder routes are static Server Components. Projects and Skills use dynamic Server Components so the production build remains independent of database connectivity while runtime reads come from PostgreSQL. Their App Router composition shares one connection pool and exposes only project-owned list/detail values; PostgreSQL and Drizzle types remain inside infrastructure. The root layout composes one header, primary navigation, main-content, and footer shell. The navigation isolates `usePathname` in a small Client Component so exact and nested section URLs expose a visible `aria-current="page"` state; native links remain keyboard operable. Global CSS owns the color, typography, spacing, width, focus, and motion tokens, responsive breakpoints, skip-link treatment, content presentation, and reduced-motion override.
+The three placeholder routes are static Server Components. Projects, Skills, Blog, and Retrospectives use dynamic Server Components so the production build remains independent of database connectivity while runtime reads come from PostgreSQL. Their App Router composition shares one connection pool and exposes only project-owned values; PostgreSQL and Drizzle types remain inside infrastructure. URL-neutral `(listing)` groups keep list loading UI from streaming a successful response before a detail route can return not found. The root layout composes one header, primary navigation, main-content, and footer shell. The navigation isolates `usePathname` in a small Client Component so exact and nested section URLs expose a visible `aria-current="page"` state; native links remain keyboard operable. Global CSS owns the color, typography, spacing, width, focus, and motion tokens, responsive breakpoints, skip-link treatment, content presentation, and reduced-motion override.
 
-Blog articles and retrospectives share the `posts` aggregate but have one required, mutually exclusive kind. Article details are owned by `/blog/[slug]`; retrospective details are owned by `/retrospectives/[slug]`. The owning URL is canonical, and draft, unknown, or mismatched-kind requests will return not found when the post routes are implemented. [ADR-0007](decisions/0007-classify-posts-by-kind.md) records this policy.
+Blog articles and retrospectives share the `posts` aggregate but have one required, mutually exclusive kind. Article details are owned by `/blog/[slug]`; retrospective details are owned by `/retrospectives/[slug]`. The owning URL is canonical, and draft, unknown, malformed, or mismatched-kind requests return not found. [ADR-0007](decisions/0007-classify-posts-by-kind.md) records this policy.
 
 ## Target MVP context
 
@@ -110,6 +112,8 @@ The project slice implements this read path for published lists, featured lists,
 
 The skill slice implements one visible-skill query ordered by category, display order, name, and stable key. It includes narrative evidence and related project titles/slugs only when those projects are published. Hidden skills remain outside public results, and malformed joined rows or connectivity failures become skill-owned repository errors.
 
+The post slice implements kind-scoped published lists ordered by publication time and slug, plus published detail-by-kind-and-slug. Infrastructure validates and groups joined rows, orders tags by name and slug, exposes only published related projects in project display order, and translates malformed rows or connectivity failures into post-owned repository errors. Route composition validates slugs, treats draft, mismatched-kind, unknown, and malformed values as not found, and derives canonical metadata from the same validated post rendered visibly.
+
 ## Release data flow
 
 ```text
@@ -140,7 +144,7 @@ Do not transfer `/var/lib/postgresql/data`, Docker volumes, or physical database
 
 For each route, document when HTML is generated, when data is read, what is cached, acceptable staleness, and invalidation ownership.
 
-The current Projects and Skills routes read PostgreSQL for each dynamic server render. No explicit Next.js data cache or revalidation window is configured yet; the accepted staleness is therefore the duration of a single request, and PostgreSQL owns the authoritative value.
+The current Projects, Skills, Blog, and Retrospectives routes read PostgreSQL for each dynamic server render. No explicit Next.js data cache or revalidation window is configured yet; the accepted staleness is therefore the duration of a single request, and PostgreSQL owns the authoritative value.
 
 ## Trust boundaries
 
@@ -152,6 +156,6 @@ Browser, Cloudflare, Nginx, Next.js, and PostgreSQL caching are independent. Int
 
 ## Planned evolution
 
-1. Extend the established database-backed public pattern to the classified Blog and Retrospectives post sections.
-2. Complete the validated content import, accessibility, SEO, unit and integration tests, `linux/arm64` Docker packaging, migration release steps, logical backup, and isolated restore verification.
-3. Add Nginx and Cloudflare Tunnel with separately verified responsibilities and no initial origin HTML cache.
+1. Complete the validated content import, reviewed portfolio content, cross-site accessibility and SEO verification, and a clean local release-candidate rehearsal.
+2. Complete `linux/arm64` Docker packaging, migration release steps, logical backup, and isolated restore verification when production work is authorized.
+3. Add Nginx and Cloudflare Tunnel with separately verified responsibilities and no initial origin HTML cache when production work is authorized.

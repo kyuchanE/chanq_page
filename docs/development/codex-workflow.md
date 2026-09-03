@@ -93,5 +93,6 @@ The initial application and local database foundations are complete:
 9. `scripts/check.sh` enforces all fast repository and application gates, including the production build, without starting Docker or a browser.
 10. The PostgreSQL project and skill repositories validate public rows and have isolated application-role integration coverage for publication/visibility state, ordering, relations, and adapter errors.
 11. Playwright resets and uses the isolated test database for dynamic Projects and Skills journeys, including refresh, metadata, responsive layout, keyboard access, and project 404 behavior.
+12. Blog and Retrospectives share one classified post repository and controlled presentation path while keeping separate list/detail URLs, canonical metadata, and kind-aware 404 behavior. PostgreSQL and Playwright checks cover ordering, relations, direct navigation, refresh, responsive layout, keyboard activation, and HTTP status behavior.
 
 The ordered queue of unfinished development and local validation work is maintained only in `docs/project-roadmap.md`.

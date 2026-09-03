@@ -234,3 +234,207 @@ test("skills expose published project evidence across responsive layouts", async
 
   expect(refreshResponse?.status()).toBe(200);
 });
+
+test("a visitor can browse and reopen a published technical article", async ({
+  page,
+}) => {
+  const listResponse = await page.goto("/blog");
+
+  expect(listResponse?.status()).toBe(200);
+  await expect(
+    page.getByRole("heading", { name: "Published articles" }),
+  ).toBeVisible();
+  await expect(page.locator(".post-card h3")).toHaveText([
+    "Fixture Published Post",
+    "Fixture Older Article",
+  ]);
+  await expect(page.getByText("Fixture Draft Article")).toHaveCount(0);
+  await expect(page.getByText("Fixture Published Retrospective")).toHaveCount(
+    0,
+  );
+  await expect(page).toHaveTitle("Blog | ChanQ Developer Portfolio");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    /\/blog$/,
+  );
+
+  const articleLink = page.getByRole("link", {
+    name: "Read article: Fixture Published Post",
+  });
+
+  await articleLink.focus();
+  await expect(articleLink).toBeFocused();
+  await page.keyboard.press("Enter");
+
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Fixture Published Post" }),
+  ).toBeVisible();
+  await expect(page.getByText("Fixture Architecture")).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Fixture Featured Project" }),
+  ).toBeVisible();
+  await expect(page).toHaveTitle(
+    "Fixture Published Post | ChanQ Developer Portfolio",
+  );
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+    "content",
+    "Synthetic published post for integration tests.",
+  );
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    /\/blog\/test-fixture-published-post$/,
+  );
+
+  const refreshResponse = await page.reload();
+
+  expect(refreshResponse?.status()).toBe(200);
+  await expect(
+    page.getByRole("heading", { level: 2, name: "Fixture Published Post" }),
+  ).toBeVisible();
+});
+
+test("a visitor can open a retrospective directly with published relations", async ({
+  page,
+}) => {
+  const listResponse = await page.goto("/retrospectives");
+
+  expect(listResponse?.status()).toBe(200);
+  await expect(
+    page.getByRole("heading", { name: "Published retrospectives" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", {
+      name: "Read retrospective: Fixture Published Retrospective",
+    }),
+  ).toBeVisible();
+  await expect(page.getByText("Fixture Draft Post")).toHaveCount(0);
+  await expect(page.getByText("Fixture Published Post")).toHaveCount(0);
+  await expect(page).toHaveTitle("Retrospectives | ChanQ Developer Portfolio");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    /\/retrospectives$/,
+  );
+
+  const detailResponse = await page.goto(
+    "/retrospectives/test-fixture-published-retrospective",
+  );
+
+  expect(detailResponse?.status()).toBe(200);
+  await expect(
+    page.getByRole("heading", {
+      level: 1,
+      name: "Fixture Published Retrospective",
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Fixture Standard Project" }),
+  ).toBeVisible();
+  await expect(page.getByText("Fixture Draft Project")).toHaveCount(0);
+  await expect(page).toHaveTitle(
+    "Fixture Published Retrospective | ChanQ Developer Portfolio",
+  );
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+    "content",
+    "Synthetic published retrospective for integration tests.",
+  );
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    /\/retrospectives\/test-fixture-published-retrospective$/,
+  );
+
+  const refreshResponse = await page.reload();
+
+  expect(refreshResponse?.status()).toBe(200);
+});
+
+test("post lists and details remain usable without horizontal overflow", async ({
+  page,
+}) => {
+  const paths = [
+    "/blog",
+    "/blog/test-fixture-published-post",
+    "/retrospectives",
+    "/retrospectives/test-fixture-published-retrospective",
+  ];
+  const viewports = [
+    { height: 812, name: "mobile", width: 375 },
+    { height: 900, name: "desktop", width: 1440 },
+  ] as const;
+
+  for (const viewport of viewports) {
+    await page.setViewportSize(viewport);
+
+    for (const path of paths) {
+      await test.step(`${viewport.name} ${path}`, async () => {
+        const response = await page.goto(path);
+
+        expect(response?.status()).toBe(200);
+        await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+
+        const hasPageOverflow = await page
+          .locator("html")
+          .evaluate((element) => element.scrollWidth > element.clientWidth);
+
+        expect(hasPageOverflow).toBe(false);
+      });
+    }
+  }
+});
+
+test("draft, mismatched, unknown, and malformed article URLs return 404", async ({
+  page,
+}) => {
+  const paths = [
+    "/blog/test-fixture-draft-article",
+    "/blog/test-fixture-published-retrospective",
+    "/blog/unknown-article",
+    "/blog/Not-URL-Safe",
+  ];
+
+  for (const path of paths) {
+    await test.step(path, async () => {
+      const response = await page.goto(path);
+
+      expect(response?.status()).toBe(404);
+      await expect(
+        page.getByRole("heading", {
+          level: 1,
+          name: "This article is not available.",
+        }),
+      ).toBeVisible();
+      await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+        "content",
+        /noindex/,
+      );
+    });
+  }
+});
+
+test("draft, mismatched, unknown, and malformed retrospective URLs return 404", async ({
+  page,
+}) => {
+  const paths = [
+    "/retrospectives/test-fixture-draft-post",
+    "/retrospectives/test-fixture-published-post",
+    "/retrospectives/unknown-retrospective",
+    "/retrospectives/Not-URL-Safe",
+  ];
+
+  for (const path of paths) {
+    await test.step(path, async () => {
+      const response = await page.goto(path);
+
+      expect(response?.status()).toBe(404);
+      await expect(
+        page.getByRole("heading", {
+          level: 1,
+          name: "This retrospective is not available.",
+        }),
+      ).toBeVisible();
+      await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+        "content",
+        /noindex/,
+      );
+    });
+  }
+});

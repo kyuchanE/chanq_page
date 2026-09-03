@@ -188,6 +188,51 @@ VALUES
     NULL,
     '2025-01-06T00:00:00Z',
     '2025-01-06T00:00:00Z'
+  ),
+  (
+    '22000000-0000-4000-8000-000000000003',
+    'test-fixture-published-retrospective',
+    'Fixture Published Retrospective',
+    'Synthetic published retrospective for repository integration tests.',
+    E'# Fixture Published Retrospective\n\nSynthetic retrospective content only.',
+    'retrospective',
+    'published',
+    '2025-03-02T00:00:00Z',
+    'Fixture Published Retrospective',
+    'Synthetic published retrospective for integration tests.',
+    NULL,
+    '2025-01-07T00:00:00Z',
+    '2025-01-07T00:00:00Z'
+  ),
+  (
+    '22000000-0000-4000-8000-000000000004',
+    'test-fixture-draft-article',
+    'Fixture Draft Article',
+    'Synthetic draft article for publication-filter tests.',
+    E'# Fixture Draft Article\n\nThis synthetic fixture must remain unpublished.',
+    'article',
+    'draft',
+    NULL,
+    'Fixture Draft Article',
+    'Synthetic draft article for integration tests.',
+    NULL,
+    '2025-01-08T00:00:00Z',
+    '2025-01-08T00:00:00Z'
+  ),
+  (
+    '22000000-0000-4000-8000-000000000005',
+    'test-fixture-older-article',
+    'Fixture Older Article',
+    'Synthetic older article for deterministic ordering tests.',
+    E'# Fixture Older Article\n\nSynthetic article content only.',
+    'article',
+    'published',
+    '2025-02-28T00:00:00Z',
+    'Fixture Older Article',
+    'Synthetic older article for integration tests.',
+    NULL,
+    '2025-01-09T00:00:00Z',
+    '2025-01-09T00:00:00Z'
   );
 
 INSERT INTO tags (id, slug, name, created_at, updated_at)
@@ -218,11 +263,16 @@ INSERT INTO post_tags (post_id, tag_id)
 VALUES
   ('22000000-0000-4000-8000-000000000001', '23000000-0000-4000-8000-000000000001'),
   ('22000000-0000-4000-8000-000000000001', '23000000-0000-4000-8000-000000000002'),
-  ('22000000-0000-4000-8000-000000000002', '23000000-0000-4000-8000-000000000002');
+  ('22000000-0000-4000-8000-000000000002', '23000000-0000-4000-8000-000000000002'),
+  ('22000000-0000-4000-8000-000000000003', '23000000-0000-4000-8000-000000000001'),
+  ('22000000-0000-4000-8000-000000000003', '23000000-0000-4000-8000-000000000002'),
+  ('22000000-0000-4000-8000-000000000004', '23000000-0000-4000-8000-000000000001');
 
 INSERT INTO post_projects (post_id, project_id)
 VALUES
   ('22000000-0000-4000-8000-000000000001', '21000000-0000-4000-8000-000000000001'),
-  ('22000000-0000-4000-8000-000000000002', '21000000-0000-4000-8000-000000000003');
+  ('22000000-0000-4000-8000-000000000002', '21000000-0000-4000-8000-000000000003'),
+  ('22000000-0000-4000-8000-000000000003', '21000000-0000-4000-8000-000000000002'),
+  ('22000000-0000-4000-8000-000000000003', '21000000-0000-4000-8000-000000000003');
 
 COMMIT;

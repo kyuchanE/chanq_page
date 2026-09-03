@@ -4,7 +4,7 @@
 
 Implemented logical and physical MVP foundation. The typed schema is in `src/features/content/infrastructure/postgres/schema.ts`, and the reviewed SQL migration history is in `infrastructure/postgres/migrations/`.
 
-Both migrations have been applied to the local development and isolated test databases. Transactional integration checks verify the seven content tables, post classification, publication constraints, unique slugs, relationship rows, and cascade deletion behavior. Isolated migration checks exercise both the complete SQL history and the representative upgrade of existing posts. Deterministic development data uses a reserved fixture namespace with fixed identifiers and timestamps; the isolated test database resets to separate synthetic fixtures. Project and skill read repositories are implemented; post repositories and content import behavior remain pending.
+Both migrations have been applied to the local development and isolated test databases. Transactional integration checks verify the seven content tables, post classification, publication constraints, unique slugs, relationship rows, and cascade deletion behavior. Isolated migration checks exercise both the complete SQL history and the representative upgrade of existing posts. Deterministic development data uses a reserved fixture namespace with fixed identifiers and timestamps; the isolated test database resets to separate synthetic fixtures. Project, skill, and post read repositories are implemented; content import behavior remains pending.
 
 ## Ownership
 
@@ -88,7 +88,7 @@ The project repository exposes published-list, featured-list, and published-deta
 
 The skill repository exposes one visible-skill list ordered alphabetically by category, then by display order, name, and stable key. Each skill includes its narrative evidence and published related projects ordered by featured state, project display order, publication time, and slug. Non-visible skills and draft project relations remain outside the public read model.
 
-The planned post repository will require the expected kind for list and detail reads. It will filter drafts before mapping, treat a kind mismatch like an unknown slug, and generate metadata and canonical URLs from the same validated post value.
+The post repository requires the expected kind for list and detail reads. Lists expose only published rows of that kind ordered by descending publication time and ascending slug, with tags ordered by name and slug. Detail reads filter drafts and kind mismatches in SQL, deduplicate the tag/project join, and expose related projects only when published; project relations use featured state, display order, publication time, and slug as deterministic ordering keys. Malformed rows and connectivity failures become post-owned errors. Route composition treats a kind mismatch like an unknown slug and generates metadata and canonical URLs from the same validated post value.
 
 ## Deferred model concerns
 

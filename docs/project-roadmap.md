@@ -42,38 +42,10 @@ Those requirements remain authoritative in the product and operations documentat
 
 ## Remaining work
 
-### DEV-07 — Blog and Retrospectives PostgreSQL vertical slices
+### DEV-08 — Validated internal content import
 
 **Status:** `READY`
 **Depends on:** None
-
-**Outcome:** Visitors can browse and read published Blog and Retrospective content with tags, related projects, trusted Markdown, and stable metadata.
-
-**Completion conditions:**
-
-- Define project-owned post list/detail read models and minimal repository queries.
-- Implement published-only listing and slug-detail behavior for both sections.
-- Apply deterministic publication ordering.
-- Validate database rows and translate adapter failures at the infrastructure boundary.
-- Render trusted Markdown without executable MDX.
-- Show tags and only published related projects.
-- Return correct not-found behavior for drafts, mismatched classifications, and unknown slugs.
-- Generate canonical URLs and visible-content-aligned metadata.
-
-**Validation:**
-
-- Mapping and validation tests
-- PostgreSQL classification, publication, ordering, tag, and project-relation tests
-- Direct navigation and refresh for both lists, details, and 404 paths
-- Canonical and metadata inspection
-- Accessibility inspection
-- Production build
-- `./scripts/check.sh`
-
-### DEV-08 — Validated internal content import
-
-**Status:** `QUEUED`  
-**Depends on:** DEV-07
 
 **Outcome:** Projects, skills, posts, tags, and relations can be prepared and verified locally through a controlled import path instead of ad hoc SQL.
 
