@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "skills": [
+    {
+      "key": "example-content-review",
+      "name": "Content review example",
+      "category": "Authoring",
+      "summary": "A synthetic example for learning the local import format.",
+      "evidence": "Replace this example with reviewed evidence before using it in a portfolio.",
+      "displayOrder": 0,
+      "visible": false
+    }
+  ],
+  "tags": [{ "slug": "example-authoring", "name": "Authoring example" }],
+  "projects": [
+    {
+      "slug": "example-draft-project",
+      "title": "Draft project example",
+      "summary": "An unpublished format example, not a portfolio claim.",
+      "body": "## Problem\n\nDescribe the problem and constraints.\n\n## Decision\n\nCompare alternatives and explain the decision.\n\n## Evidence\n\nAdd reviewed evidence, limitations, and next steps.",
+      "status": "draft",
+      "publishedAt": null,
+      "seoTitle": "Draft project example",
+      "seoDescription": "An unpublished format example.",
+      "ogImagePath": null,
+      "featured": false,
+      "displayOrder": 0,
+      "repositoryUrl": null,
+      "liveUrl": null,
+      "skillKeys": ["example-content-review"]
+    }
+  ],
+  "posts": [
+    {
+      "slug": "example-draft-article",
+      "title": "Draft article example",
+      "summary": "An unpublished Markdown article format example.",
+      "body": "## Context\n\nExplain the problem.\n\n## Verification\n\nDescribe how the result was checked and what remains uncertain.",
+      "kind": "article",
+      "status": "draft",
+      "publishedAt": null,
+      "seoTitle": "Draft article example",
+      "seoDescription": "An unpublished Markdown article format example.",
+      "ogImagePath": null,
+      "tagSlugs": ["example-authoring"],
+      "projectSlugs": ["example-draft-project"]
+    }
+  ]
+}

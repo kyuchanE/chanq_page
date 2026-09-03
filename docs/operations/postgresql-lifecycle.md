@@ -18,7 +18,8 @@ Implemented local foundation and approved production policy for separate Apple S
 | Schema | Seven content tables from two committed Drizzle migrations |
 | Deterministic local data | Fixed development seed identities plus independently resettable synthetic test fixtures |
 | Progress evidence | Container health, migration and table counts, isolated full-history and upgrade checks, seed status, permission checks, deterministic reset checks, and transactional schema checks |
-| Not implemented | Post repository adapter, content import, production Compose, backup automation, restore drill |
+| Content import | Version-1 JSON, explicit local targets/publication, read-only dry-run, and atomic application-role writes with deterministic repeat behavior |
+| Not implemented | Production import execution, production Compose, backup automation, restore drill |
 
 Actual credentials and connection URLs live only in ignored `.env.local`. The tracked `.env.example` contains safe placeholders. The PostgreSQL role named `root` is not the macOS root account and does not grant host privileges.
 
@@ -129,6 +130,8 @@ Use committed Drizzle-generated SQL migration artifacts.
 Do not use direct schema push commands in production. Do not edit an applied migration. Prefer a forward corrective migration; restore from a verified backup only when recovery is explicitly chosen.
 
 ## Seeds and content imports
+
+The implemented local CLI and its complete input/update contract are documented in [Local Content Import](../development/content-import.md). Use `pnpm content:import --target development --file content/examples/local-draft.json --dry-run` to preview the draft example without writes. Applying requires `--apply`; new publication additionally requires `--allow-publish`. The command only accepts the loopback development/test application roles and checks connected identity. It cannot execute production imports. Serializability conflicts fail for review; after a connection failure around commit, rerun dry-run to establish current state before retrying.
 
 - Keep the implemented development and test seed entry points separate.
 - Preserve fixed identifiers, timestamps, ordering, and reserved markers when extending local fixtures.

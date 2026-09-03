@@ -13,6 +13,7 @@ This page answers three questions for contributors and Codex: **what are we buil
 7. [`development/codex-workflow.md`](development/codex-workflow.md) — how to plan, implement, validate, document, and hand off changes.
 8. [`operations/deployment-topology.md`](operations/deployment-topology.md) — Docker, Nginx, Cloudflare Tunnel, and PostgreSQL topology.
 9. [`operations/postgresql-lifecycle.md`](operations/postgresql-lifecycle.md) — migration, seed, import, backup, restore, and recovery policy.
+10. [`development/content-import.md`](development/content-import.md) — versioned local import format, publication rules, dry-run/apply commands, conflicts, and recovery.
 
 ## Architecture decisions
 
@@ -23,6 +24,7 @@ This page answers three questions for contributors and Codex: **what are we buil
 - [`ADR-0005: Promote PostgreSQL Schema and Content Separately`](architecture/decisions/0005-promote-schema-and-content-separately.md)
 - [`ADR-0006: Separate Local PostgreSQL Application Roles`](architecture/decisions/0006-separate-local-postgresql-application-roles.md)
 - [`ADR-0007: Classify Posts by Kind`](architecture/decisions/0007-classify-posts-by-kind.md)
+- [`ADR-0008: Use Versioned Content Imports`](architecture/decisions/0008-use-versioned-content-imports.md)
 
 ## Current project state
 
@@ -47,7 +49,8 @@ The repository is in the **MVP PostgreSQL-backed public content** stage:
 - The default repository check enforces formatting, linting, type checking, unit/component tests, migration consistency, and the production build without starting Docker or a browser.
 - The approved topology assigns development and production to separate Apple Silicon Macs; production will run pinned `linux/arm64` containers on macOS when infrastructure is scaffolded.
 - Schema promotion uses committed migrations, content promotion uses the validated import path, and logical backups are limited to initial bootstrap or disaster recovery.
-- Project, skill, and post read repositories validate database rows, translate adapter failures into project-owned errors, share one runtime connection pool, and run through the least-privilege application role. PostgreSQL integration and production-server browser checks cover the dynamic public slices. Production PostgreSQL, validated content imports, backup automation, and restore verification have not yet been implemented.
+- Project, skill, and post read repositories validate database rows, translate adapter failures into project-owned errors, share one runtime connection pool, and run through the least-privilege application role. PostgreSQL integration and production-server browser checks cover the dynamic public slices.
+- The local internal content importer validates version-1 JSON, requires explicit target/publication intent, previews changes in a read-only transaction, and atomically updates stable records and owner-scoped relations through an application-owned port. Application-role integration and CLI tests cover idempotency, publication, conflicts, rollback, target isolation, and safe exit codes. Production PostgreSQL/import execution, backup automation, and restore verification have not yet been implemented.
 
 The ordered queue of unfinished development and local validation work is maintained only in `project-roadmap.md`. Production operations remain documented separately and are intentionally excluded from that queue.
 

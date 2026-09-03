@@ -2,7 +2,7 @@
 
 ## Status
 
-Implemented for the application scaffold, local PostgreSQL foundation, deterministic local data, application quality gates, and the Projects and Skills public vertical slices. Post and import feature testing plus production runtime-topology entries remain approved for later work.
+Implemented for the application scaffold, local PostgreSQL foundation, deterministic local data, application quality gates, public content slices, and validated local content imports. Production runtime-topology and import-execution entries remain approved for later work.
 
 ## Resolved scaffold versions
 
@@ -27,6 +27,7 @@ The committed lockfile is the dependency-resolution source of truth. Routine com
 - Zod 4.4.3
 - dotenv 17.4.2 for migration-tool environment loading
 - react-markdown 10.1.0 for controlled CommonMark rendering without executable MDX or raw HTML
+- tsx 4.23.13 as a development-only TypeScript runner for the internal import CLI; this avoids a separate compiled CLI pipeline while preserving the Node.js baseline and shared application behavior
 
 ## Resolved quality-gate versions
 
@@ -88,7 +89,7 @@ Do not expose Drizzle records or Zod schemas as domain models by default. Transl
 | Layer | Tooling | Scope |
 |---|---|---|
 | Unit and synchronous component | Vitest, React Testing Library, and DOM matchers | Domain rules, application orchestration, validation, synchronous UI behavior, and regressions |
-| PostgreSQL integration | Transactional SQL harness plus Vitest against the dedicated database | Migrations, constraints, roles, deterministic seeds, fixture reset, project/skill ordering, visibility/publication filtering, relations, and error boundaries |
+| PostgreSQL integration | Transactional SQL harness plus Vitest against the dedicated database | Migrations, constraints, roles, deterministic seeds, fixture reset, public read repositories, and atomic content import/publication/dry-run/CLI boundaries |
 | End-to-end | Playwright | Critical public navigation, project reading, skill evidence, responsive layouts, direct URLs, 404 behavior, and accessibility-critical interactions |
 
 Do not depend on component unit tests for asynchronous Server Components. Verify those paths through application tests and production-like Playwright journeys. Playwright resets and uses the isolated test database for database-backed routes.

@@ -96,3 +96,5 @@ The initial application and local database foundations are complete:
 12. Blog and Retrospectives share one classified post repository and controlled presentation path while keeping separate list/detail URLs, canonical metadata, and kind-aware 404 behavior. PostgreSQL and Playwright checks cover ordering, relations, direct navigation, refresh, responsive layout, keyboard activation, and HTTP status behavior.
 
 The ordered queue of unfinished development and local validation work is maintained only in `docs/project-roadmap.md`.
+
+The [local content import workflow](content-import.md) now provides version-1 JSON validation, explicit target/publication intent, read-only dry-run, and atomic application-role imports. Use it to prepare reviewed content; PostgreSQL remains authoritative. Import and read-repository integration suites execute sequentially against the resettable test database so transient publications cannot affect another suite's public-list expectations.

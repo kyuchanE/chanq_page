@@ -14,6 +14,8 @@ export default defineConfig({
   test: {
     clearMocks: true,
     environment: "node",
+    // Imports and public reads share one isolated fixture database.
+    fileParallelism: false,
     include: ["tests/integration/**/*.test.ts"],
     restoreMocks: true,
     testTimeout: 10_000,

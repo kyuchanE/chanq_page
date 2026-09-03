@@ -42,39 +42,10 @@ Those requirements remain authoritative in the product and operations documentat
 
 ## Remaining work
 
-### DEV-08 — Validated internal content import
+### DEV-09 — Home, About, Contact, and reviewed MVP content
 
 **Status:** `READY`
 **Depends on:** None
-
-**Outcome:** Projects, skills, posts, tags, and relations can be prepared and verified locally through a controlled import path instead of ad hoc SQL.
-
-**Completion conditions:**
-
-- Define a versioned, documented input format with Zod validation at the file boundary.
-- Keep import files as inputs rather than a parallel runtime source of truth.
-- Support an explicit local target and a no-write dry-run.
-- Provide deterministic idempotency or explicit conflict handling for stable keys and slugs.
-- Reject invalid Markdown metadata, missing relations, duplicate identifiers, unexpected publication states, and test/development marker leakage.
-- Never publish a draft as an implicit side effect of import.
-- Route writes through application behavior and project-owned repository boundaries.
-- Produce a useful summary without logging credentials or full sensitive content bodies.
-- Keep production execution and production confirmation outside this roadmap.
-
-**Validation:**
-
-- Unit tests for accepted and rejected input
-- Dry-run proving zero database writes
-- Repeated import with deterministic results
-- Transaction rollback on invalid relations or partial failure
-- PostgreSQL integration tests using the application role
-- Representative CLI failure and exit-code checks
-- `./scripts/check.sh`
-
-### DEV-09 — Home, About, Contact, and reviewed MVP content
-
-**Status:** `QUEUED`  
-**Depends on:** DEV-08
 
 **Outcome:** The public portfolio communicates specialization, evidence, technical judgment, and a safe contact path using reviewed content rather than placeholders.
 

@@ -114,6 +114,8 @@ The skill slice implements one visible-skill query ordered by category, display 
 
 The post slice implements kind-scoped published lists ordered by publication time and slug, plus published detail-by-kind-and-slug. Infrastructure validates and groups joined rows, orders tags by name and slug, exposes only published related projects in project display order, and translates malformed rows or connectivity failures into post-owned repository errors. Route composition validates slugs, treats draft, mismatched-kind, unknown, and malformed values as not found, and derives canonical metadata from the same validated post rendered visibly.
 
+The local write path is implemented by `scripts/import-content.mts` and the `content` feature's import surface. The CLI owns file/environment parsing and dependency composition; application behavior owns publication, immutable kind, relation checks, and deterministic planning through a transaction-scoped repository port. Infrastructure validates inputs/rows and implements serializable PostgreSQL transactions, database-enforced read-only dry-run, target identity checks, and atomic writes. It uses the selected local application role and a short-lived pool that closes on exit. Public routes do not import this CLI or read its files. See [local content import](../development/content-import.md) and [ADR-0008](decisions/0008-use-versioned-content-imports.md); production execution remains unimplemented.
+
 ## Release data flow
 
 ```text
@@ -156,6 +158,6 @@ Browser, Cloudflare, Nginx, Next.js, and PostgreSQL caching are independent. Int
 
 ## Planned evolution
 
-1. Complete the validated content import, reviewed portfolio content, cross-site accessibility and SEO verification, and a clean local release-candidate rehearsal.
+1. Complete reviewed portfolio content, cross-site accessibility and SEO verification, and a clean local release-candidate rehearsal.
 2. Complete `linux/arm64` Docker packaging, migration release steps, logical backup, and isolated restore verification when production work is authorized.
 3. Add Nginx and Cloudflare Tunnel with separately verified responsibilities and no initial origin HTML cache when production work is authorized.
