@@ -108,6 +108,10 @@ Public Next.js route
 
 PostgreSQL is the sole runtime source of truth for projects, developer skills, and blog posts. Database and Drizzle types stop at the infrastructure adapter. Long-form bodies are trusted Markdown rendered through controlled components; database content must not execute arbitrary MDX or React components.
 
+Project and post presentation share `content/presentation/markdown/DetailMarkdown`, with raw HTML skipped, body H1-to-H2 mapping, generated heading anchors, controlled underline, and safe links with external-link notices. The pure domain URL rule checks parsed and percent-decoded destinations before URL normalization. The outer presentation and import adapters both use `content/infrastructure/markdown` for the CommonMark/directive syntax-tree policy; this parser-adapter dependency does not expose database or framework types inward. Incoming imports reject invalid text before transactions, while public rendering independently deactivates unsafe legacy links and directives. Stored snapshot reads permit explicit repair by a reviewed valid import.
+
+[ADR-0009](decisions/0009-use-controlled-detail-markdown.md) also approves local image/GIF assets, but media filesystem validation and playback remain planned. Images currently receive destination filtering and rejected-source text fallbacks, not the full local-only media policy. The [authoring policy](../development/content-authoring.md) owns syntax and asset rules. The body column and import envelope are unchanged; future static binaries belong in `public/media/`, while PostgreSQL owns the narrative and references. Only GIF playback needs a small client leaf. No upload endpoint, remote media-fetch service, or new content store is approved.
+
 The project slice implements this read path for published lists, featured lists, and detail-by-slug. Infrastructure validates every selected row with Zod before mapping it to project-owned values. Drafts are filtered in the query, visible skill relations are deterministically ordered, and invalid rows or connectivity failures become project-owned repository errors.
 
 The skill slice implements one visible-skill query ordered by category, display order, name, and stable key. It includes narrative evidence and related project titles/slugs only when those projects are published. Hidden skills remain outside public results, and malformed joined rows or connectivity failures become skill-owned repository errors.
@@ -160,6 +164,6 @@ Browser, Cloudflare, Nginx, Next.js, and PostgreSQL caching are independent. Int
 
 ## Planned evolution
 
-1. Complete reviewed portfolio content, cross-site accessibility and SEO verification, and a clean local release-candidate rehearsal.
+1. Implement and verify the approved mixed-content policy before cross-site accessibility/SEO/performance checks, owner-reviewed release content, and the clean local rehearsal; follow the ordered [development roadmap](../project-roadmap.md).
 2. Complete `linux/arm64` Docker packaging, migration release steps, logical backup, and isolated restore verification when production work is authorized.
 3. Add Nginx and Cloudflare Tunnel with separately verified responsibilities and no initial origin HTML cache when production work is authorized.

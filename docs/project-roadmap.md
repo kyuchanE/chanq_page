@@ -13,6 +13,7 @@ This roadmap includes:
 - Local development tooling and deterministic quality gates
 - Local PostgreSQL permission parity, seeds, fixtures, repositories, and imports
 - Home, About, Skills, Projects, Retrospectives, Blog, and Contact behavior
+- Controlled detail Markdown, interleaved text/links/media, and reviewed local image/GIF assets
 - Accessibility, responsive design, SEO, content quality, and local performance validation
 - A clean local release-candidate rehearsal
 
@@ -42,10 +43,60 @@ Those requirements remain authoritative in the product and operations documentat
 
 ## Remaining work
 
-### DEV-10 — Cross-site accessibility, SEO, and performance verification
+The next slices implement the remaining media requirements in the approved [product acceptance criteria](product/project-scope.md#detail-content-acceptance-criteria), [authoring policy](development/content-authoring.md), and [ADR-0009](architecture/decisions/0009-use-controlled-detail-markdown.md). Preserve the existing DEV-10, DEV-10A, and DEV-11 identifiers; execute DEV-09B → DEV-09C before them. New sample fixtures must remain explicitly synthetic and do not satisfy the owner-reviewed release-content gate.
+
+### DEV-09B — Validated inline images and controlled GIF demonstrations
 
 **Status:** `READY`
 **Depends on:** None
+
+**Outcome:** Authors can place reviewed still images and GIF demonstrations anywhere in a detail body without uploads, remote embedding, layout breakage, or forced animation.
+
+**Completion conditions:**
+
+- Add clearly labeled synthetic, permission-safe media under `public/media/` and implement the authoring policy's PNG/JPEG/static-WebP/GIF contract using ordinary Markdown image nodes.
+- Validate normalized paths, file content/type/existence, dimensions, nonempty alternative text, GIF companion posters, and the documented per-file/per-body byte budgets in both import modes before writes. Reject remote/data URLs, traversal and encoded bypasses, symlink escapes, unsupported formats, animated encodings other than GIF, and missing assets without remote fetches. Review alternative-text usefulness manually.
+- Reuse defensive media rules at rendering and add a read-only release asset verification path so legacy/modified rows and missing release files cannot silently bypass the policy.
+- Reserve intrinsic layout space, preserve aspect ratio, fit mobile/tablet/desktop widths, lazy-load offscreen media, and retain accessible failure text without losing surrounding content.
+- Resolve each GIF's documented `.poster.webp` companion. Render only the poster initially, load the original animation on Play, and remove it on Stop. Do not flatten animation through an image optimizer.
+- Isolate accessible Play/Stop interaction in a small client leaf. Verify visible focus, reduced-motion changes, and a useful no-JavaScript poster; never auto-start GIFs.
+- Document repeatable asset preparation/verification, public exposure even for draft records, byte-budget results, and release packaging/retention requirements. Do not introduce an upload API, object storage, new database table, or production action.
+
+**Validation:**
+
+- Unit/component and local-file tests for valid formats, dimensions/budgets, alt text, poster pairing, invalid/missing/oversized files, encoded traversal, symlink escapes, and safe rendered fallbacks
+- Isolated PostgreSQL import tests for valid body/media references, unchanged repeated imports, and zero writes on invalid-media rejection
+- Targeted production-server browser checks for actual image loads, responsive layout, stable reserved space, GIF play/stop/restart, reduced-motion changes, keyboard controls, and no-JavaScript posters
+- Read-only asset verification against the test release inputs
+- `./scripts/check.sh`
+
+### DEV-09C — Mixed-content authoring and public round-trip verification
+
+**Status:** `QUEUED`
+**Depends on:** DEV-09B
+
+**Outcome:** One documented local workflow proves the requested mixed-content layout from a reviewed import through PostgreSQL to every detail type.
+
+**Completion conditions:**
+
+- Provide a runnable, explicitly synthetic import example and reviewed media exercising a project, an article, and a retrospective. Keep fixture identities isolated and do not replace owner-authored development data.
+- Include at least three body sections, bold/italic/underline, prose followed by a still image, a GIF followed by prose, an in-paragraph link, and closing website-reference/GitHub-source sections. Preserve the authored reading order without a fixed section-count template.
+- Prove dry-run/apply/repeat and repository readback preserve the normalized body, public visibility, stable identifiers, and unrelated records/relations. Invalid text/link/media inputs must fail before writes.
+- Verify all three public routes through direct URLs and refresh, with single-title heading structure, actual local assets, keyboard navigation, internal/external links, reduced motion, and mobile/tablet/desktop layouts.
+- Update the authoring/import documentation with tested commands, asset preparation, JSON newline handling, compatibility findings, actual validation evidence, and any remaining limitation. Remove current-versus-planned warnings only for controls actually verified.
+- Keep release factual review and production operations separate; synthetic mixed-content examples must not be represented as professional evidence.
+
+**Validation:**
+
+- Isolated application-role PostgreSQL import/read-repository round-trip tests
+- Production-server Playwright journeys for project, article, and retrospective mixed-content examples, ordered content, media, direct navigation, refresh, and existing metadata/404 behavior
+- Manual focused reading-order, link-distinguishability, alternative-text, GIF-control, and responsive review
+- `./scripts/check.sh`
+
+### DEV-10 — Cross-site accessibility, SEO, and performance verification
+
+**Status:** `QUEUED`
+**Depends on:** DEV-09C
 
 **Outcome:** The complete local application meets the documented public quality bar and has recorded evidence for remaining limitations.
 
@@ -53,7 +104,9 @@ Those requirements remain authoritative in the product and operations documentat
 
 - Verify semantic structure, keyboard operation, visible focus, contrast, alternative text, and reduced motion across every primary route and detail template.
 - Verify mobile, tablet, desktop, long-content, empty, error, and not-found layouts.
+- Include the completed mixed-content fixtures in all three detail types: underlined text versus links, intrinsic image sizing, actual asset loads, GIF play/stop, reduced motion, and no-JavaScript posters. Measure media bytes and layout shift alongside representative detail-page performance.
 - Implement and verify page-specific titles, descriptions, canonical URLs, Open Graph data, sitemap, robots rules, and appropriate structured data.
+- Close the confirmed baseline gap in project detail canonical metadata: the project route currently supplies title/description/Open Graph fields but no canonical URL, unlike Blog and Retrospectives.
 - Ensure structured data matches visible content and public pages remain indexable.
 - Verify correct status codes for valid, draft, unknown, and malformed URLs.
 - Measure local production-build performance for representative list and detail pages.
@@ -80,6 +133,7 @@ Those requirements remain authoritative in the product and operations documentat
 
 - Replace the sample project scenarios with at least two owner-reviewed case studies covering problem, alternatives, decision, individual contribution, implementation, evidence, limitations, and next steps.
 - Review and publish at least three useful articles or retrospectives; replace synthetic skills with supported claims and published project evidence.
+- Apply the verified authoring policy to real bodies and media: review reading order, emphasis, meaningful alternatives, GIF posters/controls, asset rights/redaction, byte budgets, and website/GitHub references. Use media only where it provides real evidence; a synthetic demonstration does not satisfy factual review.
 - Replace example contact destinations with owner-confirmed public links and verify them without sending messages.
 - Unpublish sample and development-seed writing and hide synthetic skills through the appropriate local content workflows; preserve unrelated author-owned rows and stable real URLs.
 - Remove the preview notice only after all publicly visible content and metadata pass factual review.
@@ -103,6 +157,7 @@ Those requirements remain authoritative in the product and operations documentat
 - Rehearse dependency installation from the committed lockfile.
 - Validate safe environment setup from `.env.example` without exposing local credentials.
 - Rehearse a fresh isolated PostgreSQL initialization, full migration history, role provisioning, seeds, and validated content import.
+- Reproduce versioned media assets and their validation from the clean checkout, including GIF posters and body references; confirm imports and all three detail routes require no untracked local images or remote media fetches.
 - Run the application against the rebuilt local database using the application role.
 - Verify all primary and detail routes through the production build.
 - Confirm deterministic checks fail for a representative invalid input or forbidden permission.

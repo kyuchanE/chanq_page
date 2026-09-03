@@ -4,6 +4,7 @@ import {
   ContentImportError,
   type ContentImportDocument,
 } from "../../domain/imports/content-import";
+import { inspectDetailMarkdown } from "../markdown/detail-markdown";
 
 export const MAX_IMPORT_BYTES = 2 * 1024 * 1024;
 
@@ -125,6 +126,19 @@ const documentSchema = z
   })
   .strict()
   .superRefine((document, context) => {
+    // Inspect incoming bodies, not the schemas used to read existing snapshots:
+    // a reviewed valid import must still be able to repair a legacy body.
+    for (const collection of ["projects", "posts"] as const) {
+      document[collection].forEach((row, index) => {
+        if (inspectDetailMarkdown(row.body).length > 0) {
+          context.addIssue({
+            code: "custom",
+            path: [collection, index, "body"],
+            message: "Body violates the controlled Markdown contract.",
+          });
+        }
+      });
+    }
     for (const collection of ["skills", "tags", "projects", "posts"] as const) {
       const identifiers = document[collection].map((row) =>
         "key" in row ? row.key : row.slug,

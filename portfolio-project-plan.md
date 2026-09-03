@@ -1,5 +1,9 @@
 # Personal Developer Portfolio Project Plan
 
+## Document status
+
+This is the original product rationale, not the current implementation report or unfinished-work queue. The [current scope](docs/product/project-scope.md), [accepted ADRs](docs/index.md#architecture-decisions), and [development roadmap](docs/project-roadmap.md) take precedence over historical recommendations below. PostgreSQL-backed Markdown has replaced the original local-MDX starting point. The [detail authoring policy](docs/development/content-authoring.md) now explicitly includes text emphasis, local images/GIFs, links, and mixed sections; its additional controls remain planned.
+
 ## 1. Executive Summary
 
 ### Project Goal
@@ -27,8 +31,9 @@ Build a personal portfolio website that goes beyond listing technologies and cle
 - Static rendering by default
 - Dynamic rendering only where it is required
 - Hands-on practice with content caching and revalidation
-- MDX or local files for initial content management
-- PostgreSQL, a REST API, and a React Native app considered after the MVP
+- PostgreSQL-backed Markdown with validated local JSON imports for content management
+- Controlled detail content with text emphasis, local images/GIFs, and interleaved links/sections
+- A REST API and a React Native app considered only after separately approved requirements
 
 ### Out of Scope for the MVP
 
@@ -249,29 +254,24 @@ Documenting this decision-making process is more valuable than simply stating th
 
 ### 6.1 MVP
 
-Manage initial content with MDX or structured local files.
+Use PostgreSQL as the runtime source of truth with Markdown bodies and reviewed version-1 JSON imports. This replaces the original local-MDX proposal through [ADR-0003](docs/architecture/decisions/0003-use-postgresql-for-mvp-content.md) and [ADR-0008](docs/architecture/decisions/0008-use-versioned-content-imports.md).
 
-Benefits:
+Authors can organize detail bodies into any number of sections within the existing size limits and place text, local images/GIF demonstrations, website references, and GitHub source links in reading order. The approved [authoring policy](docs/development/content-authoring.md) specifies bold/italic/controlled underline, media safety and accessibility, and current implementation gaps. Keep title and SEO metadata separate from the body.
 
-- Enables a fast start without a database or administrative interface
-- Allows content history to be managed through Git
-- Works well with static generation
-- Keeps the focus on project descriptions and technical writing
-- Reduces operational complexity and potential failures
+Repository-managed media insertion is part of the MVP; image uploads, arbitrary HTML/CSS, executable MDX, and a browser administration UI remain excluded. Media bytes are versioned public assets, while writing and references live in PostgreSQL. No fixed pair of subtitle fields or new content-block database model is required.
 
 ### 6.2 After the MVP
 
-Introduce PostgreSQL and an API when publishing frequency increases or content must be shared with a mobile application.
+Consider a read API or richer authoring workflow when publishing requirements or a mobile-specific capability justify them. PostgreSQL and explicit draft/publication states are already part of the MVP; they are no longer deferred adoption gates.
 
 Adoption criteria:
 
 - Content needs to be created and edited in a browser
-- Drafts and publication states need to be managed
 - The React Native app must consume the same content
-- Dynamic functionality such as views, search, or tags is required
+- New functionality such as view counts or complex search becomes an approved requirement
 - Content needs to be managed across multiple devices
 
-PostgreSQL and a REST API should be treated as later-stage extensions introduced in response to actual requirements, not mandatory starting components.
+An API, browser editor, upload service, and mobile application remain separate scope decisions, not prerequisites for mixed-content details.
 
 ---
 
@@ -428,6 +428,7 @@ The MVP is complete when all of the following conditions are satisfied.
 - Mobile, tablet, and desktop layouts are supported
 - Unknown routes produce a correct 404 response
 - Basic error states are implemented
+- Detail bodies support selected-text emphasis and any number of ordered sections with accessible still images, controlled GIFs, and reference/source links
 
 ### SEO
 
@@ -473,9 +474,9 @@ The goal is to make the portfolio more convincing.
 
 Prioritize content quality over new functionality.
 
-### Update 2: Database and Content API
+### Update 2: Content API
 
-Introduce PostgreSQL and an API when content-management requirements emerge.
+PostgreSQL, article/project storage, drafts, tags, and audit timestamps are already MVP capabilities. Introduce a content API only when separately approved consumers require it.
 
 Potential functionality:
 
@@ -487,7 +488,7 @@ Potential functionality:
 - Public API
 - Admin-only editing features
 
-Avoid migrating all MDX content at once. Verify that existing URLs and SEO information remain intact throughout the migration.
+Preserve the PostgreSQL source of truth, existing URLs, publication rules, and SEO information when adding an API. No MDX migration is required by the current plan.
 
 ### Update 3: Administration Features
 
@@ -574,7 +575,7 @@ Principles:
 
 ### Phase 3: Content System
 
-- Design the MDX or local content structure
+- Use the PostgreSQL Markdown body and validated import contract, including the approved controlled detail-content policy
 - Implement project listing and detail pages
 - Implement blog listing and article pages
 - Add categories and tags

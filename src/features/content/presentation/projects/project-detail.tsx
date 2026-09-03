@@ -1,7 +1,7 @@
 import Link from "next/link";
-import Markdown from "react-markdown";
 
 import type { PublishedProjectDetail as PublishedProjectDetailValue } from "@/features/content/domain/projects/project";
+import { DetailMarkdown } from "../markdown/detail-markdown";
 
 type ProjectDetailProps = Readonly<{
   project: PublishedProjectDetailValue;
@@ -66,33 +66,7 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
         </nav>
       ) : null}
 
-      <div className="content-markdown">
-        <Markdown
-          components={{
-            a: ({ children, href }) => {
-              const external =
-                href?.startsWith("https://") || href?.startsWith("http://");
-
-              return (
-                <a
-                  href={href}
-                  rel={external ? "noopener noreferrer" : undefined}
-                  target={external ? "_blank" : undefined}
-                >
-                  {children}
-                  {external ? (
-                    <span className="sr-only"> (opens in a new tab)</span>
-                  ) : null}
-                </a>
-              );
-            },
-            h1: ({ children }) => <h2>{children}</h2>,
-          }}
-          skipHtml
-        >
-          {project.body}
-        </Markdown>
-      </div>
+      <DetailMarkdown body={project.body} />
     </article>
   );
 }

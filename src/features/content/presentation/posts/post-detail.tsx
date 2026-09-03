@@ -1,10 +1,10 @@
 import Link from "next/link";
-import Markdown from "react-markdown";
 
 import {
   type PublishedPostDetail as PublishedPostDetailValue,
   postSectionPath,
 } from "@/features/content/domain/posts/post";
+import { DetailMarkdown } from "../markdown/detail-markdown";
 
 type PostDetailProps = Readonly<{
   post: PublishedPostDetailValue;
@@ -73,33 +73,7 @@ export function PostDetail({ post }: PostDetailProps) {
         </section>
       ) : null}
 
-      <div className="content-markdown">
-        <Markdown
-          components={{
-            a: ({ children, href }) => {
-              const external =
-                href?.startsWith("https://") || href?.startsWith("http://");
-
-              return (
-                <a
-                  href={href}
-                  rel={external ? "noopener noreferrer" : undefined}
-                  target={external ? "_blank" : undefined}
-                >
-                  {children}
-                  {external ? (
-                    <span className="sr-only"> (opens in a new tab)</span>
-                  ) : null}
-                </a>
-              );
-            },
-            h1: ({ children }) => <h2>{children}</h2>,
-          }}
-          skipHtml
-        >
-          {post.body}
-        </Markdown>
-      </div>
+      <DetailMarkdown body={post.body} />
     </article>
   );
 }

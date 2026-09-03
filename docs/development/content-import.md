@@ -8,6 +8,14 @@ Only the development Mac's `development` and isolated `test` targets are support
 
 The versioned format and update policy are recorded in [ADR-0008](../architecture/decisions/0008-use-versioned-content-imports.md).
 
+### Detail body policy: current validation versus planned work
+
+The [authoring policy](content-authoring.md) defines approved emphasis, underline, image/GIF, link, and mixed-section behavior for all detail types. Imports now validate parsed body links and directives in addition to the body string and metadata. Raw HTML, unsupported directives/attributes, and unsafe or unresolved fragment destinations fail with an invalid `projects.<index>.body` or `posts.<index>.body` field, without echoing source text. Both dry-run and apply inspect incoming Markdown before opening a transaction. The public renderer independently enforces the same text/link contract for stored bodies.
+
+DEV-09B and DEV-09C in the [roadmap](../project-roadmap.md) still need media existence/type/size, alternative-text, poster, and full mixed-content checks. A successful dry-run does not prove media readiness. The version-1 JSON envelope is unchanged. No URLs are fetched by text validation. Asset files remain separate versioned release inputs, not files copied or uploaded by this CLI; public asset paths are never protected by a record's draft status.
+
+A read-only compatibility audit found no text/link issues in the two example inputs (7 bodies), development writing (9 bodies), or isolated test writing (8 bodies). Existing bodies are never silently rewritten. Snapshot reads retain the old structural schema so a reviewed valid input can repair incompatible legacy text; dry-run reports the proposed update without modifying it.
+
 ## Prerequisites and commands
 
 Install dependencies from the lockfile and complete the [local PostgreSQL setup](../operations/postgresql-lifecycle.md#first-time-setup). Confirm `pnpm db:status` reports a healthy PostgreSQL 16.14 container, two applied migrations, and the isolated application roles.
@@ -67,7 +75,7 @@ All fields below are required, including nullable fields and relation arrays. Sl
 Common writing fields are `slug`, `title`, `summary`, `body`, `status`, `publishedAt`, `seoTitle`, `seoDescription`, and `ogImagePath`.
 
 - Text fields are trimmed, nonempty, and limited to 2,000 characters; Markdown bodies allow 200,000 characters. NUL characters are rejected.
-- `body` is plain Markdown text. Keep metadata in the JSON fields, without YAML frontmatter at the start of the body. Markdown is never executed as MDX or loaded as a module; the existing controlled renderer disables raw HTML.
+- `body` is controlled Markdown text, supporting CommonMark and `:underline[text]` without attributes or nested directives. Keep metadata in JSON fields, without YAML frontmatter. Raw HTML is rejected; Markdown is never executed as MDX or loaded as a module. Encode body line breaks as `\n` in JSON. The [mixed-content example](content-authoring.md#mixed-content-example) still includes placeholder media and is not an import-ready fixture.
 - `status` must explicitly be `draft` or `published`. Drafts require `publishedAt: null`. Published records require a UTC ISO 8601 timestamp with milliseconds, such as `2025-02-01T00:00:00.000Z`. There is no scheduling state or publication inferred from dates.
 - Every post must explicitly choose `article` or `retrospective`. An existing post's kind is immutable through this importer to preserve its URL owner.
 - `featured` and `visible` are booleans. `displayOrder` is an integer from 0 to 2,147,483,647.
@@ -118,5 +126,7 @@ pnpm db:test:repositories
 ```
 
 Unit tests cover accepted/rejected metadata, fixture markers, local targeting, explicit publication, and application planning. Application-role PostgreSQL tests cover all aggregates and relationships, database-enforced read-only dry-run with unchanged seven-table snapshots, stable repeated imports including UUIDs/audit timestamps, partial updates, publication/unpublication, immutable kind ownership, and rollback after late relation and real database constraint failures. CLI tests run from outside the repository and check successful dry-run/apply/repeat plus exit codes 1, 2, and 3 without disclosing content or credentials.
+
+Controlled-text tests also cover raw HTML, unsupported/attributed/nested directives, encoded unsafe schemes, credentials, controls, traversal, protocol-relative and reference-style destinations, image-link destinations, literal code/escaping, and missing heading fragments. Integration checks exercise invalid bodies in both modes with unchanged snapshots, all three detail kinds with normalized text readback, unchanged repeat imports, preservation of unrelated records/relations, and explicit repair of legacy text. Media filesystem/playback validation remains pending.
 
 The integration command resets only the synthetic test database, runs import and read-repository suites sequentially because they share that database, and cleans up import probe records. It does not import authored development content or run production operations.

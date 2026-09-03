@@ -56,6 +56,7 @@ Never claim that a command, test, build, migration, or deployment succeeded unle
 - Use Next.js App Router with strict TypeScript.
 - Prefer Server Components and static rendering. Add Client Components or dynamic rendering only for documented interaction or freshness requirements.
 - Use PostgreSQL as the MVP source of truth for projects, developer skills, and blog posts. Store trusted content bodies as Markdown text, not executable MDX.
+- Support the approved [detail content authoring policy](docs/development/content-authoring.md): selected-text emphasis and ordered sections with still images, controlled GIFs, and links. Keep raw HTML disabled; media insertion does not authorize an upload system, arbitrary CSS, or executable embeds. Distinguish planned controls from implemented behavior.
 - Include versioned schema migrations, development and test seeds, repository adapters, an internal content CLI or import path, and documented production backup and restore procedures.
 - Keep PostgreSQL private. Do not add a public write API, admin UI, admin authentication, image upload system, or multi-user permissions during the MVP.
 - Keep the public portfolio indexable. Do not place public pages behind Cloudflare Access or another authentication gateway.

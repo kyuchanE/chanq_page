@@ -29,7 +29,9 @@ projects <-> project_skills <-> skills
 - Keep `created_at` and `updated_at` on mutable records.
 - Store SEO title, SEO description, and optional Open Graph image path explicitly.
 - Store long-form content as Markdown `text`.
-- Keep static image paths or trusted external URLs as references; do not store uploaded binary images in the MVP.
+- Keep media as path references, not database binaries. The approved [body-media policy](../development/content-authoring.md) restricts inline images/GIFs to reviewed versioned local assets; external HTTP(S) URLs remain link destinations, not permission to embed remote media. Existing renderers do not yet enforce the stricter body-media rules.
+
+Mixed-content ordering stays inside the existing `body` text: do not introduce `subtitle1`/`subtitle2` fields, an image array that loses narrative position, or a block table for this requirement. Underline syntax, image/GIF paths, and inline references do not require new columns or a version-1 import-envelope change. Keep `og_image_path` and optional project repository/live URLs distinct from body content. [ADR-0009](decisions/0009-use-controlled-detail-markdown.md) records this extension; shared text/underline/link validation is implemented, while the full media contract remains pending.
 
 ## Posts
 

@@ -21,7 +21,7 @@ Create a public developer portfolio that lets a visitor quickly understand the d
 - Page-specific metadata, canonical URLs, sitemap, robots rules, Open Graph data, and appropriate structured data
 - Static rendering by default, with revalidation only where content freshness requires it
 - PostgreSQL as the source of truth for projects, developer skills, and blog posts
-- Markdown text for long-form project and blog content
+- Markdown text for long-form project, article, and retrospective content, with selected-text emphasis and interleaved images, GIF demonstrations, and links
 - Validated environment configuration and database connectivity
 - Versioned schema migrations and separate development and test seeds
 - Public read repositories with draft and published states, stable slugs, relations, and SEO fields
@@ -30,6 +30,21 @@ Create a public developer portfolio that lets a visitor quickly understand the d
 - Explicit production migration, backup, restore, retention, and restore-test procedures
 - Reproducible `linux/arm64` Docker build and single-instance deployment on the dedicated Apple Silicon macOS production host
 - Public DNS and HTTPS through Cloudflare
+
+## Detail content acceptance criteria
+
+The same authoring capabilities apply to `/projects/[slug]`, `/blog/[slug]`, and `/retrospectives/[slug]`:
+
+- A page has one title and any number of ordered sections within the existing content-size limits; section count is not fixed at two.
+- Authors can emphasize selected body text with bold, italic, and controlled underline styling. Arbitrary font families, sizes, colors, CSS, and executable content are not part of this requirement.
+- Paragraphs, subheadings, still images, GIF demonstrations, and descriptive links can be interleaved in the author's chosen reading order. Images may precede or follow the relevant explanation.
+- Website references and GitHub source links work within the narrative and in closing reference sections, not only in project metadata.
+- Images retain useful alternative text, readable mobile layouts, and reserved display space. GIFs have a static alternative and explicit keyboard-operable playback/stop controls; reduced-motion and no-JavaScript visitors can read the same explanation without animation.
+- Unsafe links, unsupported embeds, and invalid media references cannot become active public content.
+
+These are approved requirements, not a claim that every control is implemented. The [detail content authoring policy](../development/content-authoring.md) distinguishes current support from planned enforcement and provides the canonical syntax. Complete the new content items in the [development roadmap](../project-roadmap.md) before cross-site quality verification and release-content review.
+
+Versioned, repository-managed media insertion is included; a browser upload system, remote media hosting service, or visual CMS is not.
 
 ## Local content preview
 
@@ -67,6 +82,7 @@ The MVP is done when:
 8. Projects, skills, and blog posts can be created or updated through the validated internal CLI or import path without direct ad hoc production SQL.
 9. A production backup can be created, verified, and restored through the documented procedure before irreplaceable content is accepted.
 10. Performance and production errors are measured and documented rather than guessed.
+11. All three detail types preserve authored mixed-content order, selected-text styling, accessible still/GIF media, and safe reference/source links through import and public rendering.
 
 ## MVP database boundary
 

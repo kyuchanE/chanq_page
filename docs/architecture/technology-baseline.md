@@ -27,6 +27,7 @@ The committed lockfile is the dependency-resolution source of truth. Routine com
 - Zod 4.4.3
 - dotenv 17.4.2 for migration-tool environment loading
 - react-markdown 10.1.0 for controlled CommonMark rendering without executable MDX or raw HTML
+- remark-directive 4.0.0 for syntax-tree-based controlled underline; remark-parse 11.0.0 and unified 11.0.5 are explicit dependencies matching the renderer's parser stack so import and rendering share one grammar. @types/mdast 4.0.4 is development-only. The project rejects all other directives/attributes; it does not install a general HTML plugin or regex-based Markdown parser.
 - tsx 4.23.13 as a development-only TypeScript runner for the internal import CLI; this avoids a separate compiled CLI pipeline while preserving the Node.js baseline and shared application behavior
 
 ## Resolved quality-gate versions
@@ -81,6 +82,8 @@ Review the temporary scaffold before merging. Preserve repository-owned instruct
 | Production content promotion | Validated import through application and repository boundaries | Exclude development seeds, test fixtures, roles, and environment-specific database state. |
 | Logical backup role | `pg_dump` custom format with `pg_restore` | Limit logical backups to initial bootstrap or disaster recovery and keep them out of the normal schema and content deployment path. |
 | Static images | Versioned files under `public/` with database references | Keep image upload and object storage outside the MVP. |
+
+The [controlled detail Markdown decision](decisions/0009-use-controlled-detail-markdown.md) now has a shared server-rendered text path, controlled underline, and decoded/normalized body-link validation at import and rendering. Raw HTML remains disabled. Local still/GIF asset inspection, budgets, sizing, and playback under `public/media/` remain planned. The [authoring policy](../development/content-authoring.md) owns their contract; justify any media-inspection dependency when implementing that slice.
 
 Do not expose Drizzle records or Zod schemas as domain models by default. Translate external data at the infrastructure or input boundary and pass project-owned types inward.
 

@@ -14,6 +14,15 @@ PostgreSQL is the runtime source of truth for public portfolio content. This dir
 - Treat reviewed production import inputs as content-promotion artifacts; never substitute a development database or its backup for routine content promotion.
 - Require dry-run validation, explicit production targeting, and deterministic conflict handling before a production import.
 
+## Detail body authoring
+
+- Follow the canonical [detail content authoring policy](../docs/development/content-authoring.md) for projects, articles, and retrospectives. Check its implementation status before using planned syntax or media controls.
+- Keep title/summary/SEO metadata separate from the body. Use ordered Markdown sections without a fixed subtitle count; prose, images, GIF demonstrations, and reference/source links may appear wherever they support the explanation.
+- Use semantic emphasis and the approved controlled underline syntax, never authored HTML, CSS, MDX, or arbitrary components.
+- Manage reviewed media as versioned public assets, not uploads or database binaries. Follow the policy's paths, formats, byte budgets, alternative-text, and GIF-poster requirements.
+- Treat public media as publicly accessible even when its referencing record is a draft. Review ownership, redaction, linked destinations, and release asset availability before publication.
+- Do not silently rewrite existing author-owned bodies when new validation identifies unsupported syntax or media; report the incompatibility and prepare a reviewed import.
+
 ## Blog articles
 
 - Explain a concrete problem through context, environment, symptoms, root cause, failed approaches where useful, final solution, verification, limitations, and reusable lessons.

@@ -17,6 +17,11 @@ import {
   parseLocalImportTarget,
 } from "@/features/content/imports.server";
 import { importFixture } from "../../fixtures/content-import";
+import {
+  detailMarkdownBody,
+  invalidDetailBodies,
+} from "../../fixtures/detail-markdown";
+import { inspectDetailMarkdown } from "@/features/content/infrastructure/markdown/detail-markdown";
 
 const target = parseLocalImportTarget("test", process.env);
 const pool = new Pool({ connectionString: target.connectionString, max: 1 });
@@ -93,6 +98,143 @@ afterAll(async () => {
 });
 
 describe("application-role PostgreSQL content import", () => {
+  it("audits the isolated existing bodies without changing them", async () => {
+    const before = await snapshot();
+    const { rows } = await pool.query<{ body: string }>(
+      "select body from projects union all select body from posts",
+    );
+    expect(rows.length).toBeGreaterThan(0);
+    for (const row of rows) expect(inspectDetailMarkdown(row.body)).toEqual([]);
+    expect(await snapshot()).toEqual(before);
+  });
+
+  it.each(["dry-run", "apply"] as const)(
+    "rejects invalid bodies in %s with no changed rows or relations",
+    async (mode) => {
+      const before = await snapshot();
+      for (const body of invalidDetailBodies) {
+        for (const collection of ["projects", "posts"] as const) {
+          const document = importFixture();
+          document[collection][0].body = body;
+          await expect(
+            (async () =>
+              importContent(
+                connection.repository,
+                parseContentImport(document),
+                { mode, allowPublish: false },
+              ))(),
+          ).rejects.toMatchObject({ code: "invalid-input" });
+        }
+      }
+      expect(await snapshot()).toEqual(before);
+      // Exercise the real CLI boundary as well as the shared parser entry point.
+      for (const body of [
+        "<script>private-body-value</script>",
+        "[unsafe][id]\n\n[id]: //example.com/private-body-value",
+      ]) {
+        const document = importFixture();
+        document.posts[0].body = body;
+        const path = join(temporaryDirectory, "invalid-body.json");
+        await writeFile(path, JSON.stringify(document));
+        const result = await cli([
+          "--target",
+          "test",
+          "--file",
+          path,
+          `--${mode}`,
+        ]);
+        expect(result.code).toBe(2);
+        expect(result.stderr).toContain("posts.0.body");
+        expect(result.stderr).not.toContain("private-body-value");
+        expect(await snapshot()).toEqual(before);
+      }
+    },
+  );
+
+  it("round-trips the normalized text contract for all detail kinds through preview, apply, and repeat", async () => {
+    const input = importFixture();
+    input.posts.push({
+      ...input.posts[0],
+      slug: "import-check-detail-retro",
+      kind: "retrospective",
+    });
+    for (const row of [...input.projects, ...input.posts]) {
+      row.body = `  ${detailMarkdownBody}\n\n`;
+      row.status = "published";
+      row.publishedAt = "2025-01-01T00:00:00.000Z";
+    }
+    const document = parseContentImport(input);
+    const before = await snapshot();
+    const preview = await importContent(connection.repository, document, {
+      ...dryRun,
+      allowPublish: true,
+    });
+    expect(preview.projects.created).toBe(1);
+    expect(preview.posts.created).toBe(2);
+    expect(await snapshot()).toEqual(before);
+    await importContent(connection.repository, document, {
+      ...apply,
+      allowPublish: true,
+    });
+    const written = await snapshot();
+    const repeat = await importContent(connection.repository, document, {
+      ...apply,
+      allowPublish: true,
+    });
+    expect(repeat.projects.unchanged).toBe(1);
+    expect(repeat.posts.unchanged).toBe(2);
+    expect(await snapshot()).toEqual(written);
+    const reads = connectPostgresContentRepositories({
+      applicationName: "chanq_page_markdown_round_trip",
+      connectionString: target.connectionString,
+      maxConnections: 1,
+    });
+    try {
+      const projectSlug = parseProjectSlug(document.projects[0].slug);
+      if (!projectSlug) throw new Error("Invalid fixture slug");
+      expect(
+        await reads.projects.findPublishedBySlug(projectSlug),
+      ).toMatchObject({ body: detailMarkdownBody });
+      for (const row of document.posts) {
+        const postSlug = parsePostSlug(row.slug);
+        if (!postSlug) throw new Error("Invalid fixture slug");
+        expect(
+          await reads.posts.findPublishedBySlug(row.kind, postSlug),
+        ).toMatchObject({ body: detailMarkdownBody, kind: row.kind });
+      }
+    } finally {
+      await reads.close();
+    }
+    await cleanup();
+    expect(await snapshot()).toEqual(before);
+  });
+
+  it("lets a reviewed valid import repair incompatible legacy text without silently rewriting stored data", async () => {
+    const document = importFixture();
+    await importContent(connection.repository, document, apply);
+    await pool.query("update posts set body = $1 where slug = $2", [
+      "[unsafe](javascript:legacy)",
+      document.posts[0].slug,
+    ]);
+    const before = await snapshot();
+    expect(
+      (await importContent(connection.repository, document, dryRun)).posts
+        .updated,
+    ).toBe(1);
+    expect(await snapshot()).toEqual(before);
+    expect(
+      (await importContent(connection.repository, document, apply)).posts
+        .updated,
+    ).toBe(1);
+    expect(
+      (
+        await pool.query("select body from posts where slug = $1", [
+          document.posts[0].slug,
+        ])
+      ).rows[0].body,
+    ).toBe(document.posts[0].body);
+  });
+
   it("round-trips maximum-length published identities through all public repositories", async () => {
     const document = importFixture();
     const identity = `import-check-${"a".repeat(87)}`;
