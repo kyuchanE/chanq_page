@@ -7,7 +7,7 @@ import {
 } from "@/features/content/domain/posts/post";
 
 type PostListProps = Readonly<{
-  kind: PostKind;
+  kind?: PostKind;
   posts: readonly PublishedPostListItem[];
 }>;
 
@@ -31,7 +31,13 @@ const copy = {
 
 export function PostList({ kind, posts }: PostListProps) {
   if (posts.length === 0) {
-    return <p className="post-empty-state">{copy[kind].empty}</p>;
+    return (
+      <p className="post-empty-state">
+        {kind
+          ? copy[kind].empty
+          : "No writing is published yet. Explore the project case studies in the meantime."}
+      </p>
+    );
   }
 
   return (
@@ -60,11 +66,11 @@ export function PostList({ kind, posts }: PostListProps) {
                 </ul>
               ) : null}
               <Link
-                aria-label={`${copy[kind].link}: ${post.title}`}
+                aria-label={`${copy[post.kind].link}: ${post.title}`}
                 className="post-card__link"
                 href={detailPath}
               >
-                {copy[kind].link} <span aria-hidden="true">→</span>
+                {copy[post.kind].link} <span aria-hidden="true">→</span>
               </Link>
             </article>
           </li>

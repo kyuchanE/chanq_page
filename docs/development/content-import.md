@@ -31,6 +31,26 @@ An omitted mode defaults to `--dry-run`; `--apply` explicitly confirms local wri
 
 URL query parameters and fragments are rejected to prevent connection overrides. The transaction checks the connected database, current/session role, and absence of superuser privileges independently. These checks protect the documented local configuration; a manually configured port forward is outside this workflow.
 
+## Local portfolio preview
+
+The owner-authorized [portfolio preview](../../content/examples/portfolio-preview.json) is generated test data: two fictional project scenarios, two sample articles, one sample retrospective, four skill examples, and four tags. It uses stable `sample-` identities outside the reserved seed namespaces. All case studies and posts label their narrative and proposed verification as fictional; they do not claim measured results. No screenshots are invented as implementation evidence, and `ogImagePath` is null throughout.
+
+```bash
+pnpm content:import --target development --file content/examples/portfolio-preview.json --dry-run --allow-publish
+pnpm content:import --target development --file content/examples/portfolio-preview.json --apply --allow-publish
+pnpm content:import --target development --file content/examples/portfolio-preview.json --apply --allow-publish
+```
+
+On a database without these identities, preview and first apply report 4 skills, 4 tags, 2 projects, and 3 posts created. The second apply reports those counts as unchanged, with zero creates or updates. Existing developer-authored and seed rows remain untouched. Existing visible development seeds may therefore appear alongside the samples; no seed namespace is hidden in public queries.
+
+The static Contact page uses the labeled `hello@example.com` and `https://example.com` example destinations. Do not treat them as a real inbox or professional profile, and do not send a test message. The shared shell identifies the site as a content preview.
+
+The production-server browser suite imports this exact input into the isolated test database through the application importer, checks preview/apply/repeat behavior and public navigation, and removes only those test sample identities afterward. It does not modify development content. Component and application tests cover empty sections, missing project evidence, deterministic limits and ordering, and partial read failures.
+
+Local preview verification passed with 89 unit/component tests and 16 production-server Playwright journeys, including all seven primary sections, the five sample detail URLs, mobile/tablet/desktop layouts, heading order, keyboard focus and activation, and existing 404 behavior. Manual development-database inspection covered desktop Home, mobile Home/About/Contact, the visible sample labels, and keyboard skip navigation. No image was added: there is no genuine screenshot evidence for these fictional scenarios. These checks do not establish production readiness or factual professional results. The example email link was checked without launching or sending a message. External `https://example.com` availability could not be verified because DNS resolution timed out in this environment, including a retry outside the sandbox; its destination is a reserved sample, not an owner contact.
+
+Before release, follow the owner-reviewed content item in the roadmap. Prepare real content as a separate reviewed input. To withdraw preview writing, copy the preview input to a temporary reviewed file, set every project/post to `status: "draft"` with `publishedAt: null`, and set each sample skill to `visible: false`; then preview and apply that file to the intended local target. Do not remove unrelated rows or use a fixture reset on the development database. Remove the shell notice and replace Contact's example links only after reviewing all remaining public content. These changes do not constitute production deployment.
+
 ## Version 1 format
 
 Use one UTF-8 JSON file no larger than 2 MiB. The root object requires `version: 1` and four arrays: `skills`, `tags`, `projects`, and `posts`. Empty arrays are valid. Each array permits at most 1,000 records. Unknown fields, client-supplied UUIDs/audit timestamps, invalid versions, and duplicate identities within a collection are rejected.

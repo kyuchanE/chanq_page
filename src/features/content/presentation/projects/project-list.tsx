@@ -4,6 +4,8 @@ import type { PublishedProjectListItem } from "@/features/content/domain/project
 
 type ProjectListProps = Readonly<{
   projects: readonly PublishedProjectListItem[];
+  headingLevel?: 2 | 3;
+  emptyMessage?: string;
 }>;
 
 const publicationDate = new Intl.DateTimeFormat("en", {
@@ -13,13 +15,14 @@ const publicationDate = new Intl.DateTimeFormat("en", {
   year: "numeric",
 });
 
-export function ProjectList({ projects }: ProjectListProps) {
+export function ProjectList({
+  projects,
+  headingLevel = 2,
+  emptyMessage = "No project case studies are published yet. Please check back soon.",
+}: ProjectListProps) {
+  const Heading = headingLevel === 2 ? "h2" : "h3";
   if (projects.length === 0) {
-    return (
-      <p className="project-empty-state">
-        No project case studies are published yet. Please check back soon.
-      </p>
-    );
+    return <p className="project-empty-state">{emptyMessage}</p>;
   }
 
   return (
@@ -34,9 +37,9 @@ export function ProjectList({ projects }: ProjectListProps) {
               {publicationDate.format(new Date(project.publishedAt))}
             </time>
           </div>
-          <h2 className="project-card__title">
+          <Heading className="project-card__title">
             <Link href={`/projects/${project.slug}`}>{project.title}</Link>
-          </h2>
+          </Heading>
           <p className="project-card__summary">{project.summary}</p>
           <Link
             aria-label={`Read the ${project.title} case study`}

@@ -31,6 +31,12 @@ Create a public developer portfolio that lets a visitor quickly understand the d
 - Reproducible `linux/arm64` Docker build and single-instance deployment on the dedicated Apple Silicon macOS production host
 - Public DNS and HTTPS through Cloudflare
 
+## Local content preview
+
+The owner authorized generated test data for DEV-09. Its local acceptance uses two explicitly fictional project case studies, three sample articles or retrospectives, related skill examples, and clearly labeled example contact links. These inputs exercise the real validated import and PostgreSQL read paths. They are not evidence of employment, delivered client work, measured results, or reachable personal contact details.
+
+The release content requirements above remain unchanged. Owner-reviewed case studies, writing, skill evidence, and real public contact destinations must replace the sample material before the clean release-candidate rehearsal. The roadmap tracks that content review separately so local UI and quality work can continue.
+
 ## MVP exclusions
 
 - User accounts and application authentication

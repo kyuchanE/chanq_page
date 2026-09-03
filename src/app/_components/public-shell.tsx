@@ -19,7 +19,7 @@ export function PublicShell({
             </span>
             <span className="site-brand__copy">
               <span className="site-brand__name">ChanQ</span>
-              <span className="site-brand__role">Product-minded developer</span>
+              <span className="site-brand__role">Android · iOS · Web</span>
             </span>
           </Link>
 
@@ -28,6 +28,10 @@ export function PublicShell({
       </header>
 
       <main className="site-main" id="main-content" tabIndex={-1}>
+        <aside className="preview-notice" aria-label="Sample content notice">
+          Local portfolio preview. Project stories, writing, skill examples, and
+          contact destinations use sample data.
+        </aside>
         {children}
       </main>
 

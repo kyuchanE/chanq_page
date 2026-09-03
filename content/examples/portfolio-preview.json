@@ -1,0 +1,137 @@
+{
+  "version": 1,
+  "skills": [
+    {
+      "key": "sample-architecture",
+      "name": "Clean Architecture · sample",
+      "category": "Architecture",
+      "summary": "A fictional example of keeping editing rules separate from storage and UI.",
+      "evidence": "The Field Notes scenario maps an edit to a local transaction and a replaceable sync adapter. This is a design exercise, not evidence of a shipped app.",
+      "displayOrder": 0,
+      "visible": true
+    },
+    {
+      "key": "sample-native-apps",
+      "name": "Android & iOS · sample",
+      "category": "Mobile",
+      "summary": "A sample workflow for interrupted editing on native devices.",
+      "evidence": "The Field Notes case study walks through app restart, pending changes, and a visible conflict state. These are proposed checks, not measured production results.",
+      "displayOrder": 0,
+      "visible": true
+    },
+    {
+      "key": "sample-nextjs",
+      "name": "Next.js · sample",
+      "category": "Web",
+      "summary": "A fictional reading experience with server-rendered lists and stable detail URLs.",
+      "evidence": "The Reading Room scenario describes published-only queries, explicit not-found behavior, and direct-navigation checks. Its product and outcomes are fictional.",
+      "displayOrder": 0,
+      "visible": true
+    },
+    {
+      "key": "sample-postgresql",
+      "name": "PostgreSQL · sample",
+      "category": "Database",
+      "summary": "A sample relational content model with atomic publication changes.",
+      "evidence": "The Reading Room case study explains an all-or-nothing content import and a read-only preview. No production reliability or performance claim is made.",
+      "displayOrder": 0,
+      "visible": true
+    }
+  ],
+  "tags": [
+    {
+      "slug": "sample-state",
+      "name": "State modeling"
+    },
+    {
+      "slug": "sample-mobile",
+      "name": "Native apps"
+    },
+    {
+      "slug": "sample-data",
+      "name": "Content data"
+    },
+    {
+      "slug": "sample-architecture",
+      "name": "Architecture"
+    }
+  ],
+  "projects": [
+    {
+      "slug": "sample-field-notes",
+      "title": "Field Notes — sample offline journal",
+      "summary": "Fictional case study: keeping a field note editable through connection loss, restarts, and conflicting changes.",
+      "body": "> Fictional sample content. This product, role, implementation narrative, and verification examples are generated test data. They do not describe a shipped app, employer, client, or measured result.\n\n## Problem and objective\n\nImagine a field researcher recording observations where connectivity changes throughout the day. A network-first editor could leave the researcher unsure whether a note was saved. The objective in this scenario is to preserve a local edit and communicate its sync state separately.\n\nThe scope is one plain-text notebook on Android and iOS. Attachments, collaboration, account recovery, and background scheduling are deliberately outside this exercise.\n\n## Role and constraints\n\nThe imagined individual contributor owns the edit-state model, native screen behavior, storage boundary, and test plan. There is no team delivery or commercial outcome to attribute. Device storage is finite, the app may stop between actions, and a remote edit can conflict with a local one.\n\n## Alternatives\n\nA network-only save has fewer local states but cannot satisfy disconnected editing. A local queue without conflict handling improves availability but can silently replace newer data. A fully collaborative merge system would add more policy than this plain-text exercise needs.\n\n## Decision\n\nUse a local transaction to store the note and its pending sync operation together. Give each edit a stable operation identifier and the remote version it was based on. Distinguish locally saved, pending sync, and needs-review states in visible text.\n\nA successful retry acknowledges the same operation rather than creating a duplicate note. A version conflict preserves both texts and asks for a deliberate resolution.\n\n## Implementation walkthrough\n\nThe proposed flow is editor input, validated note command, local transaction, pending-operation reader, and remote adapter. The UI reads the local note and sync state. It does not treat an HTTP response as the only evidence that the user's text exists.\n\nThe domain describes note identity and edit state. Storage and transport details stay behind the boundary that coordinates those side effects. Android and iOS can use native presentation while following the same state transitions; this is not a claim that shared native code has been implemented.\n\n## Trials and evidence examples\n\nA useful replay starts with airplane mode, enters a note, closes the app after the local commit, and reopens it. Expected evidence is the same text and a pending-sync label. Repeating the same operation after a simulated timeout should still produce one remote edit. Receiving a conflicting version should preserve both versions.\n\nThese are example acceptance checks. No device run, user study, latency measurement, or production incident is claimed. A real case study would attach the test logs, implementation reference, and a redacted screen recording.\n\n## Limitations\n\nThis scenario does not solve local disk failure, encryption, large attachments, multi-device identity, or every operating-system background constraint. A local save also does not prove a remote backup exists.\n\n## Next steps\n\nImplement a small prototype, test interruption points on real devices, record conflict-resolution behavior, and review the language with people doing field work before extending the scope.\n\nRead the [sample retry article](/blog/sample-safe-retries) and [sample state-model retrospective](/retrospectives/sample-visible-state).",
+      "skillKeys": ["sample-architecture", "sample-native-apps"],
+      "displayOrder": 0,
+      "status": "published",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "seoTitle": "Field Notes — sample offline journal",
+      "seoDescription": "Fictional case study: keeping a field note editable through connection loss, restarts, and conflicting changes.",
+      "ogImagePath": null,
+      "featured": true,
+      "repositoryUrl": null,
+      "liveUrl": null
+    },
+    {
+      "slug": "sample-reading-room",
+      "title": "Reading Room — sample publishing site",
+      "summary": "Fictional case study: turning structured drafts into a readable, indexable site with predictable publication boundaries.",
+      "body": "> Fictional sample content. This product, role, implementation narrative, and verification examples are generated test data. They do not describe a delivered client project or measured business result.\n\n## Problem and objective\n\nImagine a small technical reading site maintained by one author. Drafts, topic labels, and project references must stay consistent while readers follow stable links from search results. The objective is to publish complete content without exposing unfinished notes.\n\n## Role and constraints\n\nThe imagined individual contributor owns content modeling, a local import command, public route composition, and a verification plan. The scenario has one author and a small library. A browser CMS, public writes, authentication, and file uploads are excluded.\n\n## Alternatives\n\nHardcoded page content is easy to start but couples every edit to UI code. Markdown files could work well for a small Git-authored library. A database adds migration and recovery responsibilities but provides an explicit model for publication and relationships. A full CMS would solve a broader editing problem than this scenario requires.\n\n## Decision\n\nFor this database-oriented exercise, keep projects and posts in PostgreSQL and store their long-form bodies as Markdown. Use stable slugs and explicit draft or published states. Import complete records and owner-scoped relationships in one transaction.\n\nChoose server-rendered public reads. Add caching only after defining the accepted staleness and who invalidates it; the example makes no claim of a tuned cache or measured throughput.\n\n## Implementation walkthrough\n\nThe proposed input is versioned JSON. Validation checks identities, publication intent, dates, and relation references before writes. A dry-run reads the current snapshot without changing it. Apply revalidates the snapshot and commits base records with their relationships together.\n\nThe public repository selects published records and validates returned rows. Route composition maps unknown or draft slugs to not found. Markdown rendering does not execute arbitrary React components. A list page and its detail page use the same title and summary source.\n\n## Trials and evidence examples\n\nA representative check publishes one post with a project link, opens the list, follows the detail, and refreshes the URL. A second check uses a missing relation and expects the entire import to fail without a partial post. Reapplying identical input should preserve the record identity and audit timestamp.\n\nThese are proposed observations for a fictional product. They are not benchmark results or proof that this imagined site has been deployed. A real report would include the exact commands, inspected output, database version, and remaining failures.\n\n## Limitations\n\nThe scenario leaves backup automation, production deployment, editorial review, long-term URL changes, and higher traffic unverified. Schema validation cannot determine whether an article is factually correct.\n\n## Next steps\n\nRun the prototype against an isolated database, inspect keyboard navigation and narrow layouts, measure representative pages, then prepare a recovery rehearsal before accepting irreplaceable writing.\n\nRead the [sample publication article](/blog/sample-publish-together) or return to [all projects](/projects).",
+      "skillKeys": ["sample-nextjs", "sample-postgresql"],
+      "displayOrder": 0,
+      "status": "published",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "seoTitle": "Reading Room — sample publishing site",
+      "seoDescription": "Fictional case study: turning structured drafts into a readable, indexable site with predictable publication boundaries.",
+      "ogImagePath": null,
+      "featured": true,
+      "repositoryUrl": null,
+      "liveUrl": null
+    }
+  ],
+  "posts": [
+    {
+      "slug": "sample-safe-retries",
+      "title": "Sample article: a retry is a state transition",
+      "summary": "A fictional offline-editing example that separates a saved local note from a confirmed remote operation.",
+      "kind": "article",
+      "publishedAt": "2026-09-03T02:00:00.000Z",
+      "body": "> Sample article using the fictional Field Notes scenario. The workflow below is a design exercise; no device tests or production results are claimed.\n\n## Context\n\nA researcher writes a note while disconnected. Later, a request reaches the server but its response is lost. The app cannot infer from a timeout whether the remote operation happened.\n\n## Symptom and root cause\n\nA naive retry creates a new remote note for each attempt. The visible symptom in the scenario is duplicate text. The underlying modeling mistake is treating each transport attempt as a new user action.\n\n## An approach that falls short\n\nRetrying more quickly does not answer whether the first attempt succeeded. Hiding the pending state may make the screen quieter while leaving the user less certain about their work.\n\n## Proposed solution\n\nAssign a stable operation identifier when the user edits. Persist that identifier with the note in a local transaction. A retry sends the same operation identity and base version. The remote side must define duplicate handling; an identifier alone does not make an API idempotent.\n\nTrack local persistence and remote confirmation as different states. Use text such as locally saved or pending sync so the state does not depend on color alone. Keep conflicting text until the user chooses how to resolve it.\n\n## Verification exercise\n\nSimulate a lost response after the remote write, retry the operation, and check that the remote note is not duplicated. Restart after the local commit and confirm that the pending operation still exists. Then simulate a version conflict and inspect both preserved texts.\n\nThese are acceptance checks for a future prototype, not executed test results.\n\n## Limitations and lesson\n\nA queue needs limits and a failure policy. The proposed workflow does not recover a damaged device or provide a remote backup while offline. The reusable lesson is to model the user action separately from attempts to deliver it.\n\nSee the [Field Notes sample case study](/projects/sample-field-notes).",
+      "tagSlugs": ["sample-state", "sample-mobile"],
+      "projectSlugs": ["sample-field-notes"],
+      "status": "published",
+      "seoTitle": "Sample article: a retry is a state transition",
+      "seoDescription": "A fictional offline-editing example that separates a saved local note from a confirmed remote operation.",
+      "ogImagePath": null
+    },
+    {
+      "slug": "sample-publish-together",
+      "title": "Sample article: publish a post and its links together",
+      "summary": "A fictional content-import exercise showing why validation and an atomic write solve different problems.",
+      "kind": "article",
+      "publishedAt": "2026-09-02T00:00:00.000Z",
+      "body": "> Sample article using the fictional Reading Room scenario. No production import, reliability measurement, or deployment is claimed.\n\n## Context\n\nA post points to two tags and a project. The author wants readers to see a complete publication, with the expected relationships, when its stable URL becomes available.\n\n## Symptom and root cause\n\nImagine saving the post first and its links afterward. If a referenced project is missing, the second operation fails. The post may already be visible with incomplete context. The problem is the boundary of the write, not merely the validity of the title.\n\n## An approach that falls short\n\nChecking every identifier before starting is useful but does not make multiple independent commits atomic. Another edit can also change the database between a preview and apply.\n\n## Proposed solution\n\nValidate the document at the input boundary, then plan the complete import against the database snapshot. Put the post, tags, and owner-scoped relationships in one transaction. If a required relationship cannot be resolved, roll back the whole operation.\n\nKeep the preview read-only and treat it as a report about one snapshot. Apply must check again. A preview is not a promise that later input will still be valid.\n\nUse stable identities for repeated imports. An identical document should report unchanged records; a changed slug needs explicit editorial thought because readers may already rely on the old URL.\n\n## Verification exercise\n\nCreate a draft with known relations, preview publication, and confirm that the preview did not change the stored rows. Try an input with one missing project and inspect the full rollback. Apply valid content, reopen its URL, and repeat the same import to check identity stability.\n\nThese checks describe a proposed prototype. This article does not report an actual test execution.\n\n## Limitations and lesson\n\nTransactions do not verify factual claims or fix an incorrect import document. Backups, review, permissions, and a recovery plan remain separate responsibilities. The lesson is to align one transaction with one complete content change that a reader should observe.\n\nSee the [Reading Room sample case study](/projects/sample-reading-room).",
+      "tagSlugs": ["sample-data", "sample-architecture"],
+      "projectSlugs": ["sample-reading-room"],
+      "status": "published",
+      "seoTitle": "Sample article: publish a post and its links together",
+      "seoDescription": "A fictional content-import exercise showing why validation and an atomic write solve different problems.",
+      "ogImagePath": null
+    },
+    {
+      "slug": "sample-visible-state",
+      "title": "Sample retrospective: make unsynced work visible",
+      "summary": "A fictional design retrospective about replacing an ambiguous saved label with explicit editing states.",
+      "kind": "retrospective",
+      "publishedAt": "2026-09-01T00:00:00.000Z",
+      "body": "> Fictional retrospective for testing the portfolio format. The events, role, and observations are hypothetical, not a report of a real team project.\n\n## Initial assumption\n\nIn the Field Notes scenario, a single saved label initially seems sufficient. The imaginary design assumes that a successful local write and a successful remote sync can share the same message.\n\n## What the scenario reveals\n\nAfter a disconnected edit, the note exists on the device but nowhere else. The same label would imply more certainty than the app can support. A user deciding whether to switch devices needs to understand that difference.\n\nNo user research or observed incident is asserted here. This is a walkthrough of a possible failure in the proposed design.\n\n## Decision and implementation sketch\n\nSplit the state into editing, saved on this device, pending sync, and needs review. Define what event enters and exits each state before polishing the interface. Store enough local information to show the correct state after restart.\n\nKeep the labels near the note and available to assistive technology. Offer a conflict action only when there is something the user can resolve. Repeated attempts should not create a stream of distracting alerts.\n\n## What to verify\n\nWalk through disconnect, local save, app restart, lost response, and remote conflict. Check the text after each event. Navigate the recovery action using only the keyboard where supported, and confirm that the message still makes sense without its color.\n\nThese are proposed validation steps. A real retrospective should replace them with inspected results and describe what failed.\n\n## Limitations\n\nThe exercise does not validate translations, every platform accessibility behavior, background scheduling, or recovery from damaged storage. It also cannot tell us which wording field researchers actually understand.\n\n## Reusable lesson and next steps\n\nA state label is a product promise. Define the evidence behind it, then make the wording reflect only that evidence. The next step is a small device prototype and a review with intended users, followed by changes based on what those checks reveal.\n\nCompare the [retry article](/blog/sample-safe-retries) with the [full project scenario](/projects/sample-field-notes).",
+      "tagSlugs": ["sample-state", "sample-mobile"],
+      "projectSlugs": ["sample-field-notes"],
+      "status": "published",
+      "seoTitle": "Sample retrospective: make unsynced work visible",
+      "seoDescription": "A fictional design retrospective about replacing an ambiguous saved label with explicit editing states.",
+      "ogImagePath": null
+    }
+  ]
+}

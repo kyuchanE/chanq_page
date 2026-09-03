@@ -42,39 +42,10 @@ Those requirements remain authoritative in the product and operations documentat
 
 ## Remaining work
 
-### DEV-09 — Home, About, Contact, and reviewed MVP content
+### DEV-10 — Cross-site accessibility, SEO, and performance verification
 
 **Status:** `READY`
 **Depends on:** None
-
-**Outcome:** The public portfolio communicates specialization, evidence, technical judgment, and a safe contact path using reviewed content rather than placeholders.
-
-**Completion conditions:**
-
-- Implement Home as a concise entry point to featured projects, evidence-backed skills, recent writing, and contact.
-- Complete About with relevant experience, working principles, and current focus.
-- Complete Contact with explicit, accessible contact links and no public write API or form backend.
-- Prepare and import at least two detailed project case studies covering problem, alternatives, decision, implementation, evidence, limitations, and next steps.
-- Prepare and import at least three useful articles or retrospectives.
-- Review every skill claim and project result for evidence and remove unsupported claims.
-- Replace remaining placeholder copy and verify useful empty states where content is optional.
-- Use versioned static images with useful alternative text where images add evidence.
-
-**Validation:**
-
-- Content schema and import validation
-- Manual factual and link review
-- Navigation across all seven primary sections
-- Direct navigation and refresh
-- Image alternative-text review
-- Responsive and keyboard inspection
-- Production build
-- `./scripts/check.sh`
-
-### DEV-10 — Cross-site accessibility, SEO, and performance verification
-
-**Status:** `QUEUED`  
-**Depends on:** DEV-09
 
 **Outcome:** The complete local application meets the documented public quality bar and has recorded evidence for remaining limitations.
 
@@ -98,10 +69,32 @@ Those requirements remain authoritative in the product and operations documentat
 - ESLint, type checking, tests, and production build
 - `./scripts/check.sh`
 
+### DEV-10A — Owner-reviewed release content
+
+**Status:** `QUEUED`
+**Depends on:** DEV-10 and owner-supplied content
+
+**Outcome:** Release content demonstrates real experience and a reachable contact path.
+
+**Completion conditions:**
+
+- Replace the sample project scenarios with at least two owner-reviewed case studies covering problem, alternatives, decision, individual contribution, implementation, evidence, limitations, and next steps.
+- Review and publish at least three useful articles or retrospectives; replace synthetic skills with supported claims and published project evidence.
+- Replace example contact destinations with owner-confirmed public links and verify them without sending messages.
+- Unpublish sample and development-seed writing and hide synthetic skills through the appropriate local content workflows; preserve unrelated author-owned rows and stable real URLs.
+- Remove the preview notice only after all publicly visible content and metadata pass factual review.
+
+**Validation:**
+
+- Content schema and import dry-run/apply/repeat validation
+- Manual factual, link, and image-alternative review
+- Public repository and browser checks against the reviewed local data
+- `./scripts/check.sh`
+
 ### DEV-11 — Clean local release-candidate rehearsal
 
 **Status:** `QUEUED`  
-**Depends on:** DEV-10
+**Depends on:** DEV-10A
 
 **Outcome:** A contributor can reproduce the complete development result from documented inputs without relying on hidden machine state.
 

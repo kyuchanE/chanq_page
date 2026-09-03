@@ -266,6 +266,127 @@ a {
   text-wrap: pretty;
 }
 
+.preview-notice {
+  max-width: var(--reading-width);
+  margin-bottom: var(--space-8);
+  padding: var(--space-3) var(--space-4);
+  border-left: 0.25rem solid var(--color-accent);
+  color: var(--color-text-muted);
+  background: rgb(255 253 247 / 70%);
+  font-size: 0.875rem;
+}
+
+.home-page,
+.profile-page {
+  display: grid;
+  gap: var(--space-16);
+}
+
+.home-hero,
+.home-section,
+.profile-section {
+  display: grid;
+  gap: var(--space-6);
+  min-width: 0;
+}
+
+.home-hero .page-introduction {
+  max-width: none;
+}
+
+.home-hero .page-introduction__title {
+  max-width: 17ch;
+  font-size: clamp(2.75rem, 8vw, 5.5rem);
+}
+
+.page-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-4) var(--space-6);
+}
+
+.action-link {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-small);
+  background: var(--color-accent);
+  color: var(--color-surface);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.action-link:hover {
+  background: var(--color-accent-strong);
+}
+
+.text-link {
+  width: fit-content;
+  border-radius: var(--radius-small);
+  color: var(--color-accent-strong);
+  font-weight: 700;
+}
+
+.home-notice {
+  margin: 0;
+  padding: var(--space-4) var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+}
+
+.profile-section {
+  max-width: var(--reading-width);
+}
+
+.profile-section h2,
+.contact-invitation h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  line-height: 1.2;
+}
+
+.profile-section p,
+.profile-section h3 {
+  margin: 0;
+}
+
+.profile-section p {
+  color: var(--color-text-muted);
+}
+
+.principles-list,
+.contact-options {
+  display: grid;
+  gap: var(--space-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.principles-list li,
+.contact-options li {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-large);
+  background: var(--color-surface);
+  overflow-wrap: anywhere;
+}
+
+.contact-invitation {
+  padding: var(--space-8);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-large);
+  background: linear-gradient(120deg, #e7eee8, var(--color-surface));
+}
+
 .projects-page {
   display: grid;
   gap: var(--space-16);
