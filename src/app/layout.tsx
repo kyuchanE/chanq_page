@@ -1,8 +1,19 @@
 import type { Metadata } from "next";
+import localFont from "next/font/local";
 
 import { PublicShell } from "@/app/_components/public-shell";
 
 import "./globals.css";
+
+const neoDunggeunmoCode = localFont({
+  src: "./fonts/neodgm-code-v1.601.woff2",
+  variable: "--font-neodunggeunmo-code",
+  display: "swap",
+  fallback: ["monospace"],
+  adjustFontFallback: false,
+  weight: "400",
+  style: "normal",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -19,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html className={neoDunggeunmoCode.variable} lang="en">
       <body>
         <PublicShell>{children}</PublicShell>
       </body>

@@ -52,7 +52,8 @@ jsdom is intentionally pinned below its newest major because version 30 requires
 | Import alias | `@/*` | Match the source-root convention without deep relative imports. |
 | Linting | ESLint with Next.js rules | Start from the framework-supported linting path. |
 | Formatting | Prettier | Keep formatting deterministic and separate from semantic lint rules. |
-| Styling | Tailwind CSS with explicit theme tokens | Support responsive delivery while keeping shared visual decisions centralized. |
+| Styling | Tailwind CSS with explicit Dracula palette theme tokens | Give the developer portfolio a code-editor character while keeping shared visual decisions and accessible semantic color roles centralized. |
+| Typography | Self-hosted NeoDunggeunmo Code 1.601 through `next/font/local` | Reinforce the editor-inspired direction with Korean glyph support while avoiding runtime font CDN requests. |
 | React optimization | React Compiler enabled through the scaffold option | Use the current recommended scaffold path and validate generated behavior. |
 | Development bundler | Turbopack default | Follow the current Next.js scaffold baseline unless a verified incompatibility appears. |
 
@@ -65,6 +66,8 @@ TypeScript + ESLint + Tailwind CSS + React Compiler + App Router
 ```
 
 Review the temporary scaffold before merging. Preserve repository-owned instructions, documentation, scripts, and unrelated user changes.
+
+The pinned `src/app/fonts/neodgm-code-v1.601.woff2` asset comes from the official NeoDunggeunmo 1.601 release and has SHA-256 `ea3a6af159aa584fba45a2b47640cf267be193110b5877b59a689a669ad9a4c6`. Its unmodified SIL Open Font License is stored beside it in `src/app/fonts/NEODGM-LICENSE.txt`.
 
 ## Data and validation
 
