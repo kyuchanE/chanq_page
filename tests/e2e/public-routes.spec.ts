@@ -31,6 +31,9 @@ test("the public shell exposes landmarks and keyboard skip navigation", async ({
 
   await expect(page.getByRole("banner")).toBeVisible();
   await expect(
+    page.getByRole("banner").getByText("Hello, World!", { exact: true }),
+  ).toBeVisible();
+  await expect(
     page.getByRole("navigation", { name: "Primary navigation" }),
   ).toBeVisible();
   await expect(page.getByRole("main")).toBeVisible();
@@ -61,35 +64,49 @@ test("the shell adapts without page overflow at primary viewport sizes", async (
       await page.goto("/");
 
       const layoutState = await page.locator("html").evaluate((element) => {
-        const navigation = document
-          .querySelector(".primary-navigation__list")
-          ?.getBoundingClientRect();
-        const links = Array.from(
-          document.querySelectorAll(".primary-navigation__link"),
+        const title = document.querySelector<HTMLElement>(
+          ".site-header__title",
         );
+        const navigation = document.querySelector<HTMLElement>(
+          ".primary-navigation__list",
+        );
+        const links = Array.from(
+          document.querySelectorAll<HTMLElement>(".primary-navigation__link"),
+        );
+        const titleBounds = title?.getBoundingClientRect();
+        const navigationBounds = navigation?.getBoundingClientRect();
 
         return {
           gutter: getComputedStyle(element)
             .getPropertyValue("--page-gutter")
             .trim(),
+          hasClippedHeaderText:
+            title === null || title.scrollWidth > title.clientWidth,
           hasClippedNavigationLink:
-            navigation === undefined ||
+            navigationBounds === undefined ||
             links.some((link) => {
               const bounds = link.getBoundingClientRect();
 
               return (
-                bounds.left < navigation.left || bounds.right > navigation.right
+                bounds.left < navigationBounds.left ||
+                bounds.right > navigationBounds.right
               );
             }),
           hasPageOverflow:
             document.documentElement.scrollWidth >
             document.documentElement.clientWidth,
+          isNavigationBelowTitle:
+            titleBounds !== undefined &&
+            navigationBounds !== undefined &&
+            navigationBounds.top >= titleBounds.bottom,
         };
       });
 
       expect(layoutState.gutter).toBe(viewport.expectedGutter);
+      expect(layoutState.hasClippedHeaderText).toBe(false);
       expect(layoutState.hasClippedNavigationLink).toBe(false);
       expect(layoutState.hasPageOverflow).toBe(false);
+      expect(layoutState.isNavigationBelowTitle).toBe(true);
     });
   }
 });

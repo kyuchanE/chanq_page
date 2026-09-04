@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 import { PrimaryNavigation } from "@/app/_components/primary-navigation";
 
 export function PublicShell({
@@ -13,16 +11,7 @@ export function PublicShell({
 
       <header className="site-header">
         <div className="site-header__inner">
-          <Link aria-label="ChanQ home" className="site-brand" href="/">
-            <span aria-hidden="true" className="site-brand__mark">
-              CQ
-            </span>
-            <span className="site-brand__copy">
-              <span className="site-brand__name">ChanQ</span>
-              <span className="site-brand__role">Android · iOS · Web</span>
-            </span>
-          </Link>
-
+          <p className="site-header__title">Hello, World!</p>
           <PrimaryNavigation />
         </div>
       </header>

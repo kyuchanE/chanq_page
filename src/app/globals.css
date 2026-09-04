@@ -28,6 +28,7 @@
   --color-on-bright: var(--dracula-background);
   --color-footer: var(--dracula-gray);
   --color-footer-text: var(--dracula-white);
+  --color-terminal-shadow: rgb(40 42 54 / 72%);
 
   --font-sans: var(--font-neodunggeunmo-code), "NeoDunggeunmo Code", monospace;
   --font-display:
@@ -46,7 +47,7 @@
 
   --content-width: 72rem;
   --reading-width: 46rem;
-  --content-anchor-offset: 16rem;
+  --content-anchor-offset: 18rem;
   --page-gutter: 1rem;
   --radius-small: 0.5rem;
   --radius-large: 1.5rem;
@@ -143,48 +144,25 @@ a {
 
 .site-header__inner {
   display: grid;
-  gap: var(--space-3);
-  padding-block: var(--space-3) var(--space-2);
 }
 
-.site-brand {
-  display: inline-flex;
-  width: fit-content;
-  align-items: center;
-  gap: var(--space-3);
-  border-radius: var(--radius-small);
-  text-decoration: none;
-}
-
-.site-brand__mark {
-  display: grid;
-  width: 2.5rem;
-  aspect-ratio: 1;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--color-tertiary);
-  color: var(--color-on-bright);
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-}
-
-.site-brand__copy {
-  display: grid;
-  line-height: 1.15;
-}
-
-.site-brand__name {
-  font-family: var(--font-display);
-  font-size: 1.25rem;
+.site-header__title {
+  overflow: hidden;
+  margin: 0;
+  padding: var(--space-6) 0 calc(var(--space-6) + 0.2em);
+  color: var(--color-accent);
+  font-family: var(--font-code);
+  font-size: clamp(1.75rem, 8vw, 4.5rem);
   font-weight: 700;
-}
-
-.site-brand__role {
-  color: var(--color-text-muted);
-  font-size: 0.75rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  text-align: center;
+  text-shadow:
+    0.04em 0.04em 0 var(--color-accent-strong),
+    0.08em 0.08em 0 var(--color-tertiary),
+    0.12em 0.12em 0 var(--color-secondary),
+    0.18em 0.2em 0 var(--color-terminal-shadow);
+  white-space: nowrap;
 }
 
 .primary-navigation {
@@ -194,9 +172,10 @@ a {
 .primary-navigation__list {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   margin: 0;
   gap: var(--space-1);
-  padding: var(--space-1) 0 var(--space-2);
+  padding: 0 0 var(--space-3);
   list-style: none;
 }
 
@@ -1181,7 +1160,7 @@ a {
 @media (min-width: 48rem) {
   :root {
     --page-gutter: 2rem;
-    --content-anchor-offset: 10rem;
+    --content-anchor-offset: 13rem;
   }
 
   .site-main {
@@ -1224,20 +1203,11 @@ a {
 @media (min-width: 64rem) {
   :root {
     --page-gutter: 3rem;
-    --content-anchor-offset: var(--space-24);
-  }
-
-  .site-header__inner {
-    grid-template-columns: minmax(13rem, 1fr) auto;
-    align-items: center;
-    gap: var(--space-6);
-    padding-block: var(--space-4);
+    --content-anchor-offset: 13rem;
   }
 
   .primary-navigation__list {
     flex-wrap: nowrap;
-    justify-content: flex-end;
-    padding-block: var(--space-1);
   }
 
   .site-main {

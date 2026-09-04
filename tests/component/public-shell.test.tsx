@@ -18,14 +18,14 @@ afterEach(() => {
 });
 
 describe("PublicShell", () => {
-  it("provides the public landmarks and a main-content skip target", () => {
+  it("shows the terminal greeting above the public navigation", () => {
     render(
       <PublicShell>
         <h1>Page heading</h1>
       </PublicShell>,
     );
 
-    expect(screen.getByRole("banner")).toBeVisible();
+    expect(screen.getByText("Hello, World!")).toBeVisible();
     expect(
       screen.getByRole("navigation", { name: "Primary navigation" }),
     ).toBeVisible();
