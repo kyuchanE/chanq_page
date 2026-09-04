@@ -3,11 +3,8 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import {
-  parseProjectSlug,
-  ProjectDetail,
-  ProjectList,
-} from "@/features/content/projects";
+import { ProjectDetail } from "@/features/content/presentation/projects/project-detail";
+import { parseProjectSlug, ProjectList } from "@/features/content/projects";
 
 function projectSlug(value: string) {
   const slug = parseProjectSlug(value);

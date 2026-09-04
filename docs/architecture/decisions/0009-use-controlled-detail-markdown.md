@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted. Shared text/underline/link rendering and import validation are implemented; local media and the complete mixed-content workflow remain pending in the [development roadmap](../../project-roadmap.md).
+Accepted. Shared text/underline/link rendering, validated local media, and controlled GIF playback are implemented; the complete mixed-content workflow remains pending in the [development roadmap](../../project-roadmap.md).
 
 Refines [ADR-0003](0003-use-postgresql-for-mvp-content.md) and [ADR-0008](0008-use-versioned-content-imports.md) without replacing their content ownership or import transaction decisions.
 

@@ -4,11 +4,29 @@ import remarkParse from "remark-parse";
 import { unified, type Plugin } from "unified";
 
 import { resolveBodyLink } from "../../domain/markdown/body-link";
+import {
+  DETAIL_MEDIA_BUDGETS,
+  resolveDetailMedia,
+  type DetailMediaAsset,
+  type ResolvedDetailMedia,
+} from "./detail-media";
 
 export type DetailMarkdownIssue = Readonly<{
-  rule: "html" | "directive" | "link";
+  rule: "html" | "directive" | "link" | "media" | "media-budget";
   line: number;
   column: number;
+}>;
+
+export type DetailMarkdownOptions = Readonly<{
+  contentSlug?: string;
+  mediaRoot?: string;
+}>;
+
+export type DetailMarkdownAnalysis = Readonly<{
+  issues: readonly DetailMarkdownIssue[];
+  media: readonly ResolvedDetailMedia[];
+  uniqueAssets: readonly DetailMediaAsset[];
+  uniqueAssetBytes: number;
 }>;
 
 function plainText(node: Nodes): string {
@@ -33,8 +51,14 @@ function walk(node: Nodes, visit: (node: Nodes) => void) {
 }
 
 /** Both import inspection and public rendering run this same tree policy. */
-function controlTree(tree: Root, source: string): DetailMarkdownIssue[] {
+function controlTree(
+  tree: Root,
+  source: string,
+  options: DetailMarkdownOptions,
+): DetailMarkdownAnalysis {
   const issues: DetailMarkdownIssue[] = [];
+  const media: ResolvedDetailMedia[] = [];
+  const uniqueAssets = new Map<string, DetailMediaAsset>();
   const report = (node: Nodes, rule: DetailMarkdownIssue["rule"]) => {
     issues.push({
       rule,
@@ -103,32 +127,98 @@ function controlTree(tree: Root, source: string): DetailMarkdownIssue[] {
     node.data = { hProperties: { id } };
   });
 
+  const definitions = new Map<string, Extract<Nodes, { type: "definition" }>>();
   walk(tree, (node) => {
-    // Definitions include destinations used by reference links and images.
-    if (
-      node.type !== "link" &&
-      node.type !== "definition" &&
-      node.type !== "image"
-    ) {
+    if (node.type === "definition") {
+      definitions.set(node.identifier.toLowerCase(), node);
+    }
+  });
+  const imageDefinitions = new Set<Extract<Nodes, { type: "definition" }>>();
+  let lastMediaNode: Nodes | undefined;
+  walk(tree, (node) => {
+    if (node.type !== "image" && node.type !== "imageReference") return;
+    const definition =
+      node.type === "imageReference"
+        ? definitions.get(node.identifier.toLowerCase())
+        : undefined;
+    if (definition) imageDefinitions.add(definition);
+    const sourcePath = node.type === "image" ? node.url : definition?.url;
+    const result =
+      sourcePath && options.contentSlug
+        ? resolveDetailMedia(sourcePath, node.alt ?? undefined, {
+            contentSlug: options.contentSlug,
+            mediaRoot: options.mediaRoot,
+          })
+        : { ok: false as const, reason: "path" as const };
+    if (!result.ok) {
+      report(node, "media");
+      if (node.type === "image") node.url = "";
+      if (definition) definition.url = "";
       return;
     }
+    lastMediaNode = node;
+    media.push(result.media);
+    for (const asset of result.media.assets)
+      uniqueAssets.set(asset.path, asset);
+  });
+
+  const uniqueAssetBytes = [...uniqueAssets.values()].reduce(
+    (total, asset) => total + asset.bytes,
+    0,
+  );
+  if (lastMediaNode && uniqueAssetBytes > DETAIL_MEDIA_BUDGETS.bodyBytes) {
+    report(lastMediaNode, "media-budget");
+    walk(tree, (node) => {
+      if (node.type === "image") node.url = "";
+      if (node.type === "imageReference") {
+        const definition = definitions.get(node.identifier.toLowerCase());
+        if (definition) definition.url = "";
+      }
+    });
+  }
+
+  walk(tree, (node) => {
+    // Definitions include destinations used by reference links.
+    if (node.type !== "link" && node.type !== "definition") {
+      return;
+    }
+    if (node.type === "definition" && imageDefinitions.has(node)) return;
     const link = resolveBodyLink(node.url, targets);
     if (!link) report(node, "link");
     node.url = link?.href ?? "";
   });
-  return issues;
+  return {
+    issues,
+    media,
+    uniqueAssets: [...uniqueAssets.values()],
+    uniqueAssetBytes,
+  };
 }
 
 const parser = unified().use(remarkParse).use(remarkDirective);
 
-export function inspectDetailMarkdown(body: string): DetailMarkdownIssue[] {
-  return controlTree(parser.parse(body), body);
+export function analyzeDetailMarkdown(
+  body: string,
+  options: DetailMarkdownOptions = {},
+): DetailMarkdownAnalysis {
+  return controlTree(parser.parse(body), body, options);
 }
 
-const remarkControlledDetail: Plugin<[], Root> = () => {
-  return (tree, file) => {
-    controlTree(tree, String(file.value));
-  };
-};
+export function inspectDetailMarkdown(
+  body: string,
+  options: DetailMarkdownOptions = {},
+): readonly DetailMarkdownIssue[] {
+  return analyzeDetailMarkdown(body, options).issues;
+}
 
-export const detailMarkdownPlugins = [remarkDirective, remarkControlledDetail];
+function controlledDetailPlugin(
+  options: DetailMarkdownOptions,
+): Plugin<[], Root> {
+  return () => (tree, file) => {
+    controlTree(tree, String(file.value), options);
+  };
+}
+
+export function detailMarkdownPlugins(options: DetailMarkdownOptions) {
+  return [remarkDirective, controlledDetailPlugin(options)];
+}

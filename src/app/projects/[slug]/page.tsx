@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { findPublishedProject } from "@/app/_composition/projects";
-import { ProjectDetail } from "@/features/content/projects";
+import { ProjectDetail } from "@/features/content/presentation/projects/project-detail";
 
 export const dynamic = "force-dynamic";
 

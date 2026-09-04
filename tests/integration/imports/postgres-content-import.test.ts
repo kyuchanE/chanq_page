@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import { Pool } from "pg";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
+import mediaExample from "../../../content/examples/media-policy-demo.json";
 import { importContent } from "@/features/content/imports";
 import { connectPostgresContentRepositories } from "@/features/content/content.server";
 import { parsePostSlug } from "@/features/content/posts";
@@ -37,7 +38,7 @@ let temporaryDirectory: string;
 async function cleanup() {
   for (const table of ["posts", "projects", "tags", "skills"]) {
     await pool.query(
-      `delete from ${table} where ${table === "skills" ? "key" : "slug"} like 'import-check-%'`,
+      `delete from ${table} where ${table === "skills" ? "key" : "slug"} like 'import-check-%' or ${table === "skills" ? "key" : "slug"} = 'media-policy-demo'`,
     );
   }
 }
@@ -98,6 +99,82 @@ afterAll(async () => {
 });
 
 describe("application-role PostgreSQL content import", () => {
+  it("validates local media before dry-run/apply and preserves it on repeat", async () => {
+    const input = parseContentImport(mediaExample);
+    input.projects[0].status = "published";
+    input.projects[0].publishedAt = "2025-01-01T00:00:00.000Z";
+    const document = parseContentImport(input);
+    const before = await snapshot();
+    expect(
+      await importContent(connection.repository, document, {
+        mode: "dry-run",
+        allowPublish: true,
+      }),
+    ).toMatchObject({ projects: { created: 1 } });
+    expect(await snapshot()).toEqual(before);
+    await importContent(connection.repository, document, {
+      mode: "apply",
+      allowPublish: true,
+    });
+    const written = await snapshot();
+    expect(
+      await importContent(connection.repository, document, {
+        mode: "apply",
+        allowPublish: true,
+      }),
+    ).toMatchObject({ projects: { unchanged: 1 } });
+    expect(await snapshot()).toEqual(written);
+    expect(
+      await pool.query("select body from projects where slug = $1", [
+        "media-policy-demo",
+      ]),
+    ).toMatchObject({ rows: [{ body: document.projects[0].body }] });
+
+    const cliPreview = await cli([
+      "--target",
+      "test",
+      "--file",
+      "content/examples/media-policy-demo.json",
+      "--dry-run",
+    ]);
+    expect(cliPreview).toMatchObject({ code: 0, stderr: "" });
+  });
+
+  it.each(["dry-run", "apply"] as const)(
+    "rejects invalid media before %s with zero database writes",
+    async (mode) => {
+      const before = await snapshot();
+      for (const body of [
+        "![Remote image](https://example.com/private.png)",
+        "![](/media/media-policy-demo/architecture.png)",
+        "![Missing image](/media/media-policy-demo/missing.png)",
+        "![Traversal](/media/media-policy-demo/%2e%2e/architecture.png)",
+      ]) {
+        const input = structuredClone(mediaExample);
+        input.projects[0].body = body;
+        expect(() => parseContentImport(input)).toThrow(
+          "Invalid import fields: projects.0.body",
+        );
+      }
+      expect(await snapshot()).toEqual(before);
+      const invalid = structuredClone(mediaExample);
+      invalid.projects[0].body =
+        "![Missing image](/media/media-policy-demo/missing.png)";
+      const path = join(temporaryDirectory, `invalid-media-${mode}.json`);
+      await writeFile(path, JSON.stringify(invalid));
+      const result = await cli([
+        "--target",
+        "test",
+        "--file",
+        path,
+        `--${mode}`,
+      ]);
+      expect(result.code).toBe(2);
+      expect(result.stderr).toContain("projects.0.body");
+      expect(await snapshot()).toEqual(before);
+    },
+  );
+
   it("audits the isolated existing bodies without changing them", async () => {
     const before = await snapshot();
     const { rows } = await pool.query<{ body: string }>(

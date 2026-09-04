@@ -29,6 +29,7 @@ if [[ -f "${REPOSITORY_ROOT}/package.json" ]]; then
   corepack pnpm lint
   corepack pnpm typecheck
   corepack pnpm test
+  corepack pnpm content:media:verify --file content/examples/media-policy-demo.json
   corepack pnpm db:check
   corepack pnpm build
 else

@@ -73,7 +73,7 @@ export function PostDetail({ post }: PostDetailProps) {
         </section>
       ) : null}
 
-      <DetailMarkdown body={post.body} />
+      <DetailMarkdown body={post.body} contentSlug={post.slug} />
     </article>
   );
 }

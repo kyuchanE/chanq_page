@@ -1,11 +1,20 @@
 /** @vitest-environment jsdom */
 
-import { cleanup, render, screen, within } from "@testing-library/react";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  within,
+} from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { DetailMarkdown } from "@/features/content/presentation/markdown/detail-markdown";
-import { ProjectDetail, parseProjectSlug } from "@/features/content/projects";
-import { PostDetail, parsePostSlug } from "@/features/content/posts";
+import { PostDetail } from "@/features/content/presentation/posts/post-detail";
+import { ProjectDetail } from "@/features/content/presentation/projects/project-detail";
+import { parsePostSlug } from "@/features/content/posts";
+import { parseProjectSlug } from "@/features/content/projects";
 import {
   detailMarkdownBody,
   invalidDetailBodies,
@@ -15,7 +24,12 @@ afterEach(cleanup);
 
 describe("shared detail Markdown", () => {
   it("renders ordered semantic sections, fixed underline, literal code, and safe links", () => {
-    const { container } = render(<DetailMarkdown body={detailMarkdownBody} />);
+    const { container } = render(
+      <DetailMarkdown
+        body={detailMarkdownBody}
+        contentSlug="synthetic-markdown"
+      />,
+    );
     expect(screen.queryByRole("heading", { level: 1 })).toBeNull();
     expect(
       screen
@@ -74,7 +88,10 @@ describe("shared detail Markdown", () => {
     "defends stored input independently: %s",
     (body) => {
       const { container } = render(
-        <DetailMarkdown body={`${body}\n\nSurrounding explanation.`} />,
+        <DetailMarkdown
+          body={`${body}\n\nSurrounding explanation.`}
+          contentSlug="synthetic-markdown"
+        />,
       );
       expect(
         container.querySelector(
@@ -94,6 +111,7 @@ describe("shared detail Markdown", () => {
         body={
           "[Second](#content-context-2) [Missing](#not-real)\n\n## Context\n\n## Context\n\n### constructor\n\n#### Deeper\n\n##### Fifth\n\n###### Sixth"
         }
+        contentSlug="synthetic-markdown"
       />,
     );
     expect(screen.getAllByRole("heading").map((heading) => heading.id)).toEqual(
@@ -112,6 +130,90 @@ describe("shared detail Markdown", () => {
     );
     expect(screen.queryByRole("link", { name: "Missing" })).toBeNull();
     expect(container).toHaveTextContent("Missing");
+  });
+
+  it("reserves local image space and controls GIF playback from a static poster", async () => {
+    const listeners = new Set<(event: MediaQueryListEvent) => void>();
+    Object.defineProperty(window, "matchMedia", {
+      configurable: true,
+      value: () => ({
+        addEventListener: (
+          _name: string,
+          listener: (event: MediaQueryListEvent) => void,
+        ) => listeners.add(listener),
+        matches: false,
+        removeEventListener: (
+          _name: string,
+          listener: (event: MediaQueryListEvent) => void,
+        ) => listeners.delete(listener),
+      }),
+    });
+    const body = [
+      "Before the still image.",
+      "",
+      "![Generated architecture](/media/media-policy-demo/architecture.png)",
+      "",
+      "![Generated interaction](/media/media-policy-demo/interaction.gif)",
+      "",
+      "After the GIF.",
+    ].join("\n");
+    render(<DetailMarkdown body={body} contentSlug="media-policy-demo" />);
+
+    const still = screen.getByRole("img", { name: "Generated architecture" });
+    expect(still).toHaveAttribute(
+      "src",
+      "/media/media-policy-demo/architecture.png",
+    );
+    expect(still).toHaveAttribute("width", "320");
+    expect(still).toHaveAttribute("height", "180");
+    expect(still).toHaveAttribute("loading", "lazy");
+    const gif = screen.getByRole("img", { name: "Generated interaction" });
+    expect(gif).toHaveAttribute(
+      "src",
+      "/media/media-policy-demo/interaction.poster.webp",
+    );
+    const play = await screen.findByRole("button", { name: "Play animation" });
+    fireEvent.click(play);
+    expect(gif).toHaveAttribute(
+      "src",
+      "/media/media-policy-demo/interaction.gif",
+    );
+    const stop = screen.getByRole("button", { name: "Stop animation" });
+    fireEvent.click(stop);
+    expect(gif).toHaveAttribute(
+      "src",
+      "/media/media-policy-demo/interaction.poster.webp",
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Play animation" }));
+    act(() => {
+      for (const listener of listeners) {
+        listener({ matches: true } as MediaQueryListEvent);
+      }
+    });
+    expect(
+      screen.getByRole("button", { name: "Play animation" }),
+    ).toBeVisible();
+    expect(gif).toHaveAttribute(
+      "src",
+      "/media/media-policy-demo/interaction.poster.webp",
+    );
+    expect(screen.getByText("After the GIF.")).toBeVisible();
+  });
+
+  it("keeps useful fallback text when stored media is invalid or missing", () => {
+    render(
+      <DetailMarkdown
+        body={
+          "Before.\n\n![Stored evidence](/media/missing-content/missing.png)\n\nAfter."
+        }
+        contentSlug="missing-content"
+      />,
+    );
+    expect(
+      screen.getByRole("img", { name: "Stored evidence" }),
+    ).toHaveTextContent("Image unavailable: Stored evidence");
+    expect(screen.getByText("Before.")).toBeVisible();
+    expect(screen.getByText("After.")).toBeVisible();
   });
 
   it("preserves identical body output across project, article, and retrospective with one plain title each", () => {

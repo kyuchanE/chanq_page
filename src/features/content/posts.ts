@@ -11,7 +11,6 @@ export {
   postDetailPath,
   postSectionPath,
 } from "@/features/content/domain/posts/post";
-export { PostDetail } from "@/features/content/presentation/posts/post-detail";
 export { PostError } from "@/features/content/presentation/posts/post-error";
 export { PostList } from "@/features/content/presentation/posts/post-list";
 export { PostLoading } from "@/features/content/presentation/posts/post-loading";

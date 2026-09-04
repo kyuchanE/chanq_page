@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "skills": [],
+  "tags": [],
+  "projects": [
+    {
+      "slug": "media-policy-demo",
+      "title": "Synthetic media policy demonstration",
+      "summary": "An unpublished, generated example for local media validation; it is not professional evidence.",
+      "body": "## Synthetic architecture image\n\nThe generated bands and diagonal marker exercise intrinsic PNG sizing without depicting a real system.\n\n![Generated green and cream bands crossed by an orange diagonal marker][architecture-image]\n\n## Synthetic JPEG\n\n![Two generated color blocks labeled Synthetic](/media/media-policy-demo/still.jpg)\n\n## Controlled GIF\n\nThe generated stripe movement tests explicit playback without representing product behavior.\n\n![Generated diagonal stripes shifting between two positions](/media/media-policy-demo/interaction.gif)\n\nThe explanation remains available while the animation is stopped.\n\n[architecture-image]: /media/media-policy-demo/architecture.png",
+      "status": "draft",
+      "publishedAt": null,
+      "seoTitle": "Synthetic media policy demonstration",
+      "seoDescription": "An unpublished generated input for local media-policy validation.",
+      "ogImagePath": null,
+      "featured": false,
+      "displayOrder": 0,
+      "repositoryUrl": null,
+      "liveUrl": null,
+      "skillKeys": []
+    }
+  ],
+  "posts": []
+}

@@ -50,7 +50,7 @@ Run:
 ./scripts/check.sh
 ```
 
-The default check runs the repository harness, skill validation, Markdown-link validation, Prettier check, ESLint, TypeScript, Vitest, Drizzle migration consistency, and the production build. It intentionally does not start Docker or a browser.
+The default check runs the repository harness, skill validation, Markdown-link validation, Prettier check, ESLint, TypeScript, Vitest, the read-only synthetic media asset verification, Drizzle migration consistency, and the production build. It intentionally does not start Docker or a browser.
 
 Run service-dependent and production-like browser checks explicitly when they are relevant:
 

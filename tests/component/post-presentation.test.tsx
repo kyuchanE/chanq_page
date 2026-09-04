@@ -3,7 +3,8 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { parsePostSlug, PostDetail, PostList } from "@/features/content/posts";
+import { PostDetail } from "@/features/content/presentation/posts/post-detail";
+import { parsePostSlug, PostList } from "@/features/content/posts";
 
 function postSlug(value: string) {
   const slug = parsePostSlug(value);

@@ -5,7 +5,7 @@ import {
   createPublishedPostMetadata,
   findPublishedPost,
 } from "@/app/_composition/posts";
-import { PostDetail } from "@/features/content/posts";
+import { PostDetail } from "@/features/content/presentation/posts/post-detail";
 
 export const dynamic = "force-dynamic";
 

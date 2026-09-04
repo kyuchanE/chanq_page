@@ -8,11 +8,11 @@ Only the development Mac's `development` and isolated `test` targets are support
 
 The versioned format and update policy are recorded in [ADR-0008](../architecture/decisions/0008-use-versioned-content-imports.md).
 
-### Detail body policy: current validation versus planned work
+### Detail body policy
 
-The [authoring policy](content-authoring.md) defines approved emphasis, underline, image/GIF, link, and mixed-section behavior for all detail types. Imports now validate parsed body links and directives in addition to the body string and metadata. Raw HTML, unsupported directives/attributes, and unsafe or unresolved fragment destinations fail with an invalid `projects.<index>.body` or `posts.<index>.body` field, without echoing source text. Both dry-run and apply inspect incoming Markdown before opening a transaction. The public renderer independently enforces the same text/link contract for stored bodies.
+The [authoring policy](content-authoring.md) defines approved emphasis, underline, image/GIF, link, and mixed-section behavior for all detail types. Imports validate parsed body links and directives plus local media paths, actual formats, file existence, dimensions, per-file/per-body budgets, nonempty alternative text, and GIF poster pairing. Raw HTML, unsupported directives/attributes, unsafe or unresolved destinations, and invalid media fail with an invalid `projects.<index>.body` or `posts.<index>.body` field without echoing source text. Both dry-run and apply finish this inspection before opening a transaction. The public renderer independently enforces the same text/link/media contract for stored bodies.
 
-DEV-09B and DEV-09C in the [roadmap](../project-roadmap.md) still need media existence/type/size, alternative-text, poster, and full mixed-content checks. A successful dry-run does not prove media readiness. The version-1 JSON envelope is unchanged. No URLs are fetched by text validation. Asset files remain separate versioned release inputs, not files copied or uploaded by this CLI; public asset paths are never protected by a record's draft status.
+DEV-09C in the [roadmap](../project-roadmap.md) still needs a complete mixed-content round trip through every detail type. The version-1 JSON envelope is unchanged. No URL is fetched during validation. Asset files remain separate versioned release inputs rather than files copied or uploaded by this CLI; public asset paths are never protected by a record's draft status.
 
 A read-only compatibility audit found no text/link issues in the two example inputs (7 bodies), development writing (9 bodies), or isolated test writing (8 bodies). Existing bodies are never silently rewritten. Snapshot reads retain the old structural schema so a reviewed valid input can repair incompatible legacy text; dry-run reports the proposed update without modifying it.
 
@@ -22,11 +22,12 @@ Install dependencies from the lockfile and complete the [local PostgreSQL setup]
 
 ```bash
 pnpm content:import --help
+pnpm content:media:verify --file content/examples/media-policy-demo.json
 pnpm content:import --target development --file content/examples/local-draft.json --dry-run
 pnpm content:import --target development --file content/examples/local-draft.json --apply
 ```
 
-The [draft example](../../content/examples/local-draft.json) has unpublished writing and a hidden synthetic skill. Applying it creates example rows in the selected database; omit `--apply` when only reviewing the format. Replace example copy and identities with reviewed content before preparing actual portfolio material.
+The [draft example](../../content/examples/local-draft.json) has unpublished writing and a hidden synthetic skill. The separate [media-policy example](../../content/examples/media-policy-demo.json) is an unpublished, generated input for the read-only media check; its versioned files are under `public/media/media-policy-demo/`. Applying either input creates example rows in the selected database, so omit `--apply` when only reviewing the format. Replace example copy, identities, and media with reviewed content before preparing actual portfolio material.
 
 Both the input path and `.env.local` resolve from the repository root. Absolute input paths also work. The script derives that root from its own location. `tsx` is a pinned development dependency used to execute the TypeScript entry point without maintaining a second compiled CLI or raising the Node.js baseline. Type checking remains part of `scripts/check.sh`.
 
@@ -127,6 +128,6 @@ pnpm db:test:repositories
 
 Unit tests cover accepted/rejected metadata, fixture markers, local targeting, explicit publication, and application planning. Application-role PostgreSQL tests cover all aggregates and relationships, database-enforced read-only dry-run with unchanged seven-table snapshots, stable repeated imports including UUIDs/audit timestamps, partial updates, publication/unpublication, immutable kind ownership, and rollback after late relation and real database constraint failures. CLI tests run from outside the repository and check successful dry-run/apply/repeat plus exit codes 1, 2, and 3 without disclosing content or credentials.
 
-Controlled-text tests also cover raw HTML, unsupported/attributed/nested directives, encoded unsafe schemes, credentials, controls, traversal, protocol-relative and reference-style destinations, image-link destinations, literal code/escaping, and missing heading fragments. Integration checks exercise invalid bodies in both modes with unchanged snapshots, all three detail kinds with normalized text readback, unchanged repeat imports, preservation of unrelated records/relations, and explicit repair of legacy text. Media filesystem/playback validation remains pending.
+Controlled-text tests also cover raw HTML, unsupported/attributed/nested directives, encoded unsafe schemes, credentials, controls, traversal, protocol-relative and reference-style destinations, image-link destinations, literal code/escaping, and missing heading fragments. Media tests cover supported encodings, intrinsic dimensions, byte budgets, alternative text, poster pairing, missing/mismatched/oversized files, animated non-GIF input, encoded path bypasses, symlink escape, and safe public fallbacks. Integration checks exercise invalid bodies in both modes with unchanged snapshots, valid media dry-run/apply/repeat, all three text detail kinds with normalized readback, preservation of unrelated records/relations, and explicit repair of legacy text.
 
 The integration command resets only the synthetic test database, runs import and read-repository suites sequentially because they share that database, and cleans up import probe records. It does not import authored development content or run production operations.

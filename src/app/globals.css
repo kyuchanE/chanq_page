@@ -996,6 +996,61 @@ a {
   color: inherit;
 }
 
+.content-media {
+  display: inline-grid;
+  width: 100%;
+  max-width: 100%;
+  gap: var(--space-3);
+  vertical-align: top;
+}
+
+.content-media img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  background: var(--color-surface);
+}
+
+.content-media__controls {
+  display: flex;
+  align-items: center;
+}
+
+.content-media__controls button {
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-small);
+  background: var(--color-surface);
+  color: var(--color-accent-strong);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+}
+
+.content-media__controls button:hover:not(:disabled) {
+  background: rgb(31 100 76 / 9%);
+}
+
+.content-media__controls button:disabled {
+  border-color: var(--color-border);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+.content-media__fallback {
+  display: inline-block;
+  width: 100%;
+  padding: var(--space-6);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-small);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+}
+
 .project-not-found,
 .post-not-found,
 .content-route-state {

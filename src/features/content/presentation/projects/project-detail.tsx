@@ -66,7 +66,7 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
         </nav>
       ) : null}
 
-      <DetailMarkdown body={project.body} />
+      <DetailMarkdown body={project.body} contentSlug={project.slug} />
     </article>
   );
 }

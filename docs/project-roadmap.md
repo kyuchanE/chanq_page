@@ -43,37 +43,12 @@ Those requirements remain authoritative in the product and operations documentat
 
 ## Remaining work
 
-The next slices implement the remaining media requirements in the approved [product acceptance criteria](product/project-scope.md#detail-content-acceptance-criteria), [authoring policy](development/content-authoring.md), and [ADR-0009](architecture/decisions/0009-use-controlled-detail-markdown.md). Preserve the existing DEV-10, DEV-10A, and DEV-11 identifiers; execute DEV-09B → DEV-09C before them. New sample fixtures must remain explicitly synthetic and do not satisfy the owner-reviewed release-content gate.
-
-### DEV-09B — Validated inline images and controlled GIF demonstrations
-
-**Status:** `READY`
-**Depends on:** None
-
-**Outcome:** Authors can place reviewed still images and GIF demonstrations anywhere in a detail body without uploads, remote embedding, layout breakage, or forced animation.
-
-**Completion conditions:**
-
-- Add clearly labeled synthetic, permission-safe media under `public/media/` and implement the authoring policy's PNG/JPEG/static-WebP/GIF contract using ordinary Markdown image nodes.
-- Validate normalized paths, file content/type/existence, dimensions, nonempty alternative text, GIF companion posters, and the documented per-file/per-body byte budgets in both import modes before writes. Reject remote/data URLs, traversal and encoded bypasses, symlink escapes, unsupported formats, animated encodings other than GIF, and missing assets without remote fetches. Review alternative-text usefulness manually.
-- Reuse defensive media rules at rendering and add a read-only release asset verification path so legacy/modified rows and missing release files cannot silently bypass the policy.
-- Reserve intrinsic layout space, preserve aspect ratio, fit mobile/tablet/desktop widths, lazy-load offscreen media, and retain accessible failure text without losing surrounding content.
-- Resolve each GIF's documented `.poster.webp` companion. Render only the poster initially, load the original animation on Play, and remove it on Stop. Do not flatten animation through an image optimizer.
-- Isolate accessible Play/Stop interaction in a small client leaf. Verify visible focus, reduced-motion changes, and a useful no-JavaScript poster; never auto-start GIFs.
-- Document repeatable asset preparation/verification, public exposure even for draft records, byte-budget results, and release packaging/retention requirements. Do not introduce an upload API, object storage, new database table, or production action.
-
-**Validation:**
-
-- Unit/component and local-file tests for valid formats, dimensions/budgets, alt text, poster pairing, invalid/missing/oversized files, encoded traversal, symlink escapes, and safe rendered fallbacks
-- Isolated PostgreSQL import tests for valid body/media references, unchanged repeated imports, and zero writes on invalid-media rejection
-- Targeted production-server browser checks for actual image loads, responsive layout, stable reserved space, GIF play/stop/restart, reduced-motion changes, keyboard controls, and no-JavaScript posters
-- Read-only asset verification against the test release inputs
-- `./scripts/check.sh`
+The next slice completes the mixed-content requirements in the approved [product acceptance criteria](product/project-scope.md#detail-content-acceptance-criteria), [authoring policy](development/content-authoring.md), and [ADR-0009](architecture/decisions/0009-use-controlled-detail-markdown.md). Preserve the existing DEV-10, DEV-10A, and DEV-11 identifiers; execute DEV-09C before them. New sample fixtures must remain explicitly synthetic and do not satisfy the owner-reviewed release-content gate.
 
 ### DEV-09C — Mixed-content authoring and public round-trip verification
 
-**Status:** `QUEUED`
-**Depends on:** DEV-09B
+**Status:** `READY`
+**Depends on:** None
 
 **Outcome:** One documented local workflow proves the requested mixed-content layout from a reviewed import through PostgreSQL to every detail type.
 

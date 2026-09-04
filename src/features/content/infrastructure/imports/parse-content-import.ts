@@ -4,7 +4,10 @@ import {
   ContentImportError,
   type ContentImportDocument,
 } from "../../domain/imports/content-import";
-import { inspectDetailMarkdown } from "../markdown/detail-markdown";
+import {
+  analyzeDetailMarkdown,
+  type DetailMarkdownOptions,
+} from "../markdown/detail-markdown";
 
 export const MAX_IMPORT_BYTES = 2 * 1024 * 1024;
 
@@ -126,19 +129,6 @@ const documentSchema = z
   })
   .strict()
   .superRefine((document, context) => {
-    // Inspect incoming bodies, not the schemas used to read existing snapshots:
-    // a reviewed valid import must still be able to repair a legacy body.
-    for (const collection of ["projects", "posts"] as const) {
-      document[collection].forEach((row, index) => {
-        if (inspectDetailMarkdown(row.body).length > 0) {
-          context.addIssue({
-            code: "custom",
-            path: [collection, index, "body"],
-            message: "Body violates the controlled Markdown contract.",
-          });
-        }
-      });
-    }
     for (const collection of ["skills", "tags", "projects", "posts"] as const) {
       const identifiers = document[collection].map((row) =>
         "key" in row ? row.key : row.slug,
@@ -160,22 +150,89 @@ const documentSchema = z
     }
   });
 
-export function parseContentImport(input: unknown): ContentImportDocument {
+export type ContentImportMediaSummary = Readonly<{
+  bodies: readonly Readonly<{
+    bytes: number;
+    collection: "posts" | "projects";
+    mediaReferences: number;
+    slug: string;
+    uniqueAssets: number;
+  }>[];
+  totalBytes: number;
+  uniqueAssets: number;
+}>;
+
+type ContentImportParseOptions = Readonly<
+  Pick<DetailMarkdownOptions, "mediaRoot">
+>;
+
+function invalidInput(paths: readonly string[]): never {
+  throw new ContentImportError(
+    "invalid-input",
+    `Invalid import fields: ${paths.slice(0, 8).join(", ")}. See the version-1 format.`,
+  );
+}
+
+export function inspectContentImportMedia(
+  document: ContentImportDocument,
+  options: ContentImportParseOptions = {},
+): ContentImportMediaSummary {
+  const invalidPaths: string[] = [];
+  const bodies: ContentImportMediaSummary["bodies"][number][] = [];
+  const assets = new Map<string, number>();
+  // Inspect incoming bodies, not the schemas used to read existing snapshots:
+  // a reviewed valid import must still be able to repair a legacy body.
+  for (const collection of ["projects", "posts"] as const) {
+    document[collection].forEach((row, index) => {
+      const analysis = analyzeDetailMarkdown(row.body, {
+        contentSlug: row.slug,
+        mediaRoot: options.mediaRoot,
+      });
+      if (analysis.issues.length > 0) {
+        invalidPaths.push(`${collection}.${index}.body`);
+        return;
+      }
+      if (analysis.media.length > 0) {
+        bodies.push({
+          bytes: analysis.uniqueAssetBytes,
+          collection,
+          mediaReferences: analysis.media.length,
+          slug: row.slug,
+          uniqueAssets: analysis.uniqueAssets.length,
+        });
+        for (const asset of analysis.uniqueAssets)
+          assets.set(asset.path, asset.bytes);
+      }
+    });
+  }
+  if (invalidPaths.length > 0) invalidInput(invalidPaths);
+  return {
+    bodies,
+    totalBytes: [...assets.values()].reduce((total, bytes) => total + bytes, 0),
+    uniqueAssets: assets.size,
+  };
+}
+
+export function parseContentImport(
+  input: unknown,
+  options: ContentImportParseOptions = {},
+): ContentImportDocument {
   const result = documentSchema.safeParse(input);
   if (!result.success) {
     const paths = result.error.issues
       .slice(0, 8)
       .map((issue) => issue.path.join(".") || "document");
     // Do not echo Zod messages, unknown property names, or source values.
-    throw new ContentImportError(
-      "invalid-input",
-      `Invalid import fields: ${paths.join(", ")}. See the version-1 format.`,
-    );
+    invalidInput(paths);
   }
+  inspectContentImportMedia(result.data, options);
   return result.data;
 }
 
-export function parseContentImportJson(source: string): ContentImportDocument {
+export function parseContentImportJson(
+  source: string,
+  options: ContentImportParseOptions = {},
+): ContentImportDocument {
   let value: unknown;
   try {
     value = JSON.parse(source);
@@ -185,5 +242,5 @@ export function parseContentImportJson(source: string): ContentImportDocument {
       "Input must be valid JSON; no source content was logged.",
     );
   }
-  return parseContentImport(value);
+  return parseContentImport(value, options);
 }

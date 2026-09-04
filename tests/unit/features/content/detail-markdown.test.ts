@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import draftExample from "../../../../content/examples/local-draft.json";
+import mediaExample from "../../../../content/examples/media-policy-demo.json";
 import previewExample from "../../../../content/examples/portfolio-preview.json";
 import { resolveBodyLink } from "@/features/content/domain/markdown/body-link";
 import { inspectDetailMarkdown } from "@/features/content/infrastructure/markdown/detail-markdown";
@@ -78,13 +79,15 @@ describe("body destination policy", () => {
 
 describe("controlled Markdown import boundary", () => {
   it("preserves existing reviewed inputs and the synthetic text contract", () => {
-    for (const example of [draftExample, previewExample]) {
+    for (const example of [draftExample, mediaExample, previewExample]) {
       const parsed = parseContentImport(example);
       expect(
         [...parsed.projects, ...parsed.posts].map((row) => row.body),
       ).toEqual([...example.projects, ...example.posts].map((row) => row.body));
       for (const row of [...example.projects, ...example.posts]) {
-        expect(inspectDetailMarkdown(row.body)).toEqual([]);
+        expect(
+          inspectDetailMarkdown(row.body, { contentSlug: row.slug }),
+        ).toEqual([]);
       }
     }
     const document = importFixture();

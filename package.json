@@ -19,6 +19,7 @@
     "test:e2e": "pnpm db:seed:test:reset && pnpm build && playwright test",
     "check": "./scripts/check.sh",
     "content:import": "node --import tsx scripts/import-content.mts",
+    "content:media:verify": "node --import tsx scripts/verify-content-media.mts",
     "db:generate": "drizzle-kit generate",
     "db:check": "MIGRATION_DATABASE_URL=postgresql://schema-check@127.0.0.1:5433/unused TEST_MIGRATION_DATABASE_URL=postgresql://schema-check@127.0.0.1:5433/unused drizzle-kit check",
     "db:migrate": "drizzle-kit migrate",

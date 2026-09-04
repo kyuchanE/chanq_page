@@ -94,7 +94,9 @@ async function main() {
       "Cannot read input: use a UTF-8 JSON file no larger than 2 MiB.",
     );
   }
-  const document = parseContentImportJson(source);
+  const document = parseContentImportJson(source, {
+    mediaRoot: resolve(root, "public/media"),
+  });
   const connection = connectPostgresContentImport(target);
   try {
     const summary = await importContent(connection.repository, document, {

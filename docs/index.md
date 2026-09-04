@@ -14,7 +14,7 @@ This page answers three questions for contributors and Codex: **what are we buil
 8. [`operations/deployment-topology.md`](operations/deployment-topology.md) — Docker, Nginx, Cloudflare Tunnel, and PostgreSQL topology.
 9. [`operations/postgresql-lifecycle.md`](operations/postgresql-lifecycle.md) — migration, seed, import, backup, restore, and recovery policy.
 10. [`development/content-import.md`](development/content-import.md) — versioned local import format, publication rules, dry-run/apply commands, conflicts, and recovery.
-11. [`development/content-authoring.md`](development/content-authoring.md) — implemented shared text/underline/link contract, compatibility evidence, and planned image/GIF and mixed-content controls.
+11. [`development/content-authoring.md`](development/content-authoring.md) — implemented shared text/link/local-media contract, asset workflow, compatibility evidence, and the remaining mixed-content gate.
 
 ## Architecture decisions
 
@@ -26,7 +26,7 @@ This page answers three questions for contributors and Codex: **what are we buil
 - [`ADR-0006: Separate Local PostgreSQL Application Roles`](architecture/decisions/0006-separate-local-postgresql-application-roles.md)
 - [`ADR-0007: Classify Posts by Kind`](architecture/decisions/0007-classify-posts-by-kind.md)
 - [`ADR-0008: Use Versioned Content Imports`](architecture/decisions/0008-use-versioned-content-imports.md)
-- [`ADR-0009: Use Controlled Detail Markdown`](architecture/decisions/0009-use-controlled-detail-markdown.md) — accepted; text/link rendering and import validation are implemented, with media controls pending
+- [`ADR-0009: Use Controlled Detail Markdown`](architecture/decisions/0009-use-controlled-detail-markdown.md) — accepted; text/link/local-media controls are implemented, with the complete mixed-content workflow pending
 
 ## Current project state
 
@@ -42,7 +42,7 @@ The repository is in the **MVP PostgreSQL-backed public content** stage:
 - Projects is the first completed PostgreSQL-backed public slice. Its dynamic list and stable detail route expose only published projects, deterministic featured/display ordering, visible related skills, controlled CommonMark rendering, content-aligned metadata, accessible loading/empty/recoverable-error states, and draft/unknown/malformed-slug 404 behavior.
 - Skills is a dynamic PostgreSQL-backed public slice with deterministic category/display ordering, narrative evidence, published-project-only case-study links, and accessible loading/empty/recoverable-error states. It does not expose hidden skills, draft project relations, percentages, or unsupported ratings.
 - Blog and Retrospectives are dynamic PostgreSQL-backed list and detail slices over one classified post repository. They expose only published posts of the owning kind in deterministic publication order, controlled CommonMark, ordered tags, published related projects, content-aligned metadata and canonical URLs, accessible route states, and 404 behavior for drafts, kind mismatches, unknown slugs, and malformed slugs.
-- All three detail types share one server-rendered Markdown component, CommonMark typography, fixed underline, H1-to-H2 compatibility, generated heading anchors, and decoded/normalized body links. Incoming imports reject unsafe text/directives/links before transactions, and stored content receives independent safe rendering. Unit/component and isolated PostgreSQL tests cover hostile inputs, identical detail output, normalized readback, and unchanged repeat imports. Media validation/playback and full mixed-content verification remain planned ahead of DEV-10; see the [authoring policy](development/content-authoring.md).
+- All three detail types share one server-rendered Markdown component, CommonMark typography, fixed underline, H1-to-H2 compatibility, generated heading anchors, decoded/normalized body links, and responsive local media. Incoming imports reject unsafe text/directives/links and invalid assets before transactions; stored content independently repeats the defensive text/media policy. GIFs start as same-sized static WebP posters and load only through an accessible Play/Stop client leaf. Unit/component, local-file, isolated PostgreSQL, and production-server browser tests cover hostile input, formats/dimensions/budgets, missing assets, poster pairing, zero-write rejection, responsive loads, keyboard controls, reduced-motion changes, and no-JavaScript posters. The full three-detail mixed-content workflow remains planned ahead of DEV-10; see the [authoring policy](development/content-authoring.md).
 - PostgreSQL 16.14 runs as a project-local `linux/arm64` Docker service on the development Mac. It binds to localhost port 5433 so the existing Homebrew PostgreSQL 16 service on port 5432 remains untouched.
 - The isolated `chanq_page` and `chanq_page_test` databases use the same two committed Drizzle migrations. The physical schema contains posts, projects, skills, tags, and their three relationship tables. Every post has one explicit `article` or `retrospective` kind; the owning Blog or Retrospectives detail URL is its sole canonical URL.
 - Zod validates database URLs, `.env.example` contains safe placeholders, and the actual `.env.local` remains ignored.
@@ -50,7 +50,7 @@ The repository is in the **MVP PostgreSQL-backed public content** stage:
 - Local migrations and administration use the `root` database role, while isolated least-privilege application roles own routine development and test DML; permission checks cover DDL denial, migration-ledger denial, and cross-database isolation.
 - Deterministic development seed rows use fixed identities, timestamps, and a reserved namespace without replacing developer-authored rows. The isolated test database resets to separate synthetic fixtures, and integration checks prove repeat stability, reset recovery, and cross-environment marker isolation.
 - Prettier, Vitest, React Testing Library, DOM matchers, and Playwright provide deterministic formatting, unit/component, and production-like browser smoke-test entry points.
-- The default repository check enforces formatting, linting, type checking, unit/component tests, migration consistency, and the production build without starting Docker or a browser.
+- The default repository check enforces formatting, linting, type checking, unit/component tests, read-only synthetic media asset verification, migration consistency, and the production build without starting Docker or a browser.
 - The approved topology assigns development and production to separate Apple Silicon Macs; production will run pinned `linux/arm64` containers on macOS when infrastructure is scaffolded.
 - Schema promotion uses committed migrations, content promotion uses the validated import path, and logical backups are limited to initial bootstrap or disaster recovery.
 - Project, skill, and post read repositories validate database rows, translate adapter failures into project-owned errors, share one runtime connection pool, and run through the least-privilege application role. PostgreSQL integration and production-server browser checks cover the dynamic public slices.
