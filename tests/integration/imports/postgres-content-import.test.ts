@@ -35,10 +35,19 @@ const script = fileURLToPath(
 const loader = createRequire(import.meta.url).resolve("tsx");
 let temporaryDirectory: string;
 
+const mixedFixtureIdentities = {
+  posts: mediaExample.posts.map((row) => row.slug),
+  projects: mediaExample.projects.map((row) => row.slug),
+  skills: mediaExample.skills.map((row) => row.key),
+  tags: mediaExample.tags.map((row) => row.slug),
+} as const;
+
 async function cleanup() {
-  for (const table of ["posts", "projects", "tags", "skills"]) {
+  for (const table of ["posts", "projects", "tags", "skills"] as const) {
+    const identityColumn = table === "skills" ? "key" : "slug";
     await pool.query(
-      `delete from ${table} where ${table === "skills" ? "key" : "slug"} like 'import-check-%' or ${table === "skills" ? "key" : "slug"} = 'media-policy-demo'`,
+      `delete from ${table} where ${identityColumn} like 'import-check-%' or ${identityColumn} = any($1::text[]) or ${identityColumn} = 'media-policy-demo'`,
+      [mixedFixtureIdentities[table]],
     );
   }
 }
@@ -99,45 +108,81 @@ afterAll(async () => {
 });
 
 describe("application-role PostgreSQL content import", () => {
-  it("validates local media before dry-run/apply and preserves it on repeat", async () => {
-    const input = parseContentImport(mediaExample);
-    input.projects[0].status = "published";
-    input.projects[0].publishedAt = "2025-01-01T00:00:00.000Z";
-    const document = parseContentImport(input);
+  it("round-trips all mixed-content detail kinds without changing unrelated rows or stable identities", async () => {
+    const document = parseContentImport(mediaExample);
     const before = await snapshot();
-    expect(
-      await importContent(connection.repository, document, {
-        mode: "dry-run",
-        allowPublish: true,
-      }),
-    ).toMatchObject({ projects: { created: 1 } });
-    expect(await snapshot()).toEqual(before);
-    await importContent(connection.repository, document, {
-      mode: "apply",
-      allowPublish: true,
-    });
-    const written = await snapshot();
-    expect(
-      await importContent(connection.repository, document, {
-        mode: "apply",
-        allowPublish: true,
-      }),
-    ).toMatchObject({ projects: { unchanged: 1 } });
-    expect(await snapshot()).toEqual(written);
-    expect(
-      await pool.query("select body from projects where slug = $1", [
-        "media-policy-demo",
-      ]),
-    ).toMatchObject({ rows: [{ body: document.projects[0].body }] });
-
-    const cliPreview = await cli([
+    const fixtureArgs = [
       "--target",
       "test",
       "--file",
       "content/examples/media-policy-demo.json",
-      "--dry-run",
-    ]);
-    expect(cliPreview).toMatchObject({ code: 0, stderr: "" });
+      "--allow-publish",
+    ];
+    const preview = await cli([...fixtureArgs, "--dry-run"]);
+    expect(preview).toMatchObject({ code: 0, stderr: "" });
+    expect(JSON.parse(preview.stdout)).toMatchObject({
+      mode: "dry-run",
+      posts: { created: 2, updated: 0, unchanged: 0 },
+      projects: { created: 1, updated: 0, unchanged: 0 },
+      skills: { created: 1, updated: 0, unchanged: 0 },
+      tags: { created: 1, updated: 0, unchanged: 0 },
+      target: "test",
+    });
+    expect(await snapshot()).toEqual(before);
+    const applied = await cli([...fixtureArgs, "--apply"]);
+    expect(applied).toMatchObject({ code: 0, stderr: "" });
+    expect(JSON.parse(applied.stdout)).toMatchObject({
+      mode: "apply",
+      posts: { created: 2 },
+      projects: { created: 1 },
+      target: "test",
+    });
+    const written = await snapshot();
+    const repeat = await cli([...fixtureArgs, "--apply"]);
+    expect(repeat).toMatchObject({ code: 0, stderr: "" });
+    expect(JSON.parse(repeat.stdout)).toMatchObject({
+      mode: "apply",
+      posts: { created: 0, updated: 0, unchanged: 2 },
+      projects: { created: 0, updated: 0, unchanged: 1 },
+      skills: { created: 0, updated: 0, unchanged: 1 },
+      tags: { created: 0, updated: 0, unchanged: 1 },
+      target: "test",
+    });
+    expect(await snapshot()).toEqual(written);
+    const reads = connectPostgresContentRepositories({
+      applicationName: "chanq_page_mixed_content_round_trip",
+      connectionString: target.connectionString,
+      maxConnections: 1,
+    });
+    try {
+      const projectSlug = parseProjectSlug(document.projects[0].slug);
+      if (!projectSlug) throw new Error("Invalid mixed-content project slug");
+      expect(
+        await reads.projects.findPublishedBySlug(projectSlug),
+      ).toMatchObject({
+        body: document.projects[0].body,
+        skills: [{ key: document.skills[0].key }],
+        slug: document.projects[0].slug,
+      });
+      for (const row of document.posts) {
+        const postSlug = parsePostSlug(row.slug);
+        if (!postSlug) throw new Error("Invalid mixed-content post slug");
+        expect(
+          await reads.posts.findPublishedBySlug(row.kind, postSlug),
+        ).toMatchObject({
+          body: row.body,
+          kind: row.kind,
+          projects: [{ slug: document.projects[0].slug }],
+          slug: row.slug,
+          tags: [{ slug: document.tags[0].slug }],
+        });
+      }
+    } finally {
+      await reads.close();
+    }
+
+    await cleanup();
+    expect(await snapshot()).toEqual(before);
   });
 
   it.each(["dry-run", "apply"] as const)(

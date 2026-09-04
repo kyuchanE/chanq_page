@@ -1,24 +1,68 @@
 {
   "version": 1,
-  "skills": [],
-  "tags": [],
+  "skills": [
+    {
+      "key": "media-policy-review",
+      "name": "Synthetic mixed-content review",
+      "category": "Authoring",
+      "summary": "A generated local verification skill, not a professional capability claim.",
+      "evidence": "The fixture exercises validated imports, relationships, public repository reads, and three detail routes without representing delivered work.",
+      "displayOrder": 0,
+      "visible": true
+    }
+  ],
+  "tags": [
+    {
+      "slug": "media-policy-check",
+      "name": "Synthetic media policy check"
+    }
+  ],
   "projects": [
     {
       "slug": "media-policy-demo",
       "title": "Synthetic media policy demonstration",
-      "summary": "An unpublished, generated example for local media validation; it is not professional evidence.",
-      "body": "## Synthetic architecture image\n\nThe generated bands and diagonal marker exercise intrinsic PNG sizing without depicting a real system.\n\n![Generated green and cream bands crossed by an orange diagonal marker][architecture-image]\n\n## Synthetic JPEG\n\n![Two generated color blocks labeled Synthetic](/media/media-policy-demo/still.jpg)\n\n## Controlled GIF\n\nThe generated stripe movement tests explicit playback without representing product behavior.\n\n![Generated diagonal stripes shifting between two positions](/media/media-policy-demo/interaction.gif)\n\nThe explanation remains available while the animation is stopped.\n\n[architecture-image]: /media/media-policy-demo/architecture.png",
-      "status": "draft",
-      "publishedAt": null,
+      "summary": "A published synthetic case study for local mixed-content verification; it is not professional evidence.",
+      "body": "## Context and constraints\n\nThis explicitly synthetic project uses **bold evidence**, *italic context*, and :underline[a fixed constraint] while an [internal project index](/projects) and an [in-paragraph authoring reference](https://example.com/reference) remain part of the explanation.\n\n## Still-image evidence\n\nThe generated bands and diagonal marker exercise reserved intrinsic sizing without depicting a real architecture.\n\n![Synthetic project diagram with green and cream bands crossed by an orange marker][architecture-image]\n\n![Synthetic project review card with green and orange blocks labeled Synthetic](/media/media-policy-demo/still.jpg)\n\n## Controlled interaction\n\n![Synthetic project workflow shown as diagonal stripes moving between two positions](/media/media-policy-demo/interaction.gif)\n\nThis project explanation follows the GIF so the reading order remains useful while animation is stopped.\n\n1. Review the static evidence\n2. Verify explicit playback\n\n## Website reference\n\n- [Synthetic project website](https://example.com/mixed-content-project)\n\n## GitHub source\n\n- [Synthetic project source](https://github.com/example/mixed-content-project)\n- [Return to context](#content-context-and-constraints)\n\n[architecture-image]: /media/media-policy-demo/architecture.png",
+      "status": "published",
+      "publishedAt": "2025-01-01T00:00:00.000Z",
       "seoTitle": "Synthetic media policy demonstration",
-      "seoDescription": "An unpublished generated input for local media-policy validation.",
+      "seoDescription": "A published synthetic project input for local mixed-content validation.",
       "ogImagePath": null,
       "featured": false,
       "displayOrder": 0,
       "repositoryUrl": null,
       "liveUrl": null,
-      "skillKeys": []
+      "skillKeys": ["media-policy-review"]
     }
   ],
-  "posts": []
+  "posts": [
+    {
+      "slug": "media-policy-article-demo",
+      "title": "Synthetic mixed-content article",
+      "summary": "A published synthetic article for local mixed-content verification; it is not professional evidence.",
+      "body": "## Context and constraints\n\nThis explicitly synthetic article uses **bold evidence**, *italic context*, and :underline[a fixed constraint] while an [internal project index](/projects) and an [in-paragraph authoring reference](https://example.com/reference) remain part of the explanation.\n\n## Still-image evidence\n\nThe generated bands and diagonal marker exercise reserved intrinsic sizing without depicting a real article result.\n\n![Synthetic article diagram with green and cream bands crossed by an orange marker][architecture-image]\n\n![Synthetic article review card with green and orange blocks labeled Synthetic](/media/media-policy-article-demo/still.jpg)\n\n## Controlled interaction\n\n![Synthetic article sequence shown as diagonal stripes moving between two positions](/media/media-policy-article-demo/interaction.gif)\n\nThis article explanation follows the GIF so the reading order remains useful while animation is stopped.\n\n1. Review the static evidence\n2. Verify explicit playback\n\n## Website reference\n\n- [Synthetic article website](https://example.com/mixed-content-article)\n\n## GitHub source\n\n- [Synthetic article source](https://github.com/example/mixed-content-article)\n- [Return to context](#content-context-and-constraints)\n\n[architecture-image]: /media/media-policy-article-demo/architecture.png",
+      "kind": "article",
+      "status": "published",
+      "publishedAt": "2025-01-02T00:00:00.000Z",
+      "seoTitle": "Synthetic mixed-content article",
+      "seoDescription": "A published synthetic article input for local mixed-content validation.",
+      "ogImagePath": null,
+      "tagSlugs": ["media-policy-check"],
+      "projectSlugs": ["media-policy-demo"]
+    },
+    {
+      "slug": "media-policy-retrospective-demo",
+      "title": "Synthetic mixed-content retrospective",
+      "summary": "A published synthetic retrospective for local mixed-content verification; it is not professional evidence.",
+      "body": "## Context and constraints\n\nThis explicitly synthetic retrospective uses **bold evidence**, *italic context*, and :underline[a fixed constraint] while an [internal project index](/projects) and an [in-paragraph authoring reference](https://example.com/reference) remain part of the explanation.\n\n## Still-image evidence\n\nThe generated bands and diagonal marker exercise reserved intrinsic sizing without depicting a real retrospective result.\n\n![Synthetic retrospective diagram with green and cream bands crossed by an orange marker][architecture-image]\n\n![Synthetic retrospective review card with green and orange blocks labeled Synthetic](/media/media-policy-retrospective-demo/still.jpg)\n\n## Controlled interaction\n\n![Synthetic retrospective sequence shown as diagonal stripes moving between two positions](/media/media-policy-retrospective-demo/interaction.gif)\n\nThis retrospective explanation follows the GIF so the reading order remains useful while animation is stopped.\n\n1. Review the static evidence\n2. Verify explicit playback\n\n## Website reference\n\n- [Synthetic retrospective website](https://example.com/mixed-content-retrospective)\n\n## GitHub source\n\n- [Synthetic retrospective source](https://github.com/example/mixed-content-retrospective)\n- [Return to context](#content-context-and-constraints)\n\n[architecture-image]: /media/media-policy-retrospective-demo/architecture.png",
+      "kind": "retrospective",
+      "status": "published",
+      "publishedAt": "2025-01-03T00:00:00.000Z",
+      "seoTitle": "Synthetic mixed-content retrospective",
+      "seoDescription": "A published synthetic retrospective input for local mixed-content validation.",
+      "ogImagePath": null,
+      "tagSlugs": ["media-policy-check"],
+      "projectSlugs": ["media-policy-demo"]
+    }
+  ]
 }

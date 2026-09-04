@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted. Shared text/underline/link rendering, validated local media, and controlled GIF playback are implemented; the complete mixed-content workflow remains pending in the [development roadmap](../../project-roadmap.md).
+Accepted and implemented. Shared text/underline/link rendering, validated local media, controlled GIF playback, and the complete three-detail mixed-content workflow are verified. Broader cross-site quality and owner-reviewed release content remain in the [development roadmap](../../project-roadmap.md).
 
 Refines [ADR-0003](0003-use-postgresql-for-mvp-content.md) and [ADR-0008](0008-use-versioned-content-imports.md) without replacing their content ownership or import transaction decisions.
 
@@ -20,7 +20,7 @@ Allowing arbitrary HTML for underline or introducing an MDX runtime would change
 - Allow interleaved sections, prose, still images, controlled GIFs, and descriptive links without fixed subtitle fields. Site tokens own typography; metadata stays plain text.
 - Keep media local and reviewed, with validated file references, alternative text, sizing, and byte budgets. Require a static companion poster and explicit Play/Stop interaction for GIFs; only that interaction needs a client component.
 - Do not equate the parser's default URL filter with the project destination policy. Validate allowed destinations after decoding, reject active/unsupported schemes and paths, and preserve safe readable fallbacks for legacy rows.
-- Define the syntax, media naming, budgets, and compatibility requirements in the canonical [authoring policy](../../development/content-authoring.md). Implement and verify them before DEV-10, owner-reviewed release content, and the release rehearsal. Policy acceptance does not mean these controls already run.
+- Define the syntax, media naming, budgets, and compatibility requirements in the canonical [authoring policy](../../development/content-authoring.md). Verify the complete local workflow before cross-site quality review, owner-reviewed release content, and the release rehearsal.
 
 ## Alternatives considered
 

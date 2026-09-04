@@ -1,4 +1,4 @@
-# Synthetic mixed-content project assets
+# Synthetic mixed-content retrospective assets
 
 These geometric assets are generated locally by
 `scripts/generate-synthetic-media.mts` for validation and browser tests. They do

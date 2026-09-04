@@ -7,13 +7,21 @@ import { deflateSync } from "node:zlib";
 import { chromium } from "@playwright/test";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
-const outputDirectory = resolve(root, "public/media/media-policy-demo");
+const contentSlugs = [
+  "media-policy-demo",
+  "media-policy-article-demo",
+  "media-policy-retrospective-demo",
+] as const;
+const outputDirectories = contentSlugs.map((slug) =>
+  resolve(root, "public/media", slug),
+);
 const width = 320;
 const height = 180;
 const usage = `Usage: node --import tsx scripts/generate-synthetic-media.mts --allow-write
 
-Regenerates the permission-safe geometric assets used by the synthetic media
-policy example. This command writes only public/media/media-policy-demo/.
+Regenerates the permission-safe geometric assets used by the synthetic mixed-
+content example. This command writes only the three public/media/media-policy-*
+demo/ directories listed in the script.
 Install the pinned Playwright Chromium build before running it.`;
 
 function crc32(buffer: Buffer) {
@@ -218,18 +226,26 @@ async function main() {
     return;
   }
   if (!values["allow-write"]) throw new Error(usage);
-  await mkdir(outputDirectory, { recursive: true });
+  await Promise.all(
+    outputDirectories.map((directory) => mkdir(directory, { recursive: true })),
+  );
   const [jpeg, poster] = await Promise.all([
     canvasAsset("image/jpeg", 0.84, "blocks"),
     canvasAsset("image/webp", 0.82, "stripes"),
   ]);
-  await Promise.all([
-    writeFile(resolve(outputDirectory, "architecture.png"), createPng()),
-    writeFile(resolve(outputDirectory, "still.jpg"), jpeg),
-    writeFile(resolve(outputDirectory, "interaction.gif"), createGif()),
-    writeFile(resolve(outputDirectory, "interaction.poster.webp"), poster),
-  ]);
-  console.log(`Generated synthetic media in ${outputDirectory}.`);
+  const png = createPng();
+  const gif = createGif();
+  await Promise.all(
+    outputDirectories.flatMap((directory) => [
+      writeFile(resolve(directory, "architecture.png"), png),
+      writeFile(resolve(directory, "still.jpg"), jpeg),
+      writeFile(resolve(directory, "interaction.gif"), gif),
+      writeFile(resolve(directory, "interaction.poster.webp"), poster),
+    ]),
+  );
+  console.log(
+    `Generated synthetic media for ${contentSlugs.join(", ")} under public/media/.`,
+  );
 }
 
 main().catch((error: unknown) => {

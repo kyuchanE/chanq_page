@@ -43,35 +43,12 @@ Those requirements remain authoritative in the product and operations documentat
 
 ## Remaining work
 
-The next slice completes the mixed-content requirements in the approved [product acceptance criteria](product/project-scope.md#detail-content-acceptance-criteria), [authoring policy](development/content-authoring.md), and [ADR-0009](architecture/decisions/0009-use-controlled-detail-markdown.md). Preserve the existing DEV-10, DEV-10A, and DEV-11 identifiers; execute DEV-09C before them. New sample fixtures must remain explicitly synthetic and do not satisfy the owner-reviewed release-content gate.
-
-### DEV-09C — Mixed-content authoring and public round-trip verification
-
-**Status:** `READY`
-**Depends on:** None
-
-**Outcome:** One documented local workflow proves the requested mixed-content layout from a reviewed import through PostgreSQL to every detail type.
-
-**Completion conditions:**
-
-- Provide a runnable, explicitly synthetic import example and reviewed media exercising a project, an article, and a retrospective. Keep fixture identities isolated and do not replace owner-authored development data.
-- Include at least three body sections, bold/italic/underline, prose followed by a still image, a GIF followed by prose, an in-paragraph link, and closing website-reference/GitHub-source sections. Preserve the authored reading order without a fixed section-count template.
-- Prove dry-run/apply/repeat and repository readback preserve the normalized body, public visibility, stable identifiers, and unrelated records/relations. Invalid text/link/media inputs must fail before writes.
-- Verify all three public routes through direct URLs and refresh, with single-title heading structure, actual local assets, keyboard navigation, internal/external links, reduced motion, and mobile/tablet/desktop layouts.
-- Update the authoring/import documentation with tested commands, asset preparation, JSON newline handling, compatibility findings, actual validation evidence, and any remaining limitation. Remove current-versus-planned warnings only for controls actually verified.
-- Keep release factual review and production operations separate; synthetic mixed-content examples must not be represented as professional evidence.
-
-**Validation:**
-
-- Isolated application-role PostgreSQL import/read-repository round-trip tests
-- Production-server Playwright journeys for project, article, and retrospective mixed-content examples, ordered content, media, direct navigation, refresh, and existing metadata/404 behavior
-- Manual focused reading-order, link-distinguishability, alternative-text, GIF-control, and responsive review
-- `./scripts/check.sh`
+The approved three-detail mixed-content workflow is implemented and verified. The next slice applies the complete local application to cross-site quality checks before owner-reviewed release content and the clean rehearsal. Preserve the existing DEV-10, DEV-10A, and DEV-11 identifiers. Synthetic fixtures remain test inputs and do not satisfy the owner-reviewed release-content gate.
 
 ### DEV-10 — Cross-site accessibility, SEO, and performance verification
 
-**Status:** `QUEUED`
-**Depends on:** DEV-09C
+**Status:** `READY`
+**Depends on:** None
 
 **Outcome:** The complete local application meets the documented public quality bar and has recorded evidence for remaining limitations.
 

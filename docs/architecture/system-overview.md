@@ -164,6 +164,6 @@ Browser, Cloudflare, Nginx, Next.js, and PostgreSQL caching are independent. Int
 
 ## Planned evolution
 
-1. Implement and verify the approved mixed-content policy before cross-site accessibility/SEO/performance checks, owner-reviewed release content, and the clean local rehearsal; follow the ordered [development roadmap](../project-roadmap.md).
+1. Complete cross-site accessibility/SEO/performance checks, owner-reviewed release content, and the clean local rehearsal in the ordered [development roadmap](../project-roadmap.md); the approved three-detail mixed-content workflow is implemented and locally verified.
 2. Complete `linux/arm64` Docker packaging, migration release steps, logical backup, and isolated restore verification when production work is authorized.
 3. Add Nginx and Cloudflare Tunnel with separately verified responsibilities and no initial origin HTML cache when production work is authorized.
