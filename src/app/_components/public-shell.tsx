@@ -12,9 +12,14 @@ export function PublicShell({
       <header className="site-header">
         <div className="site-header__inner">
           <p className="site-header__title">Hello, World!</p>
-          <PrimaryNavigation />
         </div>
       </header>
+
+      <div className="site-navigation-bar">
+        <div className="site-navigation-bar__inner">
+          <PrimaryNavigation />
+        </div>
+      </div>
 
       <main className="site-main" id="main-content" tabIndex={-1}>
         <aside className="preview-notice" aria-label="Sample content notice">

@@ -30,10 +30,10 @@
   --color-footer-text: var(--dracula-white);
   --color-terminal-shadow: rgb(40 42 54 / 72%);
 
-  --font-sans: var(--font-neodunggeunmo-code), "NeoDunggeunmo Code", monospace;
+  --font-sans: var(--font-d2-coding), "D2Coding", monospace;
   --font-display:
     var(--font-neodunggeunmo-code), "NeoDunggeunmo Code", monospace;
-  --font-code: var(--font-neodunggeunmo-code), "NeoDunggeunmo Code", monospace;
+  --font-code: var(--font-d2-coding), "D2Coding", monospace;
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -47,7 +47,7 @@
 
   --content-width: 72rem;
   --reading-width: 46rem;
-  --content-anchor-offset: 18rem;
+  --content-anchor-offset: 12rem;
   --page-gutter: 1rem;
   --radius-small: 0.5rem;
   --radius-large: 1.5rem;
@@ -104,7 +104,7 @@ a {
 .site-shell {
   display: grid;
   min-height: 100svh;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto auto 1fr auto;
 }
 
 .skip-link {
@@ -126,15 +126,11 @@ a {
 }
 
 .site-header {
-  position: sticky;
-  z-index: 20;
-  top: 0;
-  border-bottom: 1px solid var(--color-border);
   background: rgb(40 42 54 / 92%);
-  backdrop-filter: blur(0.75rem);
 }
 
 .site-header__inner,
+.site-navigation-bar__inner,
 .site-footer__inner {
   width: 100%;
   max-width: calc(var(--content-width) + (var(--page-gutter) * 2));
@@ -146,12 +142,21 @@ a {
   display: grid;
 }
 
+.site-navigation-bar {
+  position: sticky;
+  z-index: 20;
+  top: 0;
+  border-bottom: 1px solid var(--color-border);
+  background: rgb(40 42 54 / 92%);
+  backdrop-filter: blur(0.75rem);
+}
+
 .site-header__title {
   overflow: hidden;
   margin: 0;
   padding: var(--space-6) 0 calc(var(--space-6) + 0.2em);
   color: var(--color-accent);
-  font-family: var(--font-code);
+  font-family: var(--font-display);
   font-size: clamp(1.75rem, 8vw, 4.5rem);
   font-weight: 700;
   letter-spacing: 0.02em;
@@ -175,7 +180,7 @@ a {
   justify-content: center;
   margin: 0;
   gap: var(--space-1);
-  padding: 0 0 var(--space-3);
+  padding: var(--space-3) 0;
   list-style: none;
 }
 
@@ -1160,7 +1165,7 @@ a {
 @media (min-width: 48rem) {
   :root {
     --page-gutter: 2rem;
-    --content-anchor-offset: 13rem;
+    --content-anchor-offset: 8rem;
   }
 
   .site-main {
@@ -1203,7 +1208,7 @@ a {
 @media (min-width: 64rem) {
   :root {
     --page-gutter: 3rem;
-    --content-anchor-offset: 13rem;
+    --content-anchor-offset: 6rem;
   }
 
   .primary-navigation__list {

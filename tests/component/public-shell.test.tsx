@@ -18,17 +18,25 @@ afterEach(() => {
 });
 
 describe("PublicShell", () => {
-  it("shows the terminal greeting above the public navigation", () => {
+  it("shows the terminal greeting before the independently sticky navigation", () => {
     render(
       <PublicShell>
         <h1>Page heading</h1>
       </PublicShell>,
     );
 
+    const banner = screen.getByRole("banner");
+    const navigation = screen.getByRole("navigation", {
+      name: "Primary navigation",
+    });
+
     expect(screen.getByText("Hello, World!")).toBeVisible();
+    expect(navigation).toBeVisible();
+    expect(banner).not.toContainElement(navigation);
     expect(
-      screen.getByRole("navigation", { name: "Primary navigation" }),
-    ).toBeVisible();
+      banner.compareDocumentPosition(navigation) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
     expect(screen.getByRole("main")).toHaveAttribute("id", "main-content");
     expect(screen.getByRole("contentinfo")).toBeVisible();
     expect(

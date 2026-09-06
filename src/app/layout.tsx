@@ -5,6 +5,25 @@ import { PublicShell } from "@/app/_components/public-shell";
 
 import "./globals.css";
 
+const d2Coding = localFont({
+  src: [
+    {
+      path: "./fonts/d2coding-v1.3.3-regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "./fonts/d2coding-v1.3.3-bold.woff2",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-d2-coding",
+  display: "swap",
+  fallback: ["monospace"],
+  adjustFontFallback: false,
+});
+
 const neoDunggeunmoCode = localFont({
   src: "./fonts/neodgm-code-v1.601.woff2",
   variable: "--font-neodunggeunmo-code",
@@ -30,7 +49,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html className={neoDunggeunmoCode.variable} lang="en">
+    <html
+      className={`${d2Coding.variable} ${neoDunggeunmoCode.variable}`}
+      lang="en"
+    >
       <body>
         <PublicShell>{children}</PublicShell>
       </body>

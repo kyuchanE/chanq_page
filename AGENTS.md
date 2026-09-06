@@ -9,7 +9,7 @@ Build a personal developer portfolio that demonstrates real project experience, 
 - Maintain a developer-focused code-editor atmosphere across the public site.
 - Use the Dracula palette as the canonical color foundation: background `#282a36`, gray `#44475a`, white `#f8f8f2`, green `#50fa7b`, orange `#ffb86c`, pink `#ff79c6`, purple `#bd93f9`, red `#ff5555`, yellow `#f1fa8c`, and cyan `#8be9fd`.
 - Keep raw Dracula values centralized in `src/app/globals.css` and map components through semantic color tokens. Do not scatter palette literals through route or feature components.
-- Use the self-hosted NeoDunggeunmo Code font as the global site typeface, with a monospace fallback. Keep the pinned font file and its SIL Open Font License together under `src/app/fonts/`; treat a version change as a reviewed asset update.
+- Use the self-hosted D2Coding font for body and code text, and reserve NeoDunggeunmo Code for title typography, with monospace fallbacks. Keep the pinned font files and their SIL Open Font Licenses together under `src/app/fonts/`; treat a version change as a reviewed asset update.
 - Preserve readable type sizes and line heights, sufficient contrast, visible focus, reduced-motion behavior, and non-color cues while expressing the editor-inspired visual direction.
 
 These instructions apply to the entire repository. Before editing a file, also read every `AGENTS.md` from the repository root down to that file's directory. The nearest file adds or narrows instructions for its scope. Do not copy root rules into child files unless the local context needs a more specific constraint.

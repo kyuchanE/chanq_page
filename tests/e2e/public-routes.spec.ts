@@ -111,6 +111,82 @@ test("the shell adapts without page overflow at primary viewport sizes", async (
   }
 });
 
+test("only the navigation remains pinned after the title scrolls away", async ({
+  page,
+}) => {
+  const viewports = [
+    { height: 720, name: "mobile", width: 375 },
+    { height: 720, name: "desktop", width: 1280 },
+  ] as const;
+
+  for (const viewport of viewports) {
+    await test.step(viewport.name, async () => {
+      await page.setViewportSize(viewport);
+      await page.goto("/about");
+
+      const title = page.locator(".site-header__title");
+      const navigationBar = page.locator(".site-navigation-bar");
+      const navigationLink = page
+        .getByRole("navigation", { name: "Primary navigation" })
+        .getByRole("link", { name: "About", exact: true });
+      const pageTitle = page.getByRole("heading", { level: 1 });
+
+      const initialPositions = await page.evaluate(() => {
+        const titleElement = document.querySelector<HTMLElement>(
+          ".site-header__title",
+        );
+        const navigationElement = document.querySelector<HTMLElement>(
+          ".site-navigation-bar",
+        );
+
+        if (titleElement === null || navigationElement === null) {
+          throw new Error("The public shell header is incomplete.");
+        }
+
+        return {
+          navigationTop: navigationElement.getBoundingClientRect().top,
+          titleBottom: titleElement.getBoundingClientRect().bottom,
+        };
+      });
+      const bodyFontFamily = await page
+        .locator("body")
+        .evaluate((element) => getComputedStyle(element).fontFamily);
+      const titleFontFamily = await title.evaluate(
+        (element) => getComputedStyle(element).fontFamily,
+      );
+
+      expect(initialPositions.navigationTop).toBeGreaterThanOrEqual(
+        initialPositions.titleBottom,
+      );
+      await expect(navigationLink).toHaveCSS("font-family", bodyFontFamily);
+      expect(titleFontFamily).toBe(
+        await pageTitle.evaluate(
+          (element) => getComputedStyle(element).fontFamily,
+        ),
+      );
+      expect(titleFontFamily).not.toBe(bodyFontFamily);
+
+      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+
+      await expect
+        .poll(() => page.evaluate(() => window.scrollY))
+        .toBeGreaterThan(0);
+      await expect
+        .poll(() =>
+          navigationBar.evaluate(
+            (element) => element.getBoundingClientRect().top,
+          ),
+        )
+        .toBe(0);
+      await expect
+        .poll(() =>
+          title.evaluate((element) => element.getBoundingClientRect().bottom),
+        )
+        .toBeLessThanOrEqual(0);
+    });
+  }
+});
+
 test("reduced-motion preference disables smooth page scrolling", async ({
   page,
 }) => {

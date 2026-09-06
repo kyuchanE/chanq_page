@@ -53,7 +53,7 @@ jsdom is intentionally pinned below its newest major because version 30 requires
 | Linting | ESLint with Next.js rules | Start from the framework-supported linting path. |
 | Formatting | Prettier | Keep formatting deterministic and separate from semantic lint rules. |
 | Styling | Tailwind CSS with explicit Dracula palette theme tokens | Give the developer portfolio a code-editor character while keeping shared visual decisions and accessible semantic color roles centralized. |
-| Typography | Self-hosted NeoDunggeunmo Code 1.601 through `next/font/local` | Reinforce the editor-inspired direction with Korean glyph support while avoiding runtime font CDN requests. |
+| Typography | Self-hosted D2Coding 1.3.3 for body/code text and NeoDunggeunmo Code 1.601 for titles through `next/font/local` | Preserve distinctive title typography while improving general Korean and code readability without runtime font CDN requests. |
 | React optimization | React Compiler enabled through the scaffold option | Use the current recommended scaffold path and validate generated behavior. |
 | Development bundler | Turbopack default | Follow the current Next.js scaffold baseline unless a verified incompatibility appears. |
 
@@ -68,6 +68,8 @@ TypeScript + ESLint + Tailwind CSS + React Compiler + App Router
 Review the temporary scaffold before merging. Preserve repository-owned instructions, documentation, scripts, and unrelated user changes.
 
 The pinned `src/app/fonts/neodgm-code-v1.601.woff2` asset comes from the official NeoDunggeunmo 1.601 release and has SHA-256 `ea3a6af159aa584fba45a2b47640cf267be193110b5877b59a689a669ad9a4c6`. Its unmodified SIL Open Font License is stored beside it in `src/app/fonts/NEODGM-LICENSE.txt`.
+
+The pinned official D2Coding 1.3.3 web assets are `src/app/fonts/d2coding-v1.3.3-regular.woff2` with SHA-256 `49a1a380c1079bc74950acf6152cbfc4fd69101813e18127e1be45bd8bb15063` and `src/app/fonts/d2coding-v1.3.3-bold.woff2` with SHA-256 `7e03de7314d7a2d5a8a275531c760902c71494ac1c7d1fde0dab4f2f318f0ca0`. Their unmodified SIL Open Font License is stored beside them in `src/app/fonts/D2CODING-OFL.txt`.
 
 ## Data and validation
 
